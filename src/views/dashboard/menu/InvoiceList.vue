@@ -177,10 +177,7 @@
                     ></v-text-field>
                   </v-col>
                   <v-col>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      x-small
+                    <v-btn color="blue darken-1" text x-small
                       >[load it from library]</v-btn
                     >
                     <v-textarea
@@ -221,7 +218,6 @@
                     >
                   </v-col>
                   <v-row>
-
                     <v-col sm="4" md="6">
                       <v-select
                         v-model="discount_id"
@@ -532,23 +528,8 @@
 
 <script>
 import { API, Auth } from "aws-amplify";
+import { createRecord, updateRecord } from "../../../graphql/mutations";
 import {
-  createSmInvoice,
-  updateSmInvoice,
-  updateLeads,
-  createServicesLineQ,
-  createSmInstallment,
-  deleteSmInstallment,
-  updateServicesLineQ,
-  deleteSmInvoice,
-} from "../../../graphql/mutations";
-import {
-  listSmInvoices,
-  getServicesLineQ,
-  getSType,
-  getCompany,
-  listSmInstallments,
-  listServicesLineQs,
   listAccounts,
   getOrganization,
   listQuotes,
@@ -811,7 +792,6 @@ export default {
   }),
 
   computed: {
-
     ...Vuex.mapState([
       "organizationID",
       "leads",
@@ -850,8 +830,6 @@ export default {
       .toISOString()
       .substr(0, 10);
     console.log(this.startDate);
-    this.getAccounts();
-    this.getCatalogs();
     this.GetLeads();
     this.getInvoices();
   },
@@ -1166,14 +1144,14 @@ export default {
 
       this.quotes = [...this.quotes, todo];
       const a = await API.graphql({
-        query: createSmInvoice,
+        query: createRecord,
         variables: { input: todo },
       });
-      const quoteID = a.data.createQuotation.id;
+      const quoteID = a.data.createRecord.id;
       const id = lead_id;
       const l = { quoteID, id };
       await API.graphql({
-        query: updateLeads,
+        query: updateRecord,
         variables: { input: l },
       });
       let price = 0;
@@ -1216,7 +1194,7 @@ export default {
           quoteID,
         };
         await API.graphql({
-          query: createServicesLineQ,
+          query: createRecord,
           variables: { input: t },
         });
       }
@@ -1235,7 +1213,7 @@ export default {
             companyID,
           };
           await API.graphql({
-            query: createSmInstallment,
+            query: createRecord,
             variables: { input: inst },
           });
         }
@@ -1320,17 +1298,17 @@ export default {
 
       this.quotes = [...this.quotes, todo];
       const a = await API.graphql({
-        query: createSmInvoice,
+        query: createRecord,
         variables: { input: todo },
       });
 
-      const quoteID = a.data.createSmInvoice.id;
+      const quoteID = a.data.createRecord.id;
       id = lead_id;
 
       const l = { quoteID, id };
 
       await API.graphql({
-        query: updateLeads,
+        query: updateRecord,
         variables: { input: l },
       });
 
@@ -1343,7 +1321,7 @@ export default {
         const id = all_servi.data.listServicesLineQs.items[i].id;
         const update_serv = { quoteID, id };
         await API.graphql({
-          query: updateServicesLineQ,
+          query: updateRecord,
           variables: { input: update_serv },
         });
       }
@@ -1392,7 +1370,7 @@ export default {
             quoteID,
           };
           const sq = await API.graphql({
-            query: createServicesLineQ,
+            query: createRecord,
             variables: { input: t },
           });
           console.log(sq);
@@ -1432,7 +1410,7 @@ export default {
             companyID,
           };
           await API.graphql({
-            query: createSmInstallment,
+            query: createRecord,
             variables: { input: todo },
           });
         }
@@ -1493,7 +1471,7 @@ export default {
         };
 
         await API.graphql({
-          query: updateServicesLineQ,
+          query: updateRecord,
           variables: { input: todo },
         });
         this.editedServiceItem.type_name = type_name;
@@ -1655,7 +1633,7 @@ export default {
               const id = item;
               const todo = { email_sent, sent_date, id };
               await API.graphql({
-                query: updateSmInvoice,
+                query: updateRecord,
                 variables: { input: todo },
               });
               this.alert = true;

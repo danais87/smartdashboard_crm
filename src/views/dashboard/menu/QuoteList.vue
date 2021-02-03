@@ -582,7 +582,7 @@
                             placeholder="Select a Customer"
                           >
                             <el-option
-                              v-for="item in leads"
+                              v-for="item in leads_seek"
                               :key="item.id"
                               :label="JSON.parse(item.l_smName)[0].fullName"
                               :value="item.id"
