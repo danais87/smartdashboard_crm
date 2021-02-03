@@ -2,27 +2,7 @@
   <v-container id="dashboard" fluid grid-list-lg class="mx-0 pa-0">
     <div id="app">
       <v-app>
-        <v-app-bar
-          :clipped-left="$vuetify.breakpoint.lgAndUp"
-          app
-          color="blue darken-3"
-          dark
-        >
-          <v-toolbar-title style="width: 300px" class="ml-0 pl-4">
-            <span class="hidden-sm-and-down">CRM</span>
-          </v-toolbar-title>
 
-          <v-col cols="12" sm="12" md="12" align="right">
-            <v-spacer></v-spacer>
-            <v-btn @click="logout" color="primary" dark class="mb-2"
-              >Logout</v-btn
-            >
-          </v-col>
-        </v-app-bar>
-        <v-progress-linear
-          v-if="apiRequest"
-          :indeterminate="true"
-        ></v-progress-linear>
         <v-row cols="12" sm="12" md="12">
           <v-spacer></v-spacer>
           <v-col cols="12" sm="2" md="2" align="center">

@@ -331,13 +331,13 @@ export default {
       { text: "Email", sortable: true, value: "email", align: "start" },
     ],
     headers_ins: [
-      { text: "Name", sortable: true, value: "i", align: "start" },
-      { text: "Client", sortable: true, value: "c", align: "start" },
+      { text: "Name", sortable: true, value: "name", align: "start" },
+      { text: "Client", sortable: true, value: "full_name", align: "start" },
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
       {
         text: "Amount",
         sortable: true,
-        value: "amount",
+        value: "payment",
         align: "right",
       },
       {
@@ -677,7 +677,7 @@ export default {
         this.item_inst = [];
 
         for (let k = 0; k < installments.length; k++) {
-          if (installments[k].GSP1PK1 == this.quotes[i].SK) {
+          if (installments[k].GSP2PK1 == this.quotes[i].SK) {
             this.item_inst = [...this.item_inst, installments[k]];
           }
         }
@@ -701,15 +701,17 @@ export default {
       }
       console.log(this.received_payment);
       for (let i = 0; i < this.item.length; i++) {
-        for (let j = 0; j < this.item[i].inst.length; j++) {
-          if (this.item[i].inst[j].isPaid != "N") {
-            this.pend_payment.push({
-              type: "IN",
-              name: this.item[i].quote.orderNumber,
-              date: this.item[i].inst[j].payDate,
-              full_name: this.item[i].quote.customerName,
-              payment: this.item[i].inst[j].amount,
-            });
+        if (this.item[i].quote.orderNumber != undefined) {
+          for (let j = 0; j < this.item[i].inst.length; j++) {
+            if (this.item[i].inst[j].isPaid != "Y") {
+              this.pend_payment.push({
+                type: "IN",
+                name: this.item[i].quote.orderNumber,
+                date: this.item[i].inst[j].startDate,
+                full_name: this.item[i].quote.customerName,
+                payment: this.item[i].inst[j].amount,
+              });
+            }
           }
         }
       }
