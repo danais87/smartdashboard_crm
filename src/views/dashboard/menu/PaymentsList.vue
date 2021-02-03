@@ -23,7 +23,8 @@
                     v-model="selectedEmails"
                     :headers="headers_e"
                     :items="send_email[0].emails"
-                    item-key="email"
+                    item-text="email"
+                    item-value="email"
                     show-select
                     selectable-key="isSelectable"
                     hide-default-footer
@@ -237,6 +238,8 @@ import { API, Auth } from "aws-amplify";
 
 import {
   getCompany,
+  getOrganization,
+  listCustomers,
   listInstallments,
   listQuotes,
   listSmInstallments,
@@ -552,6 +555,7 @@ export default {
     item_inst: [],
     quotes: [],
     item: [],
+    editedItem_c: [],
   }),
 
   computed: {
@@ -633,8 +637,11 @@ export default {
 
     async getInvoice() {
       var installments = [];
+      this.quotes = [];
       this.received_payment = [];
       this.pend_payment = [];
+      this.item = [];
+      var leads = [];
       this.total_pr = 0;
       this.total_pp = 0;
 
@@ -681,6 +688,7 @@ export default {
             this.item_inst = [...this.item_inst, installments[k]];
           }
         }
+
         this.item.push({
           quote: this.quotes[i],
           inst: this.item_inst,
@@ -696,6 +704,7 @@ export default {
             date: this.item[i].quote.createdAt.substr(0, 10),
             full_name: this.item[i].quote.customerName,
             payment: this.item[i].quote.downPayment,
+            quote: this.item[i].quote,
           });
         }
       }
@@ -710,6 +719,7 @@ export default {
                 date: this.item[i].inst[j].startDate,
                 full_name: this.item[i].quote.customerName,
                 payment: this.item[i].inst[j].amount,
+                quote: this.item[i].quote,
               });
             }
           }
@@ -788,20 +798,42 @@ export default {
       this.dialog = true;
     },
 
-    OpenSentEmail(item) {
-      this.editedItemLeads = item.item.quote.items[0].leads.items[0];
+    async OpenSentEmail(item) {
+
+      this.editedItem_c = item;
+      const todos = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: item.quote.customerID,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+
+      this.editedItemLeads = todos.data.listCustomers[0];
       this.dialog_email = true;
       this.list_email = [];
       this.send_email = [];
 
-      for (
-        let i = 0;
-        i < this.editedItemLeads.smLeadsdetails.items.length;
-        i++
-      ) {
-        if (this.editedItemLeads.smLeadsdetails.items[i].type == "E") {
-          let email = this.editedItemLeads.smLeadsdetails.items[i].value;
-          let e_type = this.editedItemLeads.smLeadsdetails.items[i].value_type;
+      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
+          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
+          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
           const todo = {
             email,
             e_type,
@@ -810,28 +842,35 @@ export default {
         }
       }
       this.send_email.push({
-        name: this.editedItemLeads.name + " " + this.editedItemLeads.lastname,
+        name: JSON.parse(this.editedItemLeads.l_smName)[0].fullName,
         emails: this.list_email,
-        quoteID: item.item.quoteID,
+        quoteID: item.quote,
       });
-      console.log(this.send_email);
-      this.SetBodyInst(item.item.quote.items[0]);
+      this.SetBodyInst(item);
     },
 
-    async invokeLambda(item) {
-      console.log(this.selectedEmails);
-
+    async invokeLambda() {
       var AWS = require("aws-sdk");
 
-      const company = await API.graphql({
-        query: getCompany,
-        variables: { id: this.company },
+      const todos = await API.graphql({
+        query: getOrganization,
+        variables: {
+          filter: {
+            active: { eq: "1" },
+            SK: {
+              eq: "#META#",
+            },
+            PK: { eq: this.organizationID },
+          },
+        },
       });
 
-      const com = company.data.getCompany;
-
-      var REGION = com.region;
-      var identityPoolId = com.IdentityPoolId;
+      const com = todos.data.getOrganization[0];
+      const quotePK = this.editedItem_c.quote.PK;
+      const quoteSK = this.editedItem_c.quote.SK;
+      const smName = this.editedItem_c.quote.smName;
+      var REGION = com.funcRegion;
+      var identityPoolId = com.funcIdentityPoolId;
 
       AWS.config.update({
         region: REGION,
@@ -846,17 +885,22 @@ export default {
         apiVersion: "2015-03-31",
       });
 
+      this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
+      this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];
+      console.log(this.selectedEmails)
       for (let i = 0; i < this.selectedEmails.length; i++) {
         var pullParams = {
-          FunctionName: com.FunctionName,
+          FunctionName: com.funcName,
           InvocationType: "RequestResponse",
           Payload:
             '{ "toAddresses": "' +
-            this.selectedEmails[i].email +
+            this.selectedEmails[i] +
             '","source":"' +
-            com.source +
+            com.funcSource +
             '","subject":"' +
-            "Your Quote from BizPlanEasy" +
+            "Your Payment for Quote: (" +
+            smName +
+            ") from BizPlanEasy" +
             '","body":"' +
             this.bodyinst +
             '"}',
@@ -869,13 +913,16 @@ export default {
           } else {
             pullResults = JSON.parse(data.Payload);
             console.log(pullResults);
+
             if (pullResults.MessageId) {
-              const email_sent = "Y";
-              const sent_date = new Date().toLocaleString();
-              const id = item;
-              const todo = { email_sent, sent_date, id };
+              const emailSent = "Y";
+              const sentDate = new Date().toLocaleString();
+              const sentBy = this.usuario;
+              const PK = quotePK;
+              const SK = quoteSK;
+              const todo = { emailSent, sentDate, sentBy, PK, SK };
               await API.graphql({
-                query: updateQuotation,
+                query: updateRecord,
                 variables: { input: todo },
               });
               this.alert = true;

@@ -2767,7 +2767,7 @@ export default {
             '","source":"' +
             com.funcSource +
             '","subject":"' +
-            "Your Quote:" +this.editedItem_c.smName+ " from BizPlanEasy"+
+            "Your Quote: (" +this.editedItem_c.smName+ ") from BizPlanEasy: "+this.editedItem_c.subject+
             '","body":"' +
             this.body +
             '"}',
