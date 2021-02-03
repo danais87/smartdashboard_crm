@@ -2,7 +2,6 @@
   <v-container id="dashboard" fluid grid-list-lg class="mx-0 pa-0">
     <div id="app">
       <v-app>
-
         <v-row cols="12" sm="12" md="12">
           <v-spacer></v-spacer>
           <v-col cols="12" sm="2" md="2" align="center">
@@ -10,13 +9,13 @@
               ref="menu"
               v-model="menu"
               :close-on-content-click="false"
-              :return-value.sync="start_date"
+              :return-value.sync="startDate"
               transition="scale-transition"
               offset-y
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="start_date"
+                  v-model="startDate"
                   label="Start Date"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -24,16 +23,12 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="start_date" no-title scrollable>
+              <v-date-picker v-model="startDate" no-title scrollable>
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="menu = false">
                   Cancel
                 </v-btn>
-                <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.menu.save(start_date)"
-                >
+                <v-btn text color="primary" @click="$refs.menu.save(startDate)">
                   OK
                 </v-btn>
               </v-date-picker>
@@ -44,14 +39,14 @@
               ref="menu1"
               v-model="menu1"
               :close-on-content-click="false"
-              :return-value.sync="end_date"
+              :return-value.sync="endDate"
               transition="scale-transition"
               offset-y
               min-width="290px"
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="end_date"
+                  v-model="endDate"
                   label="End Date"
                   prepend-icon="mdi-calendar"
                   readonly
@@ -59,12 +54,12 @@
                   v-on="on"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="end_date" no-title scrollable>
+              <v-date-picker v-model="endDate" no-title scrollable>
                 <v-spacer></v-spacer>
                 <v-btn text color="primary" @click="menu1 = false">
                   Cancel
                 </v-btn>
-                <v-btn text color="primary" @click="$refs.menu1.save(end_date)">
+                <v-btn text color="primary" @click="$refs.menu1.save(endDate)">
                   OK
                 </v-btn>
               </v-date-picker>
@@ -125,10 +120,10 @@
                   <v-col cols="12" sm="4" md="4">
                     <v-select
                       v-model="editedItem.status"
-                      :items="options"
+                      :items="task_status"
                       label="Status"
-                      item-text="title"
-                      item-value="value"
+                      item-text="description"
+                      item-value="description"
                       required
                       dense
                       solo
@@ -138,10 +133,10 @@
                   <v-col cols="12" sm="4" md="4">
                     <v-select
                       v-model="editedItem.responsible"
-                      :items="team"
+                      :items="teams"
                       label="Responsible"
-                      item-text="name"
-                      item-value="id"
+                      item-text="teamName"
+                      item-value="teamName"
                       required
                       dense
                       solo
@@ -189,15 +184,16 @@
 
 
 <script>
-import { API, Auth } from "aws-amplify";
+import { API } from "aws-amplify";
 import {
+  getOrganization,
   getSmTeam,
-  listSmLibraryCategorys,
-  listSmLibrarys,
-  listSmTaskMonitors,
-  listSmTeams,
+  listQuoteItems,
+
 } from "../../../graphql/queries";
 import { updateServicesLineQ } from "../../../graphql/mutations";
+import Vuex from "vuex";
+import { uuid } from "vue-uuid";
 
 export default {
   name: "Company",
@@ -209,10 +205,10 @@ export default {
     team: [],
     apiRequest: false,
     data: [],
-    start_date: "",
+    startDate: "",
     menu: false,
     modal: false,
-    end_date: new Date().toISOString().substr(0, 10),
+    endDate: new Date().toISOString().substr(0, 10),
     menu1: false,
     modal1: false,
     headers: [
@@ -236,6 +232,8 @@ export default {
         value: "resp",
       },
     ],
+    teams : [],
+    task_status : [],
     options: [],
     chil: [],
     dialog: false,
@@ -258,124 +256,153 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
+    ...Vuex.mapState([
+      "organizationID",
+      "usuario"
+    ]),
   },
 
   watch: {},
 
   created() {
-    this.$emit(`update:layout`, DefaultLayout);
-    this.getTask();
-    this.getCatalogs();
-    this.getTeam();
     const d = new Date();
-    this.start_date = new Date(d.setMonth(d.getMonth() - 3))
+    this.startDate = new Date(d.setMonth(d.getMonth() - 3))
       .toISOString()
       .substr(0, 10);
+
+    this.getTask();
+    this.getTeam();
   },
 
   methods: {
-    logout() {
-      Auth.signOut()
-        .then((data) => {
-          console.log(data);
-          this.$router.push("/login");
-        })
-        .catch((err) => console.log(err));
-    },
-    async getCatalogs() {
-      //Status Task
-      const op = await API.graphql({
-        query: listSmLibraryCategorys,
-        variables: {
-          filter: {
-            category_name: { eq: "TaskStatus" },
-          },
-        },
-      });
-
-      const id = op.data.listSmLibraryCategorys.items[0].id;
-
-      const op_status = await API.graphql({
-        query: listSmLibrarys,
-        variables: {
-          filter: {
-            lib_category_id: { eq: id },
-          },
-        },
-      });
-      this.options = op_status.data.listSmLibrarys.items;
-      this.options.sort(function (a, b) {
-        if (a.value.toLowerCase() > b.value.toLowerCase()) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-      console.log(this.options);
-    },
-
     async getTeam() {
-      const team = await API.graphql({
-        query: listSmTeams,
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
       });
-      this.team = team.data.listSmTeams.items;
-      console.log(this.team);
+      console.log(this.organizationID);
+      this.teams = [];
+      this.task_status = [];
+      const todos = await API.graphql({
+        query: getOrganization,
+        variables: {
+          filter: {
+            active: { eq: "1" },
+            SK: {
+              eq: "#META#",
+            },
+            PK: { eq: this.organizationID },
+          },
+        },
+      });
+
+      this.organization = todos.data.getOrganization[0];
+      console.log(this.organization);
+
+      //TEAMS
+      if (this.organization.l_team[0]) {
+        for (let i = 0; i < JSON.parse(this.organization.l_team).length; i++) {
+          if (JSON.parse(this.organization.l_team)[i].teamName != "") {
+            let teamName = JSON.parse(this.organization.l_team)[i].teamName;
+            let teamEmail = JSON.parse(this.organization.l_team)[i].teamEmail;
+            let status = JSON.parse(this.organization.l_team)[i].status;
+            const todo = {
+              teamName,
+              teamEmail,
+              status,
+            };
+            this.teams = [...this.teams, todo];
+          }
+        }
+      }
+
+
+      //TASK
+      if (this.organization.l_taskStatusType[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.organization.l_taskStatusType).length;
+          i++
+        ) {
+          if (
+            JSON.parse(this.organization.l_taskStatusType)[i].description != ""
+          ) {
+            let description = JSON.parse(this.organization.l_taskStatusType)[i]
+              .description;
+            let abbreviation = JSON.parse(this.organization.l_taskStatusType)[i]
+              .abbreviation;
+            let status = JSON.parse(this.organization.l_taskStatusType)[i]
+              .status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            this.task_status = [...this.task_status, todo];
+          }
+        }
+      }
+
+
+      loading.close();
     },
 
     async getTask() {
       this.task = [];
 
-      this.apiRequest = true;
-
+      const loading = this.$loading({
+        lock: true,
+        text: "Get Task...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       const todos = await API.graphql({
-        query: listSmTaskMonitors,
+        query: listQuoteItems,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "PRO#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
       });
 
-      this.task = todos.data.listSmTaskMonitors.items;
-      this.apiRequest = false;
+      this.task = todos.data.listQuoteItems;
+
       this.chil = [];
 
       for (let i = 0; i < this.task.length; i++) {
-        for (
-          let j = 0;
-          j < this.task[i].quote.items[0].services.items.length;
-          j++
-        ) {
-          if (
-           this.task[i].quote.items[0].services.items[j].createdAt.substr(0, 10) >=
-              this.start_date &&
-            this.task[i].quote.items[0].services.items[j].createdAt.substr(0, 10) <=
-              this.end_date
-          ) {
-            if (this.task[i].quote.items[0].services.items[j].variants != "") {
-              this.chil.push({
-                label: this.task[i].quote.items[0].leads.items[0].full_name,
-                name:
-                  this.task[i].quote.items[0].services.items[j].name +
-                  " Is Variant: " +
-                  this.task[i].quote.items[0].services.items[j].variants,
-                status: this.task[i].quote.items[0].services.items[j]
-                  .task_descstatus,
-                resp: this.task[i].quote.items[0].services.items[j]
-                  .task_nameresp,
-                id_task: this.task[i].id,
-                id_serv: this.task[i].quote.items[0].services.items[j].id,
-              });
-            } else {
-              this.chil.push({
-                label: this.task[i].quote.items[0].leads.items[0].full_name,
-                name: this.task[i].quote.items[0].services.items[j].name,
-                status: this.task[i].quote.items[0].services.items[j]
-                  .task_descstatus,
-                resp: this.task[i].quote.items[0].services.items[j]
-                  .task_nameresp,
-                id_task: this.task[i].id,
-                id_serv: this.task[i].quote.items[0].services.items[j].id,
-              });
-            }
-          }
+        if (this.task[i].isVariant != "N") {
+          this.chil.push({
+            label: this.task[i].smName,
+            name:
+              this.task[i].smName + " Is Variant: " + this.task[i].variantName,
+            status: this.task[i].taskStatus,
+            resp: this.task[i].taskNameresp,
+            id_serv: this.task[i].SK,
+          });
+        } else {
+          this.chil.push({
+            label: this.task[i].smName,
+            name: this.task[i].smName,
+            status: this.task[i].taskStatus,
+            resp: this.task[i].taskNameresp,
+            id_serv: this.task[i].SK,
+          });
         }
       }
+      loading.close();
       console.log(this.task);
       console.log(this.chil);
     },

@@ -240,7 +240,7 @@ export default new Vuex.Store({
         "<table>" +
         "<tr> " +
         "<td width='50%'> " +
-        "<img src='http://localhost:8080/assets/bizPlanEasyLogo.png'/>" +
+        "<img src='https://master.ddqrxn9rg7lbw.amplifyapp.com/public/bizPlanEasyLogo.png'/>" +
         "</td> " +
         "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" +
         "<td width='50%' valign=top style='padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
@@ -444,7 +444,7 @@ export default new Vuex.Store({
         "<table>" +
         "<tr> " +
         "<td width='50%'> " +
-        "<img src='http://localhost:8080/assets/bizPlanEasyLogo.png'/>" +
+        "<img src='https://master.ddqrxn9rg7lbw.amplifyapp.com/public/bizPlanEasyLogo.png'/>" +
         "</td> " +
         "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" +
         "<td width='50%' valign=top style='padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
@@ -625,7 +625,7 @@ export default new Vuex.Store({
         "<table>" +
         "<tr> " +
         "<td width='50%'> " +
-        "<img src='https://master.ddqrxn9rg7lbw.amplifyapp.com/assets/bizPlanEasyLogo.png'/>" +
+        "<img src='https://master.ddqrxn9rg7lbw.amplifyapp.com/public/bizPlanEasyLogo.png'/>" +
         "</td> " +
         "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>" +
         "<td width='50%' valign=top style='padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
