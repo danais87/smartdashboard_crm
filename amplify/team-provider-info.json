@@ -10,6 +10,11 @@
       "StackName": "amplify-smartdashboardcrm-dev-101337",
       "StackId": "arn:aws:cloudformation:us-east-1:409460944769:stack/amplify-smartdashboardcrm-dev-101337/6b821fe0-6632-11eb-a824-0a26b1b748b1",
       "AmplifyAppId": "ddqrxn9rg7lbw"
+    },
+    "categories": {
+      "auth": {
+        "smartdashboardcrm17d74991": {}
+      }
     }
   }
 }

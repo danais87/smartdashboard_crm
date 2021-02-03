@@ -1,0 +1,3189 @@
+<template>
+  <v-container id="dashboard" fluid grid-list-lg class="mx-0 pa-0">
+    <v-app>
+      <DialogLeads
+        v-model="dialog_lead"
+        v-bind:item="editedItemLeads"
+        :index="editedIndexLead"
+        call_type="external"
+      >
+      </DialogLeads>
+      <DialogLibrary
+        v-model="showlibrary"
+        call_type="external"
+        @conclucion="conclusion = $event"
+      ></DialogLibrary>
+      <v-dialog
+        v-model="dialog_email"
+        max-width="500px"
+        v-if="send_email.length > 0"
+      >
+        <v-card>
+          <v-card-title>
+            <span class="headline">Select Email:</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col sm="6" md="6">
+                  <b>Name:</b> {{ send_email[0].name }}
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-select
+                    v-model="selectedEmails"
+                    :items="send_email[0].emails"
+                    label="Select"
+                    multiple
+                    chips
+                    persistent-hint
+                    item-text="email"
+                    item-value="email"
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="close_email"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="invokeLambda()"
+              >Send</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog_delete" max-width="290">
+        <v-card>
+          <v-card-title class="headline">
+            Are you sure you want to delete this item?
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="dialog_delete = false">
+              Disagree
+            </v-btn>
+            <v-btn color="green darken-1" text @click="deleteServiceItem">
+              Agree
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog">
+        <v-card>
+          <el-container style="solid #eee">
+            <el-header style="text-align: center; font-size: 16px">
+              <v-row
+                ><v-col cols="12" sm="6" md="6">
+                  <span
+                    >{{ formTitle }} : {{ editedItem_c.smName }}</span
+                  ></v-col
+                >
+                <v-col cols="12" sm="6" md="6">
+                  <el-button
+                    id="c"
+                    type="success"
+                    icon="el-icon-shopping-cart-full"
+                    circle
+                    @click="OpenPayment(editedItem_c)"
+                    size="mini"
+                  ></el-button>
+                  <el-button
+                    id="c"
+                    type="success"
+                    icon="el-icon-download"
+                    circle
+                    @click="DownLoad(editedItem_c)"
+                    size="mini"
+                  ></el-button>
+                  <el-button
+                    id="c"
+                    type="info"
+                    icon="el-icon-message"
+                    circle
+                    @click="OpenSentEmail(editedItem_c)"
+                    size="mini"
+                  ></el-button>
+                  <el-button
+                    id="c"
+                    type="warning"
+                    icon="el-icon-chat-line-square"
+                    circle
+                    @click="sendMessege(editedItem_c)"
+                    size="mini"
+                  ></el-button>
+                  <el-button
+                    id="c"
+                    type="danger"
+                    icon="el-icon-delete"
+                    circle
+                    @click="deleteItem(editedItem_c)"
+                    size="mini"
+                  ></el-button>
+                  <v-btn color="blue darken-1" id="c" text @click="close"
+                    >Cancel</v-btn
+                  >
+                  <v-btn color="blue darken-1" id="c" text @click="save"
+                    >Save</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </el-header>
+            <el-main max-height="700">
+              <v-row>
+                <v-col cols="12" md="7" sm="7">
+                  <v-row>
+                    <v-spacer></v-spacer>
+                    <p class="font-weight-light">Add New Contact</p>
+                    <v-btn
+                      class="ma-2"
+                      outlined
+                      x-small
+                      fab
+                      color="indigo"
+                      @click="NewLead"
+                    >
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                  </v-row>
+                  <br />
+                  <v-col v-if="editedItemLeads.name != ''">
+                    <v-card outlined elevation="1">
+                      <v-card-text>
+                        <v-row>
+                          <v-col sm="4" md="4">
+                            <v-list-item three-line>
+                              <v-list-item-content>
+                                <v-list-item-subtitle>
+                                  Name: {{ editedItemLeads.name }}
+                                </v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-col>
+
+                          <v-col sm="4" md="4">
+                            <v-list-item
+                              three-line
+                              v-for="item in listemails"
+                              :key="item.id"
+                            >
+                              <v-list-item-content>
+                                <v-list-item-subtitle>
+                                  {{ item.e_type }}: {{ item.email }}
+                                </v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-col>
+                          <v-col sm="4" md="4">
+                            <v-list-item
+                              three-line
+                              v-for="item in listphone"
+                              :key="item.id"
+                            >
+                              <v-list-item-content>
+                                <v-list-item-subtitle>
+                                  {{ item.p_type }}: {{ item.phone }}
+                                </v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <el-button
+                          type="primary"
+                          icon="el-icon-edit"
+                          circle
+                          size="mini"
+                          @click="editItemLead()"
+                        ></el-button>
+                        <el-button
+                          type="danger"
+                          icon="el-icon-delete"
+                          circle
+                          size="mini"
+                          @click="deleteItemLead()"
+                        ></el-button>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                  <v-col>
+                    <v-text-field
+                      v-model="editedItem_c.subject"
+                      label="Subject:"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="DialogLibrary()"
+                      x-small
+                      >[load it from library]</v-btn
+                    >
+                    <v-textarea
+                      outlined
+                      name="Introduction"
+                      v-model="conclusion"
+                      required
+                      label="Introduction Notes:"
+                    ></v-textarea>
+                  </v-col>
+                  <v-dialog v-model="dialog_service" max-width="800px">
+                    <v-card>
+                      <v-card-title>
+                        <span class="headline">Service</span>
+                      </v-card-title>
+                      <v-card-text>
+                        <v-container>
+                          <v-row>
+                            <v-col cols="12" sm="6" md="6">
+                              <v-text-field
+                                v-model="editedServiceItem.smName"
+                                label="Name"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-textarea
+                                outlined
+                                name="description"
+                                v-model="editedServiceItem.description"
+                                label="Description"
+                              ></v-textarea>
+                            </v-col>
+                            <v-col cols="12" sm="2" md="2">
+                              <v-text-field
+                                v-model="editedServiceItem.price"
+                                label="Procut Price"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="5" md="5">
+                              <v-select
+                                v-model="editedServiceItem.typeName"
+                                :items="types"
+                                label="Type"
+                                item-text="name"
+                                item-value="id"
+                                required
+                              ></v-select>
+                            </v-col>
+                            <v-col cols="12" sm="5" md="5">
+                              <v-text-field
+                                v-model="editedServiceItem.otherType"
+                                label="Other Type"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="12" md="12">
+                              <v-textarea
+                                outlined
+                                name="description"
+                                v-model="editedServiceItem.internalComments"
+                                label="Internal Comments"
+                              ></v-textarea>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" text @click="closeservice"
+                          >Cancel</v-btn
+                        >
+                        <v-btn color="blue darken-1" text @click="saveservice"
+                          >Save</v-btn
+                        >
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                  <v-col v-for="item in q_services" :key="item.variant.id">
+                    <v-card outlined elevation="1">
+                      <br />
+                      <v-row>
+                        <v-col sm="2" md="4">
+                          {{ item.service.smName }}
+                        </v-col>
+                        <v-col sm="2" md="4"> <b>Variant: </b> </v-col>
+                        <v-spacer></v-spacer>
+                        <v-col sm="2" md="4"
+                          ><b>Price:</b>
+                          {{
+                            formattedCurrencyValue(item.service.price)
+                          }}</v-col
+                        >
+                      </v-row>
+                      <v-card-text
+                        ><b>Description: </b>{{ item.service.description }}
+                        <v-spacer></v-spacer>
+                        <b>Recurrent: </b>
+                        {{ item.service.isRecurrent }}
+                        <v-spacer></v-spacer>
+                        <b>Internal Comments: </b
+                        >{{ item.service.internalComments }}
+                      </v-card-text>
+
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <el-button
+                          type="primary"
+                          icon="el-icon-edit"
+                          circle
+                          size="mini"
+                          @click="editServiceItem(item)"
+                        ></el-button>
+                        <el-button
+                          type="danger"
+                          icon="el-icon-delete"
+                          circle
+                          size="mini"
+                          @click="deleteService(item)"
+                        ></el-button>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+                  <v-col>
+                    <el-header class="total" style="alaing: center"
+                      >TOTAL:{{ formattedCurrencyValue(total) }}</el-header
+                    >
+                  </v-col>
+                  <br />
+                  <v-row>
+                    <v-spacer></v-spacer>
+                    <v-col sm="4" md="6">
+                      <v-select
+                        v-model="discount_id"
+                        :items="discount"
+                        label="Discount"
+                        item-text="discount_name"
+                        item-value="discount_code"
+                      ></v-select>
+                    </v-col>
+                    <v-col sm="4" md="5">
+                      <v-btn outlined color="blue darken-1" text @click="aply"
+                        >Aply</v-btn
+                      >
+                    </v-col>
+                  </v-row>
+                  <v-col>
+                    <el-header class="total" style="alaing: center"
+                      >TOTAL:
+                      {{ formattedCurrencyValue(total_disc) }}</el-header
+                    >
+                  </v-col>
+                  <v-col>
+                    <el-card class="box-card">
+                      <div slot="header" class="clearfix">
+                        <span>Installment:</span>
+                      </div>
+                      <div class="text item">
+                        <el-checkbox
+                          v-model="is_installment"
+                          label="Is Installment?"
+                          border
+                        ></el-checkbox>
+                      </div>
+                      <br />
+                      <div v-if="is_installment == true" class="text item">
+                        <el-form
+                          ref="form"
+                          label-width="100px"
+                          :label-position="labelPosition"
+                        >
+                          <v-row>
+                            <v-col sm="3" md="3">
+                              <el-form-item label="Down Payment ($)">
+                                <el-input v-model="payment"></el-input>
+                              </el-form-item>
+                            </v-col>
+                            <v-col sm="3" md="3">
+                              <el-form-item label="Installments">
+                                <el-input v-model="number"></el-input>
+                              </el-form-item>
+                            </v-col>
+                            <v-col sm="2" md="2">
+                              <br /><br />
+                              <v-btn color="blue darken-1" @click="aply_calc"
+                                >Calculate</v-btn
+                              >
+                            </v-col>
+                          </v-row>
+                          <v-dialog v-model="dialog_v" max-width="300px">
+                            <v-card>
+                              <v-card-title>
+                                <span class="headline">Installment</span>
+                              </v-card-title>
+                              <v-card-text>
+                                <v-container>
+                                  <v-row>
+                                    <v-col cols="12" sm="6" md="6">
+                                      <v-text-field
+                                        v-model="editedItem_v.startDate"
+                                        label="Pay Date"
+                                      ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="6">
+                                      <v-text-field
+                                        v-model="editedItem_v.amount"
+                                        label="Amount"
+                                      ></v-text-field>
+                                    </v-col>
+                                  </v-row>
+                                </v-container>
+                              </v-card-text>
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  color="blue darken-1"
+                                  text
+                                  @click="close_v"
+                                  >Cancel</v-btn
+                                >
+                                <v-btn
+                                  color="blue darken-1"
+                                  text
+                                  @click="save_v"
+                                  >Save</v-btn
+                                >
+                              </v-card-actions>
+                            </v-card>
+                          </v-dialog>
+                          <v-row v-if="calc == true">
+                            <v-col
+                              class="d-flex"
+                              cols="12"
+                              sm="12"
+                              md="12"
+                              v-if="vari == 'new'"
+                            >
+                              <v-data-table
+                                :headers="headers_i"
+                                :items="installments"
+                                class="elevation-1"
+                                :items-per-page="-1"
+                              >
+                                <template v-slot:top>
+                                  <v-toolbar flat color="white">
+                                    <v-toolbar-title
+                                      >Installments</v-toolbar-title
+                                    >
+                                    <v-divider
+                                      class="mx-4"
+                                      inset
+                                      vertical
+                                    ></v-divider>
+                                    <v-spacer></v-spacer>
+                                  </v-toolbar>
+                                </template>
+                                <template v-slot:[`item.amount`]="{ item }"
+                                  >{{ formattedCurrencyValue(item.amount) }}
+                                </template>
+                                <template v-slot:[`item.actions`]="{ item }">
+                                  <el-button
+                                    type="primary"
+                                    icon="el-icon-edit"
+                                    size="mini"
+                                    circle
+                                    @click="editItem_v(item)"
+                                  ></el-button>
+                                  <el-button
+                                    type="danger"
+                                    icon="el-icon-delete"
+                                    size="mini"
+                                    circle
+                                    @click="deleteItem_v(item)"
+                                  ></el-button>
+                                </template>
+                              </v-data-table>
+                            </v-col>
+                            <v-col
+                              class="d-flex"
+                              cols="4"
+                              sm="5"
+                              md="5"
+                              v-if="vari == 'edit'"
+                            >
+                              <v-data-table
+                                :headers="headers_v"
+                                :items="editedItem_c.l_variants"
+                                class="elevation-1"
+                                :items-per-page="-1"
+                                v-if="editedItem_c.is_variant == 'Y'"
+                              >
+                                <template v-slot:top>
+                                  <v-toolbar flat color="white">
+                                    <v-toolbar-title>Variants</v-toolbar-title>
+                                    <v-divider
+                                      class="mx-4"
+                                      inset
+                                      vertical
+                                    ></v-divider>
+                                    <v-spacer></v-spacer>
+                                  </v-toolbar>
+                                </template>
+                                <template v-slot:[`item.actions`]="{ item }">
+                                  <el-button
+                                    type="primary"
+                                    icon="el-icon-edit"
+                                    size="mini"
+                                    circle
+                                    @click="editItem_v(item)"
+                                  ></el-button>
+                                  <el-button
+                                    type="danger"
+                                    icon="el-icon-delete"
+                                    size="mini"
+                                    circle
+                                    @click="deleteItem_v(item)"
+                                  ></el-button>
+                                </template>
+                              </v-data-table>
+                            </v-col>
+                          </v-row>
+                        </el-form>
+                      </div>
+                    </el-card>
+                  </v-col>
+                  <br />
+                  <v-col>
+                    <v-textarea
+                      outlined
+                      name="Comments"
+                      v-model="editedItem_c.internalComments"
+                      required
+                      label="Internal Comments:"
+                    ></v-textarea>
+                  </v-col>
+                  <v-col class="d-flex" cols="5" sm="5" md="5">
+                    <v-select
+                      v-model="editedItem_c.processStatus"
+                      :items="options"
+                      label="Status"
+                      item-text="description"
+                      item-value="description"
+                      outlined
+                    ></v-select>
+                  </v-col>
+                </v-col>
+                <v-col cols="12" sm="5" md="5">
+                  <el-menu :default-openeds="['1', '3']">
+                    <el-submenu index="1">
+                      <template slot="title"
+                        ><i class="el-icon-message"></i>Contacts</template
+                      >
+                      <el-menu-item-group>
+                        <el-menu-item index="1-1">
+                          <el-select
+                            v-model="lead_id"
+                            filterable
+                            clearable
+                            placeholder="Select a Customer"
+                          >
+                            <el-option
+                              v-for="item in leads"
+                              :key="item.id"
+                              :label="JSON.parse(item.l_smName)[0].fullName"
+                              :value="item.id"
+                            >
+                            </el-option>
+                          </el-select>
+                        </el-menu-item>
+                        <el-menu-item index="1-2">
+                          <v-btn
+                            class="ma-2"
+                            outlined
+                            x-small
+                            fab
+                            color="indigo"
+                            @click="addLead"
+                          >
+                            <v-icon>el-icon-d-arrow-left</v-icon>
+                          </v-btn>
+                        </el-menu-item>
+                      </el-menu-item-group>
+                    </el-submenu>
+
+                    <el-submenu index="3" max-height="700">
+                      <template slot="title"
+                        ><i class="el-icon-setting"></i>Services</template
+                      >
+                      <el-menu-item-group>
+                        <el-menu-item index="3-1">
+                          <v-btn
+                            class="ma-2"
+                            outlined
+                            x-small
+                            fab
+                            color="indigo"
+                            @click="addService"
+                          >
+                            <v-icon>el-icon-d-arrow-left</v-icon>
+                          </v-btn></el-menu-item
+                        >
+                        <el-menu-item index="3-2">
+                          <el-input
+                            placeholder="Filter keyword"
+                            v-model="filterText"
+                          >
+                          </el-input>
+                          <el-tree
+                            class="filter-tree"
+                            :data="data"
+                            show-checkbox
+                            check-strictly
+                            filterable
+                            default-expand-all
+                            node-key="value"
+                            highlight-current
+                            ref="tree"
+                            check-on-click-node
+                            :props="defaultProps"
+                            :filter-node-method="filterNode"
+                          >
+                          </el-tree>
+                        </el-menu-item>
+                      </el-menu-item-group>
+                    </el-submenu>
+                  </el-menu>
+                </v-col>
+              </v-row>
+            </el-main>
+          </el-container>
+        </v-card>
+      </v-dialog>
+      <v-row>
+        <v-spacer></v-spacer>
+        <v-col cols="12" sm="2" md="2" align="center">
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="startDate"
+            transition="scale-transition"
+            offset-y
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="startDate"
+                label="Start Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="startDate" no-title scrollable>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu = false"> Cancel </v-btn>
+              <v-btn text color="primary" @click="$refs.menu.save(startDate)">
+                OK
+              </v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" sm="2" md="2" align="center">
+          <v-menu
+            ref="menu1"
+            v-model="menu1"
+            :close-on-content-click="false"
+            :return-value.sync="end_date"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="end_date"
+                label="End Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="end_date" no-title scrollable>
+              <v-spacer></v-spacer>
+              <v-btn text color="primary" @click="menu1 = false">
+                Cancel
+              </v-btn>
+              <v-btn text color="primary" @click="$refs.menu1.save(end_date)">
+                OK
+              </v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col sm="2" md="2">
+          <br />
+          <v-btn color="blue darken-1" text @click="getQuotes">Apply</v-btn>
+        </v-col>
+        <v-col cols="12" sm="6" md="6">
+          <v-btn class="ma-2" outlined small fab color="indigo" to="/quotes">
+            <v-icon>el-icon-s-grid</v-icon>
+          </v-btn>
+          <v-btn class="ma-2" outlined small fab color="indigo" to="/dashlist">
+            <v-icon>el-icon-pie-chart</v-icon>
+          </v-btn>
+        </v-col>
+        <v-spacer></v-spacer>
+      </v-row>
+      <v-col cols="12" sm="12" md="12" align="center">
+        <v-data-table
+          :headers="headers"
+          :items="quotes_datac"
+          sort-by="name"
+          class="elevation-1"
+          :search="search"
+          :items-per-page="-1"
+          @click:row="handleClick"
+        >
+          <template v-slot:[`item.final_amount`]="{ item }">
+            <v-chip class="ma-2" color="green" outlined light small>{{
+              formattedCurrencyValue(item.finalAmount)
+            }}</v-chip>
+          </template>
+          <template v-slot:top>
+            <v-toolbar flat color="white">
+              <v-toolbar-title>Sales</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <el-alert
+                v-if="alert != false"
+                title="Success"
+                type="success"
+                description="Email sent!!"
+                show-icon
+              ></el-alert>
+              <v-text-field
+                v-model="search"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+              ></v-text-field>
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+          </template>
+
+          <template v-slot:[`item.actions`]="{ item }">
+            <el-button
+              type="success"
+              icon="el-icon-shopping-cart-full"
+              circle
+              @click="OpenPayment(item)"
+              size="mini"
+            ></el-button>
+            <el-button
+              type="info"
+              icon="el-icon-message"
+              circle
+              @click="OpenSentEmail(item)"
+              size="mini"
+            ></el-button>
+            <el-button
+              type="warning"
+              icon="el-icon-chat-line-square"
+              circle
+              @click="sendMessege(item)"
+              size="mini"
+            ></el-button>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-app>
+  </v-container>
+</template>
+
+
+<script>
+import { API, Auth } from "aws-amplify";
+import { createRecord, updateRecord } from "../../../graphql/mutations";
+import {
+  listQuotes,
+  getOrganization,
+  listAccounts,
+  listProducts,
+  listPhoneNumber,
+  listCustomers,
+  listQuoteItems,
+} from "../../../graphql/queries";
+
+import DialogLeads from "../dialogs/DialogLeads";
+import DialogLibrary from "../dialogs/DialogLibrary";
+import Vuex from "vuex";
+
+export default {
+  name: "Quote",
+  components: { DialogLeads, DialogLibrary },
+  data: () => ({
+    props: { multiple: true, expandTrigger: "hover", checkStrictly: true },
+    defaultProps: {
+      children: "children",
+      label: "label",
+    },
+    footerProps: { "items-per-page-options": [20, 50, 100, -1] },
+    startDate: new Date(),
+    menu: false,
+    modal: false,
+    end_date: new Date().toISOString().substr(0, 10),
+    menu1: false,
+    modal1: false,
+    chartdata: null,
+    boptions: null,
+    dchartdata: null,
+    doptions: null,
+    alert: false,
+    sm_analized: "3",
+    md_analized: "3",
+    sm_negotiation: "3",
+    md_negotiation: "3",
+    sm_verbal: "3",
+    md_verbal: "3",
+    labelPosition: "top",
+    total_disc: 0,
+    total: 0,
+    total_v: 0,
+    total_s: 0,
+    total_qs: 0,
+    total_qc: 0,
+    total_va: 0,
+    expanded: [],
+    is_installment: false,
+    singleExpand: false,
+    dialog_v: false,
+    search: "",
+    search_s: "",
+    search_l: "",
+    discount_id: "",
+    lead_id: "",
+    show: false,
+    see_leads: true,
+    name: "",
+    is_discount: "N",
+    q_leads: [],
+    q_discount: [],
+    q_services: [],
+    organization: [],
+    send_email: {
+      emails: [],
+      name: "",
+      quoteID: "",
+    },
+    options: [],
+    selectedEmails: [],
+    currentRow: null,
+    services: [],
+    quotes_created: [],
+    quotes_s: [],
+    quotes_va: [],
+    quotes_datac: [],
+    quotes_datas: [],
+    quotes_datava: [],
+    lista: [],
+    types: [],
+    discount: [],
+    installments: [],
+    data: [],
+    list_email: [],
+    list_phone: [],
+    list_address: [],
+    select_service: "",
+    select_type: "",
+    dialog: false,
+    dialogs: false,
+    dialog_service: false,
+    value_opt: [],
+    dialog_detalle: false,
+    dialog_delete: false,
+    dialog_lead: false,
+    showlibrary: false,
+    dialog_email: false,
+    accounts: [],
+    apiRequest: false,
+    valid: true,
+    item_service: [],
+    headers_i: [
+      {
+        text: "Start Date",
+        align: "start",
+        sortable: true,
+        value: "startDate",
+      },
+      { text: "Amount", align: "start", sortable: true, value: "amount" },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
+    headers_v: [
+      {
+        text: "Start Date",
+        align: "start",
+        sortable: true,
+        value: "startDate",
+      },
+      { text: "Amount", align: "start", sortable: true, value: "amount" },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
+    headers: [
+      { text: "Name", sortable: true, value: "smName", align: "start" },
+      {
+        text: "Contact",
+        sortable: true,
+        value: "customerName",
+        align: "start",
+      },
+      {
+        text: "Status",
+        sortable: true,
+        value: "processStatus",
+        align: "start",
+      },
+      {
+        text: "Final Amount",
+        sortable: true,
+        value: "final_amount",
+        align: "right",
+      },
+        {
+        text: "Created Date",
+        sortable: true,
+        value: "createdAt",
+        align: "right",
+      },
+      {
+        text: "Created By",
+        sortable: true,
+        value: "createdBy",
+        align: "right",
+      },
+    ],
+    headers_l: [
+      { text: "Name", sortable: true, value: "full_name", align: "start" },
+      {
+        text: "From",
+        sortable: true,
+        value: "adquisition",
+        align: "right",
+      },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
+    sheaders: [
+      { text: "Name", align: "start", sortable: true, value: "name" },
+
+      { text: "Price", align: "right", sortable: true, value: "price" },
+      { text: "Type", sortable: true, value: "type_name", align: "start" },
+      {
+        text: "Other Type",
+        sortable: true,
+        value: "other_type",
+        align: "start",
+      },
+    ],
+    item_editquote: [],
+    editedIndex: -1,
+    editedIndexLead: -1,
+    editedIndex_v: -1,
+    editedIndexServi: -1,
+    editedItem_v: {
+      id: "",
+      startDate: "",
+      amount: "",
+    },
+    defaultItem_v: {
+      id: "",
+      startDate: "",
+      amount: "",
+    },
+
+    editedItem_c: {
+      id: "",
+      name: "",
+      lead_id: "",
+      lead_name: "",
+      email_sent: "",
+      sent_date: "",
+      is_discount: "N",
+      discount_id: "",
+      discount_code: "",
+      discount_type: "",
+      discount_value: "",
+      discount_amount: "",
+      quotation_amount: "",
+      final_amount: "",
+      services: "",
+      leads: "",
+      is_installment: "",
+      payment: "",
+      number: "",
+      createdAt: "",
+      conclusion: "",
+      internalComments: "",
+      subject: "",
+      processStatus: "Created",
+    },
+    defaultItem_c: {
+      id: "",
+      name: "",
+      lead_id: "",
+      lead_name: "",
+      email_sent: "",
+      sent_date: "",
+      is_discount: "N",
+      discount_id: "",
+      discount_code: "",
+      discount_type: "",
+      discount_value: "",
+      discount_amount: "",
+      quotation_amount: "",
+      final_amount: "",
+      services: "",
+      leads: "",
+      is_installment: "",
+      payment: "",
+      number: "",
+      createdAt: "",
+      conclusion: "",
+      internalComments: "",
+      subject: "",
+      processStatus: "Created",
+    },
+    payment: 1,
+    number: 1,
+    editedServiceItem: {
+      id: "",
+      name: "",
+      description: "",
+      price: 0,
+      select_type: "",
+      type_name: "",
+      type_id: "",
+      status: "A",
+      is_recurrent: "",
+      is_variant: "",
+      other_type: "",
+      variants: [],
+      internalComments: "",
+    },
+    values_services: [],
+    defaulServicetItem: {
+      id: "",
+      name: "",
+      description: "",
+      price: 0,
+      select_type: "",
+      type_name: "",
+      type_id: "",
+      status: "A",
+      is_recurrent: "",
+      is_variant: "",
+      other_type: "",
+      variants: [],
+      internalComments: "",
+    },
+    editedItem_c_v: {
+      id: "",
+      startDate: "",
+      amount: "",
+    },
+    defaultItem_v: {
+      id: "",
+      startDate: "",
+      amount: "",
+    },
+    headers_d: [
+      { text: "Type", align: "start", sortable: true, value: "p_type" },
+      { text: "Phone", align: "start", sortable: true, value: "phone" },
+    ],
+    headers_e: [
+      { text: "Type", align: "start", sortable: true, value: "e_type" },
+      { text: "Email", align: "start", sortable: true, value: "email" },
+    ],
+    headers_a: [
+      { text: "Type", align: "start", sortable: true, value: "a_type" },
+      { text: "Country", align: "start", sortable: true, value: "country" },
+      { text: "City", align: "start", sortable: true, value: "city" },
+      { text: "State", align: "start", sortable: true, value: "state" },
+      {
+        text: "Street",
+        align: "start",
+        sortable: true,
+        value: "street_address",
+      },
+      { text: "Zip Code", align: "start", sortable: true, value: "zip_code" },
+    ],
+    editedItemLeads: {
+      id: "",
+      name: "",
+      lastname: "",
+      street_address: "",
+      country: "",
+      city: "",
+      state: "",
+      zip_code: "",
+      a_type: "",
+      phone: "",
+      p_type: "",
+      e_type: "",
+      status: "A",
+      account_id: "",
+      account_name: "",
+      lead_status: "NS",
+      seekingService: "Y",
+      smLeadsdetails: [],
+    },
+    defaultItemLeads: {
+      id: "",
+      name: "",
+      lastname: "",
+      street_address: "",
+      country: "",
+      city: "",
+      state: "",
+      zip_code: "",
+      a_type: "",
+      phone: "",
+      p_type: "",
+      e_type: "",
+      status: "A",
+      account_id: "",
+      account_name: "",
+      lead_status: "NS",
+      seekingService: "Y",
+      smLeadsdetails: [],
+    },
+
+    vari: "new",
+    calc: false,
+    conclusion: "",
+    process_status: "Created",
+    filterText: "",
+    service_type: [],
+    discounts: [],
+    librarys: [],
+    quote_status: [],
+    l_discount: [],
+  }),
+
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "New Quote" : "Edit Quote";
+    },
+    ...Vuex.mapState([
+      "organizationID",
+      "leads",
+      "lead",
+      "listphone",
+      "listemails",
+      "listaddress",
+      "body",
+    ]),
+  },
+
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+    dialogs(val) {
+      val || this.closeservice();
+    },
+    dialog_detalle(val) {
+      val || this.closedetalle();
+    },
+    dialog_service(val) {
+      val || this.closeservice();
+    },
+    dialog_v(val) {
+      val || this.close_v();
+    },
+    dialog_email(val) {
+      val || this.close_email();
+    },
+  },
+
+  created() {
+    const d = new Date();
+    this.startDate = new Date(d.setMonth(d.getMonth() - 1))
+      .toISOString()
+      .substr(0, 10);
+    console.log(this.body);
+    this.getServices();
+    this.getQuotes();
+    this.GetLeads();
+    this.getAccounts();
+    this.getCatalogs();
+  },
+
+  methods: {
+    ...Vuex.mapActions(["GetLeads", "GetLeads_Seek"]),
+    ...Vuex.mapMutations([
+      "SetPhone",
+      "SetEmails",
+      "SetAddress",
+      "SetLead",
+      "SetBody",
+      "SetConclusion",
+    ]),
+
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+
+    async getQuotes() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading Quotes...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+
+      var total_c = 0;
+      var total_s = 0;
+      var total_v = 0;
+      this.quotes_datac = [];
+      this.quotes_created = [];
+      this.quotes_s = [];
+      this.quotes_va = [];
+      console.log(this.startDate);
+      console.log(this.end_date);
+      const todos = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "QUO#",
+            },
+            indexs: {
+              eq: "4",
+            },
+            active: {
+              eq: "1",
+            },
+            startDate: {
+              eq: this.startDate,
+            },
+            endDate: {
+              eq: this.end_date,
+            },
+          },
+        },
+      });
+
+      this.quotes_datac = todos.data.listQuotes;
+      console.log(this.quotes_datac);
+
+      for (let i = 0; i < this.quotes_datac.length; i++) {
+        console.log(this.quotes_created);
+        if (this.quotes_datac[i].processStatus == "Created") {
+          this.quotes_created.push(this.quotes_datac[i]);
+          total_c = total_c + this.quotes_datac[i].finalAmount;
+        }
+
+        if (this.quotes_datac[i].processStatus == "Negotiations") {
+          this.quotes_s.push(this.quotes_datac[i]);
+          total_s = total_s + this.quotes_datac[i].finalAmount;
+        }
+
+        if (this.quotes_datac[i].processStatus == "Verbal Agreement") {
+          this.quotes_va.push(this.quotes_datac[i]);
+          total_v = total_v + this.quotes_datac[i].finalAmount;
+        }
+      }
+
+      this.chartdata = {
+        labels: ["MES"],
+        datasets: [
+          {
+            label: "Analyzed",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            data: [total_c],
+          },
+          {
+            label: "Negotiation",
+            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            data: [total_s],
+          },
+          {
+            label: "Verbal Agreement",
+            backgroundColor: "rgba(255, 206, 86, 0.2)",
+            data: [total_v],
+          },
+        ],
+      };
+
+      this.boptions = {
+        lineTension: 1,
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+              gridLines: {
+                display: true,
+              },
+            },
+          ],
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
+              },
+            },
+          ],
+        },
+        legend: {
+          display: true,
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+
+      this.dchartdata = {
+        labels: ["Analyzed", "Negotiation", "Verbal Agreement"],
+        datasets: [
+          {
+            borderWidth: 1,
+            borderColor: [
+              "rgba(255,99,132,1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+            ],
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+            ],
+            data: [total_c, total_s, total_v],
+          },
+        ],
+      };
+
+      this.doptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        pieceLabel: {
+          mode: "percentage",
+          precision: 1,
+        },
+      };
+
+      this.total_qc = this.formattedCurrencyValue(total_c);
+      this.total_qs = this.formattedCurrencyValue(total_s);
+      this.total_va = this.formattedCurrencyValue(total_v);
+      loading.close();
+    },
+
+    handleClick(value) {
+      this.editItem(value);
+    },
+
+    async getCatalogs() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Get Catalogs",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+
+      console.log(this.organizationID);
+      this.types = [];
+      this.discount = [];
+      this.librarys = [];
+      this.options = [];
+
+      const todos = await API.graphql({
+        query: getOrganization,
+        variables: {
+          filter: {
+            active: { eq: "1" },
+            SK: {
+              eq: "#META#",
+            },
+            PK: { eq: this.organizationID },
+          },
+        },
+      });
+
+      this.organization = todos.data.getOrganization[0];
+      console.log(this.organization);
+
+      //ServiceTypes
+      if (this.organization.l_productType[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.organization.l_productType).length;
+          i++
+        ) {
+          if (JSON.parse(this.organization.l_productType)[i].name != "") {
+            let name = JSON.parse(this.organization.l_productType)[i].name;
+            let description = JSON.parse(this.organization.l_productType)[i]
+              .description;
+            let abbreviation = JSON.parse(this.organization.l_productType)[i]
+              .abbreviation;
+            let status = JSON.parse(this.organization.l_productType)[i].status;
+            const todo = {
+              name,
+              description,
+              abbreviation,
+              status,
+            };
+            this.types = [...this.types, todo];
+          }
+        }
+      }
+      //Discount
+      if (this.organization.l_discount[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.organization.l_discount).length;
+          i++
+        ) {
+          if (JSON.parse(this.organization.l_discount)[i].discount_code != "") {
+            let discount_code = JSON.parse(this.organization.l_discount)[i]
+              .discount_code;
+            let discount_name = JSON.parse(this.organization.l_discount)[i]
+              .discount_name;
+            let discount_desc = JSON.parse(this.organization.l_discount)[i]
+              .discount_desc;
+            let discount_type = JSON.parse(this.organization.l_discount)[i]
+              .discount_type;
+            let discount_value = JSON.parse(this.organization.l_discount)[i]
+              .discount_value;
+            let valid_from = JSON.parse(this.organization.l_discount)[i]
+              .valid_from;
+            let valid_to = JSON.parse(this.organization.l_discount)[i].valid_to;
+            let status = JSON.parse(this.organization.l_discount)[i].status;
+            const todo = {
+              discount_code,
+              discount_name,
+              discount_desc,
+              discount_type,
+              discount_value,
+              valid_from,
+              valid_to,
+              status,
+            };
+            this.discount = [...this.discount, todo];
+          }
+        }
+      }
+      console.log(this.discount);
+      //Library
+      if (this.organization.l_quoteLibrary[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.organization.l_quoteLibrary).length;
+          i++
+        ) {
+          if (
+            JSON.parse(this.organization.l_quoteLibrary)[i].description != ""
+          ) {
+            let title = JSON.parse(this.organization.l_quoteLibrary)[i].title;
+            let description = JSON.parse(this.organization.l_quoteLibrary)[i]
+              .description;
+            let abbreviation = JSON.parse(this.organization.l_quoteLibrary)[i]
+              .abbreviation;
+            let status = JSON.parse(this.organization.l_quoteLibrary)[i].status;
+            const todo = {
+              title,
+              description,
+              abbreviation,
+              status,
+            };
+            this.librarys = [...this.librarys, todo];
+          }
+        }
+      }
+      //Quote Status
+      if (this.organization.l_quoteStatus[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.organization.l_quoteStatus).length;
+          i++
+        ) {
+          if (
+            JSON.parse(this.organization.l_quoteStatus)[i].description != ""
+          ) {
+            let description = JSON.parse(this.organization.l_quoteStatus)[i]
+              .description;
+            let abbreviation = JSON.parse(this.organization.l_quoteStatus)[i]
+              .abbreviation;
+            let status = JSON.parse(this.organization.l_quoteStatus)[i].status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            this.options = [...this.options, todo];
+          }
+        }
+      }
+      loading.close();
+    },
+
+    formattedCurrencyValue(value) {
+      return (
+        "$ " +
+        parseFloat(value)
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+      );
+    },
+
+    formattedValInstal(value) {
+      return parseFloat(value)
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, "$&,");
+    },
+
+    OpenPayment(item) {
+      this.$router.push({
+        path: "/payment",
+        query: {
+          id: item.id,
+          orgid: this.organizationID,
+        },
+      });
+    },
+
+    async getAccounts() {
+      const todos = await API.graphql({
+        query: listAccounts,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "ACC#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      this.accounts = todos.data.listAccounts;
+    },
+
+    async getServices() {
+      const todos = await API.graphql({
+        query: listProducts,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "PRO#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      this.services = todos.data.listProducts;
+      console.log(this.services);
+      let chil = [];
+
+      for (let i = 0; i < this.services.length; i++) {
+        chil = [];
+
+        for (
+          let j = 0;
+          j < JSON.parse(this.services[i].l_variant).length;
+          j++
+        ) {
+          if (JSON.parse(this.services[i].l_variant)[j].name != "")
+            chil.push({
+              value:
+                JSON.parse(this.services[i].l_variant)[j].name +
+                "/" +
+                JSON.stringify(
+                  JSON.parse(this.services[i].l_variant)[j].product
+                ),
+              label:
+                JSON.parse(this.services[i].l_variant)[j].name +
+                "/ Price:$ " +
+                JSON.parse(this.services[i].l_variant)[j].price,
+            });
+        }
+        this.data.push({
+          label:
+            this.services[i].smName + "/ Price:$ " + this.services[i].price,
+          value: this.services[i].id,
+          children: chil,
+        });
+      }
+      this.data.sort(function (a, b) {
+        if (a.label.toLowerCase() > b.label.toLowerCase()) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      console.log(this.data);
+    },
+
+    async addLead() {
+      this.list_email = [];
+      this.list_phone = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "CUS#" + this.lead_id,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      this.editedItemLeads = l.data.listCustomers[0];
+      console.log(this.editedItemLeads);
+      this.editedItemLeads.name = JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].fullName;
+
+      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
+          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
+          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+          const todo = {
+            email,
+            e_type,
+          };
+          this.list_email = [...this.list_email, todo];
+        }
+      }
+
+      const todos = await API.graphql({
+        query: listPhoneNumber,
+        variables: { filter: { GSP1PK1: { eq: this.editedItemLeads.SK } } },
+      });
+      this.phones = todos.data.listPhoneNumber;
+
+      if (this.phones.length > 0) {
+        for (let i = 0; i < this.phones.length; i++) {
+          let phone = this.phones[i].value;
+          let p_type = this.phones[i].type;
+          const todo = {
+            phone,
+            p_type,
+          };
+          this.list_phone = [...this.list_phone, todo];
+        }
+      }
+
+      if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_smAddress).length;
+          i++
+        ) {
+          let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
+          let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
+          let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
+          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .street_address;
+          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .zip_code;
+          let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
+          const todo = {
+            country,
+            state,
+            city,
+            street_address,
+            zip_code,
+            a_type,
+          };
+          this.list_address = [...this.list_address, todo];
+        }
+      }
+
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+
+      this.lead_id = "";
+    },
+
+    NewLead() {
+      this.editedItemLeads = this.defaultItemLeads;
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      this.editedIndexLead = -1;
+      this.dialog_lead = true;
+    },
+
+    DialogLibrary() {
+      this.conclusion = "";
+      this.SetConclusion(this.conclusion);
+      this.showlibrary = true;
+    },
+
+    async addService() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Add Services",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      this.values_services = this.$refs.tree.getCheckedKeys();
+      console.log(this.values_services);
+
+      this.total = 0;
+      this.total_v = 0;
+      this.total_s = 0;
+      var lista = [];
+      var servi = [];
+      var id = "";
+      for (let i = 0; i < this.values_services.length; i++) {
+        servi = [];
+        const id_s = this.values_services[i];
+        const s = await API.graphql({
+          query: listProducts,
+          variables: {
+            filter: {
+              PK: {
+                eq: this.organizationID,
+              },
+              SK: {
+                eq: "PRO#" + id_s,
+              },
+              indexs: {
+                eq: "table",
+              },
+              active: {
+                eq: "1",
+              },
+            },
+          },
+        });
+
+        lista = s.data.listProducts[0];
+        if (lista != undefined) {
+          var v = [];
+          servi = lista;
+        } else {
+          /*id = id_s.split('/');
+          servi = JSON.parse(id[1]);
+          if (JSON.parse(servi.l_variant)[0]) {
+            for (let i = 0; i < JSON.parse(servi.l_variant).length; i++) {
+              if (JSON.parse(servi.l_variant)[i].name == id[0]) {
+                let name = JSON.parse(servi.l_variant)[i].name;
+                let price = JSON.parse(servi.l_variant)[i].price;
+                let product = JSON.parse(servi.l_variant)[i].product;
+                const todo = {
+                  name,
+                  price,
+                  product,
+                };
+                v = todo;
+              }
+            }
+          }*/
+          var v = [];
+          servi = servi;
+        }
+
+        this.q_services.push({
+          service: servi,
+          variant: v,
+        });
+      }
+      console.log(this.q_services);
+
+      for (let i = 0; i < this.q_services.length; i++) {
+        if (this.q_services[i].variant.price != undefined) {
+          console.log(parseFloat(this.q_services[i].variant.price));
+          this.total_v += parseFloat(this.q_services[i].variant.price);
+          this.q_services[i].service.price = parseFloat(
+            this.q_services[i].variant.price
+          );
+        } else {
+          this.total_s += parseFloat(this.q_services[i].service.price);
+        }
+      }
+
+      this.total = this.total_s + this.total_v;
+      this.total_disc = this.total;
+      this.quotation_amount = this.total;
+
+      this.value_opt = "";
+      this.aply();
+      loading.close();
+      this.$refs.tree.setCheckedKeys([]);
+    },
+
+    async aply() {
+      this.discount_code = "";
+      this.discount_type = "";
+      this.discount_value = 0;
+      this.discount_amount = 0;
+      if (this.discount_id != "") {
+        for (let i = 0; i < this.discount.length; i++) {
+          if (this.discount_id == this.discount[i].discount_code) {
+            this.discount_code = this.discount[i].discount_code;
+            this.discount_type = this.discount[i].discount_type;
+            this.discount_value = this.discount[i].discount_value;
+            this.is_discount = "Y";
+            this.l_discount.push(this.discount[i]);
+          }
+        }
+      }
+      console.log(this.l_discount);
+      this.quotation_amount = this.total;
+      if (this.discount_type == "F") {
+        this.discount_amount = this.discount_value;
+      }
+      if (this.discount_type == "P") {
+        this.discount_amount =
+          (this.quotation_amount * this.discount_value) / 100;
+      }
+      this.total_disc = this.quotation_amount - this.discount_amount;
+    },
+
+    async aply_calc() {
+      if (!this.payment || !this.number || !this.total_disc)
+        return alert("error en datos");
+      this.calc = true;
+      let cant_amounts = 0;
+      this.installments = [];
+      cant_amounts = (this.total_disc - this.payment) / this.number;
+
+      for (let i = 0; i < this.number; i++) {
+        const d = new Date();
+        const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
+          .toISOString()
+          .substr(0, 10);
+
+        const amount = cant_amounts;
+        const todo = {
+          startDate,
+          amount,
+        };
+        this.installments = [...this.installments, todo];
+      }
+    },
+
+    async createQuotes(item) {
+      const loading = this.$loading({
+        lock: true,
+        text: "Create Quote",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      console.log(item);
+      console.log(this.l_discount);
+      if (this.lead.id != undefined) {
+        this.editedItemLeads = this.lead;
+      }
+      var downPayment = 0;
+      var numInstallments = 0;
+      const seq = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "QUO#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      const sequence = seq.data.listQuotes;
+      const c = sequence.length++;
+      var PK = this.organizationID;
+      const id = uuid.v1();
+      var SK = "QUO#" + id;
+      const GSP1PK1 = this.editedItemLeads.SK;
+      const GSP1SK1 = SK;
+      var GSP2PK1 = SK;
+      var GSP2SK1 = "#META#";
+      const GSP4PK1 = this.organizationID;
+      const GSP4SK1 = new Date().toISOString().substr(0, 10);
+      const entityType = "QUOTE";
+      const createdAt = new Date().toISOString().substr(0, 10);
+      var updateAt = new Date().toISOString().substr(0, 10);
+      const createdBy = this.usuario;
+      const active = "1";
+      const smName = "Q" + c;
+      const subject = item.subject;
+      const introduction = item.introduction;
+      const conclusion = this.conclusion;
+      const internalComments = item.internalComments;
+      const isDiscount = this.is_discount;
+      const isInstallment = this.is_installment;
+      if (isInstallment == false) {
+        downPayment = this.total_disc;
+        numInstallments = this.number;
+      } else {
+        downPayment = this.payment;
+        numInstallments = this.number;
+      }
+
+      const disccountAmount = this.discount_amount;
+      const l_discount = JSON.stringify(this.l_discount);
+      const quotationAmount = this.total;
+      const finalAmount = this.total_disc;
+      const processStatus = item.processStatus;
+      const live = "Y";
+      const customerID = this.editedItemLeads.SK;
+      const customerName = this.editedItemLeads.name;
+
+      const todo = {
+        PK,
+        id,
+        SK,
+        GSP1PK1,
+        GSP1SK1,
+        GSP2PK1,
+        GSP2SK1,
+        GSP4PK1,
+        GSP4SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        smName,
+        customerID,
+        customerName,
+        conclusion,
+        internalComments,
+        subject,
+        introduction,
+        isDiscount,
+        l_discount,
+        disccountAmount,
+        quotationAmount,
+        finalAmount,
+        isInstallment,
+        processStatus,
+        live,
+        downPayment,
+        numInstallments,
+      };
+
+      const a = await API.graphql({
+        query: createRecord,
+        variables: { input: todo },
+      });
+      //update customer
+      var id_quote = a.data.createRecord.SK;
+      var GSP2PK1 = a.data.createRecord.SK;
+      var GSP2SK1 = this.editedItemLeads.SK;
+      SK = this.editedItemLeads.SK;
+      PK = this.editedItemLeads.PK;
+
+      const seekingService = "N";
+      const l = { SK, PK, GSP2PK1, GSP2SK1, seekingService };
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: l },
+      });
+
+      let price = 0;
+      for (let i = 0; i < this.q_services.length; i++) {
+        const id = uuid.v1();
+        const SK = "QIT#" + id;
+        const GSP1PK1 = this.editedItemLeads.SK;
+        const GSP1SK1 = SK;
+        const GSP2PK1 = id_quote;
+        const GSP2SK1 = SK;
+        const entityType = "QUOTEITEM";
+        const createdAt = new Date().toISOString().substr(0, 10);
+        const updateAt = new Date().toISOString().substr(0, 10);
+        const createdBy = this.usuario;
+        const active = "1";
+        const smName = this.q_services[i].service.smName;
+        const description = this.q_services[i].service.description;
+        price = parseFloat(this.q_services[i].service.price);
+        const typeName = this.q_services[i].service.typeName;
+        const otherType = this.q_services[i].service.otherType;
+        const isRecurrent = this.q_services[i].service.isRecurrent;
+        const isVariant = this.q_services[i].service.isVariant;
+        const internalComments = this.q_services[i].service.internalComments;
+
+        const t = {
+          PK,
+          SK,
+          id,
+          GSP1PK1,
+          GSP1SK1,
+          GSP2PK1,
+          GSP2SK1,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          smName,
+          description,
+          price,
+          typeName,
+          otherType,
+          isRecurrent,
+          isVariant,
+          internalComments,
+        };
+        await API.graphql({
+          query: createRecord,
+          variables: { input: t },
+        });
+      }
+
+      if (this.installments != null) {
+        let inst = "";
+        for (let i = 0; i < this.installments.length; i++) {
+          const id = uuid.v1();
+          const SK = "INS#" + id;
+          const GSP1PK1 = this.editedItemLeads.SK;
+          const GSP1SK1 = SK;
+          const GSP2PK1 = id_quote;
+          const GSP2SK1 = SK;
+          const GSP4PK1 = this.organizationID;
+          const GSP4SK1 = new Date().toISOString().substr(0, 10);
+          const entityType = "INSTALLMENT";
+          const createdAt = new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
+          const createdBy = this.usuario;
+          const active = "1";
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const isPaid = "N";
+
+          inst = {
+            PK,
+            SK,
+            id,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            GSP4PK1,
+            GSP4SK1,
+            entityType,
+            createdAt,
+            updateAt,
+            createdBy,
+            active,
+            startDate,
+            amount,
+            isPaid,
+          };
+          await API.graphql({
+            query: createRecord,
+            variables: { input: inst },
+          });
+        }
+      }
+
+      this.name = "";
+      this.q_services = [];
+      this.installments = [];
+      this.quotes_created = [];
+      this.quotes_s = [];
+      this.quotes_va = [];
+      this.is_installment = false;
+      this.calc = false;
+      this.number = 1;
+      this.payment = 1;
+      this.conclusion = "";
+      loading.close();
+      this.GetLeads();
+      this.GetLeads_Seek();
+    },
+
+    async updateQuote(item) {
+      const loading = this.$loading({
+        lock: true,
+        text: "Update Quote",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      console.log(item);
+      console.log(this.l_discount);
+      if (this.lead.id != undefined) {
+        this.editedItemLeads = this.lead;
+      }
+
+      var downPayment = 0;
+      var numInstallments = 0;
+
+      var todo = [];
+      var PK = item.PK;
+      var SK = item.SK;
+      var updateAt = new Date().toISOString().substr(0, 10);
+      const subject = item.subject;
+      const introduction = item.introduction;
+      const conclusion = this.conclusion;
+      const internalComments = item.internalComments;
+      const isDiscount = this.is_discount;
+      const isInstallment = this.is_installment;
+      if (isInstallment == false) {
+        downPayment = this.total_disc;
+        numInstallments = this.number;
+      } else {
+        downPayment = this.payment;
+        numInstallments = this.number;
+      }
+      var list_e = "";
+      for (let i = 0; i < this.l_discount.length; i++) {
+        list_e += JSON.stringify(this.l_discount[i]) + ",";
+      }
+      const disccountAmount = this.discount_amount;
+      const l_discount = list_e.slice(0, -1);
+      const quotationAmount = this.total;
+      const finalAmount = this.total_disc;
+      const processStatus = item.processStatus;
+      const live = "Y";
+      const customerID = this.editedItemLeads.SK;
+      const customerName = this.editedItemLeads.name;
+      todo = {
+        PK,
+        SK,
+        updateAt,
+        customerID,
+        customerName,
+        conclusion,
+        internalComments,
+        subject,
+        introduction,
+        isDiscount,
+        l_discount,
+        disccountAmount,
+        quotationAmount,
+        finalAmount,
+        isInstallment,
+        processStatus,
+        live,
+        downPayment,
+        numInstallments,
+      };
+
+      if (!this.q_services || !this.editedItemLeads.id)
+        return alert("error en datos");
+
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: todo },
+      });
+
+      //update customer
+      var id_quote = item.SK;
+      var GSP2PK1 = id_quote;
+      var GSP2SK1 = this.editedItemLeads.SK;
+      SK = this.editedItemLeads.SK;
+      PK = this.editedItemLeads.PK;
+      const seekingService = "N";
+      const l = { SK, PK, GSP2PK1, GSP2SK1, seekingService };
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: l },
+      });
+      console.log(this.q_services);
+      //update quoteitems
+      let price = 0;
+      for (let i = 0; i < this.q_services.length; i++) {
+        const todos = await API.graphql({
+          query: listQuoteItems,
+          variables: {
+            filter: {
+              active: { eq: "1" },
+              SK: {
+                eq: "QIT#",
+              },
+              PK: { eq: this.organizationID },
+              indexs: {
+                eq: "table_items",
+              },
+              GSP1SK1: {
+                eq: this.q_services[i].service.SK,
+              },
+            },
+          },
+        });
+        console.log(todos.data.listQuoteItems[0]);
+        if (todos.data.listQuoteItems[0]) {
+          const SK = this.q_services[i].service.SK;
+          const PK = this.q_services[i].service.PK;
+          const GSP1PK1 = this.editedItemLeads.SK;
+          const GSP1SK1 = this.q_services[i].service.SK;
+          const GSP2PK1 = id_quote;
+          const GSP2SK1 = this.q_services[i].service.SK;
+          const updateAt = new Date().toISOString().substr(0, 10);
+          const smName = this.q_services[i].service.name;
+          const description = this.q_services[i].service.description;
+          price = parseFloat(this.q_services[i].service.price);
+          const typeName = this.q_services[i].service.type_name;
+          const otherType = this.q_services[i].service.other_type;
+          const isRecurrent = this.q_services[i].service.is_recurrent;
+          const isVariant = this.q_services[i].service.is_variant;
+          const internalComments = this.q_services[i].service.comments;
+
+          const t = {
+            PK,
+            SK,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            updateAt,
+            smName,
+            description,
+            price,
+            typeName,
+            otherType,
+            isRecurrent,
+            isVariant,
+            internalComments,
+          };
+          const sq = await API.graphql({
+            query: updateRecord,
+            variables: { input: t },
+          });
+        } else {
+          const id = uuid.v1();
+          const SK = "QIT#" + id;
+          const GSP1PK1 = this.editedItemLeads.SK;
+          const GSP1SK1 = SK;
+          const GSP2PK1 = id_quote;
+          const GSP2SK1 = SK;
+          const entityType = "QUOTEITEM";
+          const createdAt = new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
+          const createdBy = this.usuario;
+          const active = "1";
+          const smName = this.q_services[i].service.smName;
+          const description = this.q_services[i].service.description;
+          price = parseFloat(this.q_services[i].service.price);
+          const typeName = this.q_services[i].service.typeName;
+          const otherType = this.q_services[i].service.otherType;
+          const isRecurrent = this.q_services[i].service.isRecurrent;
+          const isVariant = this.q_services[i].service.isVariant;
+          const internalComments = this.q_services[i].service.internalComments;
+
+          const t = {
+            PK,
+            SK,
+            id,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            entityType,
+            createdAt,
+            updateAt,
+            createdBy,
+            active,
+            smName,
+            description,
+            price,
+            typeName,
+            otherType,
+            isRecurrent,
+            isVariant,
+            internalComments,
+          };
+          await API.graphql({
+            query: createRecord,
+            variables: { input: t },
+          });
+        }
+      }
+      //update installments
+      if (this.installments != null) {
+        let inst = "";
+        for (let i = 0; i < this.installments.length; i++) {
+          if (this.installments[i].SK) {
+            const SK = this.installments[i].SK;
+            const PK = this.installments[i].PK;
+            const GSP1PK1 = this.editedItemLeads.SK;
+            const GSP1SK1 = SK;
+            const GSP2PK1 = id_quote;
+            const GSP2SK1 = SK;
+            const GSP4PK1 = this.organizationID;
+            const GSP4SK1 = new Date().toISOString().substr(0, 10);
+            const updateAt = new Date().toISOString().substr(0, 10);
+            const startDate = this.installments[i].startDate;
+            const amount = this.installments[i].amount;
+            const isPaid = "N";
+
+            inst = {
+              PK,
+              SK,
+              GSP1PK1,
+              GSP1SK1,
+              GSP2PK1,
+              GSP2SK1,
+              GSP4PK1,
+              GSP4SK1,
+              updateAt,
+              startDate,
+              amount,
+              isPaid,
+            };
+            await API.graphql({
+              query: updateRecord,
+              variables: { input: inst },
+            });
+          } else {
+            const id = uuid.v1();
+            const SK = "INS#" + id;
+            const GSP1PK1 = this.editedItemLeads.SK;
+            const GSP1SK1 = SK;
+            const GSP2PK1 = id_quote;
+            const GSP2SK1 = SK;
+            const GSP4PK1 = this.organizationID;
+            const GSP4SK1 = new Date().toISOString().substr(0, 10);
+            const entityType = "INSTALLMENT";
+            const createdAt = new Date().toISOString().substr(0, 10);
+            const updateAt = new Date().toISOString().substr(0, 10);
+            const createdBy = this.usuario;
+            const active = "1";
+            const startDate = this.installments[i].startDate;
+            const amount = this.installments[i].amount;
+            const isPaid = "N";
+
+            inst = {
+              PK,
+              SK,
+              id,
+              GSP1PK1,
+              GSP1SK1,
+              GSP2PK1,
+              GSP2SK1,
+              GSP4PK1,
+              GSP4SK1,
+              entityType,
+              createdAt,
+              updateAt,
+              createdBy,
+              active,
+              startDate,
+              amount,
+              isPaid,
+            };
+            await API.graphql({
+              query: createRecord,
+              variables: { input: inst },
+            });
+          }
+        }
+      }
+
+      this.name = "";
+      this.q_services = [];
+      this.installments = [];
+      this.quotes_created = [];
+      this.quotes_s = [];
+      this.quotes_va = [];
+      this.is_installment = false;
+      this.calc = false;
+      this.number = 1;
+      this.payment = 1;
+      this.conclusion = "";
+      loading.close();
+      this.GetLeads();
+      this.GetLeads_Seek();
+    },
+
+    async updateServices(item) {
+      console.log(item.SK.slice(0, 4));
+      if (item.SK.slice(0, 4) != "PRO#") {
+        var l_team = "";
+        this.variants = [];
+        if (this.variants.length > 0) {
+          for (let i = 0; i < this.variants.length; i++) {
+            l_team += JSON.stringify(this.variants[i]) + ",";
+          }
+        }
+        const PK = item.PK;
+        const SK = item.SK;
+        const updateAt = new Date().toISOString().substr(0, 10);
+        const smName = item.smName;
+        const description = item.description;
+        const price = item.price;
+        const typeName = item.typeName;
+        const otherType = item.otherType;
+        const isRecurrent = item.isRecurrent;
+        const isVariant = item.isVariant;
+        const internalComments = item.internalComments;
+        const l_variant = l_team.slice(0, -1);
+        if (!smName || !description || !price) {
+          this.alert = false;
+          this.openMS();
+        } else {
+          const todo = {
+            PK,
+            SK,
+            updateAt,
+            smName,
+            description,
+            price,
+            typeName,
+            otherType,
+            isRecurrent,
+            isVariant,
+            internalComments,
+            l_variant,
+          };
+          const prod = await API.graphql({
+            query: updateRecord,
+            variables: { input: todo },
+          });
+          console.log(prod);
+          const seq = await API.graphql({
+            query: listQuotes,
+            variables: {
+              filter: {
+                PK: {
+                  eq: this.organizationID,
+                },
+                SK: {
+                  eq: item.GSP2PK1,
+                },
+                indexs: {
+                  eq: "2",
+                },
+                active: {
+                  eq: "1",
+                },
+              },
+            },
+          });
+          const services = [];
+          this.q_services = [];
+          var servi = [];
+          var vari = [];
+          var datas = seq.data.listQuotes;
+          console.log(datas);
+          for (let i = 0; i < datas.length; i++) {
+            if (datas[i].entityType == "QUOTEITEM") {
+              services.push(datas[i]);
+            }
+          }
+          console.log(services);
+          for (let j = 0; j < services.length; j++) {
+            vari = [];
+            servi = [];
+            servi = services[j];
+            this.q_services.push({
+              service: servi,
+              variant: vari,
+            });
+          }
+          console.log(this.q_services);
+        }
+        this.aply();
+      } else {
+        console.log("cambair local");
+        this.total = 0;
+        this.total_s = 0;
+
+        Object.assign(this.q_services[this.editedIndexServi].service, item);
+        for (let i = 0; i < this.q_services.length; i++) {
+          this.total_s += parseFloat(this.q_services[i].service.price);
+        }
+        console.log(this.q_services);
+        this.total = this.total_s;
+        this.aply();
+      }
+    },
+
+    OpenSentEmail(item) {
+      this.dialog_email = true;
+      this.list_email = [];
+      this.send_email = [];
+
+      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
+          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
+          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+          const todo = {
+            email,
+            e_type,
+          };
+          this.list_email = [...this.list_email, todo];
+        }
+      }
+      this.send_email.push({
+        name: item.customerName,
+        emails: this.list_email,
+        quoteID: item.SK,
+      });
+      this.SetBody(item);
+    },
+
+    async invokeLambda(item) {
+      var AWS = require("aws-sdk");
+
+      const todos = await API.graphql({
+        query: getOrganization,
+        variables: {
+          filter: {
+            active: { eq: "1" },
+            SK: {
+              eq: "#META#",
+            },
+            PK: { eq: this.organizationID },
+          },
+        },
+      });
+
+      const com = todos.data.getOrganization[0];
+
+      var REGION = com.funcRegion;
+      var identityPoolId = com.funcIdentityPoolId;
+
+      AWS.config.update({
+        region: REGION,
+      });
+
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: identityPoolId,
+      });
+
+      var lambda = new AWS.Lambda({
+        region: REGION,
+        apiVersion: "2015-03-31",
+      });
+
+      this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
+      this.selectedEmails = [...this.selectedEmails, "alberto@bizplaneasy.com"];
+      this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];
+
+      for (let i = 0; i < this.selectedEmails.length; i++) {
+        var pullParams = {
+          FunctionName: com.funcName,
+          InvocationType: "RequestResponse",
+          Payload:
+            '{ "toAddresses": "' +
+            this.selectedEmails[i] +
+            '","source":"' +
+            com.funcSource +
+            '","subject":"' +
+            "Your Quote from BizPlanEasy" +
+            '","body":"' +
+            this.body +
+            '"}',
+          LogType: "None",
+        };
+        var pullResults = null;
+        await lambda.invoke(pullParams, async function (error, data) {
+          if (error) {
+            prompt(error);
+          } else {
+            pullResults = JSON.parse(data.Payload);
+            console.log(pullResults);
+            if (pullResults.MessageId) {
+              const emailSent = "Y";
+              const sentDate = new Date().toLocaleString();
+              const sentBy = this.usuario;
+              const PK = this.editedItem_c_c.PK;
+              const SK = this.editedItem_c_c.SK;
+              const todo = { emailSent, sentDate, sentBy, PK, SK };
+              await API.graphql({
+                query: updateRecord,
+                variables: { input: todo },
+              });
+              this.alert = true;
+            }
+          }
+        });
+      }
+      await this.close_email();
+    },
+
+    async editItem(item) {
+      this.q_services = [];
+      this.installments = [];
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+
+      if (item.processStatus == "Created") {
+        this.editedIndex = this.quotes_created.indexOf(item);
+      }
+      if (item.processStatus == "Negotiations") {
+        this.editedIndex = this.quotes_s.indexOf(item);
+      }
+      if (item.processStatus == "Verbal Agreement") {
+        this.editedIndex = this.quotes_va.indexOf(item);
+      }
+
+      this.editedItem_c_c = Object.assign({}, item);
+      this.conclusion = item.conclusion;
+      this.number = item.numInstallments;
+      this.payment = item.downPayment;
+      console.log(this.editedItem_c_c);
+
+      const seq = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: item.SK,
+            },
+            indexs: {
+              eq: "2",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      console.log(seq.data.listQuotes);
+      var datas = seq.data.listQuotes;
+      var quotes = [];
+      var leads = [];
+      var installments = [];
+      var services = [];
+      let vari = [];
+      let servi = [];
+      this.editedItemLeads = [];
+
+      for (let i = 0; i < datas.length; i++) {
+        if (datas[i].entityType == "QUOTE") {
+          quotes.push(datas[i]);
+        }
+        if (datas[i].entityType == "CUSTOMER") {
+          leads.push(datas[i]);
+        }
+        if (datas[i].entityType == "INSTALLMENT") {
+          installments.push(datas[i]);
+        }
+        if (datas[i].entityType == "QUOTEITEM") {
+          services.push(datas[i]);
+        }
+      }
+      console.log(services);
+
+      for (let j = 0; j < services.length; j++) {
+        vari = [];
+        servi = [];
+        servi = services[j];
+        this.q_services.push({
+          service: servi,
+          variant: vari,
+        });
+      }
+      for (let k = 0; k < installments.length; k++) {
+        this.is_installment = true;
+        this.calc = true;
+        this.installments.push(installments[k]);
+      }
+
+      for (let l = 0; l < leads.length; l++) {
+        this.editedItemLeads = leads[l];
+      }
+
+      this.editedItemLeads.name = JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].fullName;
+      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
+          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
+          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+          const todo = {
+            email,
+            e_type,
+          };
+          this.list_email = [...this.list_email, todo];
+        }
+      }
+
+      const todos = await API.graphql({
+        query: listPhoneNumber,
+        variables: { filter: { GSP1PK1: { eq: this.editedItemLeads.SK } } },
+      });
+      this.phones = todos.data.listPhoneNumber;
+      console.log(this.phones);
+
+      if (this.phones.length > 0) {
+        for (let i = 0; i < this.phones.length; i++) {
+          let phone = this.phones[i].value;
+          let p_type = this.phones[i].type;
+          const todo = {
+            phone,
+            p_type,
+          };
+          this.list_phone = [...this.list_phone, todo];
+        }
+      }
+
+      if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_smAddress).length;
+          i++
+        ) {
+          let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
+          let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
+          let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
+          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .street_address;
+          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .zip_code;
+          let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
+          const todo = {
+            country,
+            state,
+            city,
+            street_address,
+            zip_code,
+            a_type,
+          };
+          this.list_address = [...this.list_address, todo];
+        }
+      }
+
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      console.log(JSON.parse(item.l_discount));
+      console.log(JSON.parse(item.l_discount[0]).discount_code);
+
+      if (JSON.parse(item.l_discount[0])) {
+        this.discount_id = JSON.parse(item.l_discount[0]).discount_code;
+      }
+
+      this.total = item.quotationAmount;
+      this.total_disc = item.finalAmount;
+      this.dialog = true;
+    },
+
+    closedetalle() {
+      this.dialog_detalle = false;
+    },
+
+    closedelete() {
+      this.dialog_delete = false;
+    },
+
+    deleteItem(item) {},
+
+    close() {
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      this.conclusion = "";
+      const lead = "";
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      this.SetLead(lead);
+      this.dialog = false;
+      this.editedItemLeads.name = "";
+      this.editedItemLeads.lastname = "";
+      this.q_services = [];
+      this.discount_id = "";
+      this.total = "";
+      this.total_disc = "";
+      this.installments = [];
+      this.is_installment = false;
+      this.calc = false;
+      this.number = 1;
+      this.payment = 1;
+      this.$nextTick(() => {
+        this.editedItem_c_c = Object.assign({}, this.defaultItem_c);
+        this.editedIndex = -1;
+      });
+      this.$refs.tree.setCheckedKeys([]);
+    },
+
+    openDialog() {
+      this.dialog = true;
+    },
+
+    async save() {
+      if (this.editedIndex > -1) {
+        console.log("edit");
+        await this.updateQuote(this.editedItem_c_c);
+      } else {
+        console.log("crear");
+        await this.createQuotes(this.editedItem_c_c);
+      }
+      this.close();
+      this.fillData();
+      this.GetLeads();
+      this.GetLeads_Seek();
+    },
+
+     editServiceItem(item) {
+      console.log(item);
+      this.editedIndexServi = this.q_services.indexOf(item);
+      this.editedServiceItem = Object.assign({}, item.service);
+      this.dialog_service = true;
+    },
+
+    deleteService(item) {
+      this.dialog_delete = true;
+      this.item_service = item;
+    },
+
+    async deleteServiceItem() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Delete Services",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+
+      this.total = 0;
+      this.total_v = 0;
+      this.total_s = 0;
+      const index = this.q_services.indexOf(this.item_service);
+      this.q_services.splice(index, 1);
+
+      const todos = await API.graphql({
+        query: listQuoteItems,
+        variables: {
+          filter: {
+            active: { eq: "1" },
+            SK: {
+              eq: "QIT#",
+            },
+            PK: { eq: this.organizationID },
+            indexs: {
+              eq: "table_items",
+            },
+            GSP1SK1: {
+              eq: this.item_service.service.SK,
+            },
+          },
+        },
+      });
+
+      if (todos.data.listQuoteItems[0]) {
+        const SK = this.item_service.service.SK;
+        const PK = this.item_service.service.PK;
+        const active = "0";
+
+        const t = {
+          PK,
+          SK,
+          active,
+        };
+        const sq = await API.graphql({
+          query: updateRecord,
+          variables: { input: t },
+        });
+      }
+
+      for (let i = 0; i < this.q_services.length; i++) {
+        this.total_s += parseFloat(this.q_services[i].service.price);
+      }
+
+      this.total = this.total_s + this.total_v;
+      this.total_disc = this.total;
+      this.quotation_amount = this.total;
+      console.log(this.q_services);
+      this.closedelete();
+      loading.close();
+    },
+
+    saveservice() {
+      console.log("edit");
+      this.updateServices(this.editedServiceItem);
+      this.closeservice();
+    },
+
+    closeservice() {
+      this.dialog_service = false;
+      this.$nextTick(() => {
+        this.editedServiceItem = Object.assign({}, this.defaulServicetItem);
+        // this.editedIndex = -1;
+      });
+    },
+
+    editItem_v(item) {
+      this.editedIndex_v = this.installments.indexOf(item);
+      this.editedItem_v = Object.assign({}, item);
+      this.dialog_v = true;
+    },
+
+    deleteItem_v(item) {
+      const index = this.installments.indexOf(item);
+      confirm("Are you sure you want to delete this item?") &&
+        this.installments.splice(index, 1);
+    },
+
+    close_v() {
+      this.dialog_v = false;
+      this.$nextTick(() => {
+        this.editedItem_v = Object.assign({}, this.defaultItem_v);
+        this.editedIndex_v = -1;
+      });
+    },
+
+    async save_v() {
+      this.updateInstallment();
+      this.close_v();
+    },
+
+    async updateInstallment() {
+      Object.assign(this.installments[this.editedIndex_v], this.editedItem_v);
+    },
+
+    deleteItemLead() {
+      console.log("delete");
+      this.editedItemLeads.name = "";
+    },
+
+    close_email() {
+      this.dialog_email = false;
+      this.send_email = {};
+      this.selectedEmails = [];
+    },
+
+    async editItemLead() {
+      this.editedIndexLead = 1;
+      this.list_email = [];
+      this.list_phone = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+
+      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
+        for (let i = 0; i < JSON.parse(this.editedItemLeads.l_email).length; i++) {
+          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
+          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+          const todo = {
+            email,
+            e_type,
+          };
+          this.list_email = [...this.list_email, todo];
+        }
+      }
+      const todos = await API.graphql({
+        query: listPhoneNumber,
+        variables: { filter: { GSP1PK1: { eq: this.editedItemLeads.SK } } },
+      });
+      this.phones = todos.data.listPhoneNumber;
+      console.log(this.phones);
+
+      if (this.phones.length > 0) {
+        for (let i = 0; i < this.phones.length; i++) {
+          let phone = this.phones[i].value;
+          let p_type = this.phones[i].type;
+          const todo = {
+            phone,
+            p_type,
+          };
+          this.list_phone = [...this.list_phone, todo];
+        }
+      }
+
+      if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
+        for (let i = 0; i < JSON.parse(this.editedItemLeads.l_smAddress).length; i++) {
+          let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
+          let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
+          let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
+          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i].street_address;
+          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i].zip_code;
+          let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
+          const todo = {
+            country,
+            state,
+            city,
+            street_address,
+            zip_code,
+            a_type,
+          };
+          this.list_address = [...this.list_address, todo];
+        }
+      }
+
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+
+      this.dialog_lead = true;
+    },
+
+    async ItemLeadT(item) {
+      this.editedIndexLead = this.leads.indexOf(item);
+      this.editedItemLeads = Object.assign({}, item);
+      this.editedItemLeads.name = JSON.parse(item.l_smName)[0].fullName;
+      this.list_email = [];
+      this.list_phone = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+
+      if (JSON.parse(item.l_email)[0]) {
+        for (let i = 0; i < JSON.parse(item.l_email).length; i++) {
+          let e_type = JSON.parse(item.l_email)[i].e_type;
+          let email = JSON.parse(item.l_email)[i].email;
+          const todo = {
+            email,
+            e_type,
+          };
+          this.list_email = [...this.list_email, todo];
+        }
+      }
+      const todos = await API.graphql({
+        query: listPhoneNumber,
+        variables: { filter: { GSP1PK1: { eq: item.SK } } },
+      });
+      this.phones = todos.data.listPhoneNumber;
+      console.log(this.phones);
+
+      if (this.phones.length > 0) {
+        for (let i = 0; i < this.phones.length; i++) {
+          let phone = this.phones[i].value;
+          let p_type = this.phones[i].type;
+          const todo = {
+            phone,
+            p_type,
+          };
+          this.list_phone = [...this.list_phone, todo];
+        }
+      }
+
+      if (JSON.parse(item.l_smAddress)[0]) {
+        for (let i = 0; i < JSON.parse(item.l_smAddress).length; i++) {
+          let country = JSON.parse(item.l_smAddress)[i].country;
+          let state = JSON.parse(item.l_smAddress)[i].state;
+          let city = JSON.parse(item.l_smAddress)[i].city;
+          let street_address = JSON.parse(item.l_smAddress)[i].street_address;
+          let zip_code = JSON.parse(item.l_smAddress)[i].zip_code;
+          let a_type = JSON.parse(item.l_smAddress)[i].a_type;
+          const todo = {
+            country,
+            state,
+            city,
+            street_address,
+            zip_code,
+            a_type,
+          };
+          this.list_address = [...this.list_address, todo];
+        }
+      }
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      this.dialog = true;
+    },
+
+    closeLead() {
+      this.see_leads = false;
+      this.sm_analized = "4";
+      this.md_analized = "4";
+      this.sm_negotiation = "4";
+      this.md_negotiation = "4";
+      this.sm_verbal = "4";
+      this.md_verbal = "4";
+    },
+  },
+};
+</script>
+
+
+
+<style scoped>
+.el-header {
+  background-color: #b3c0d1;
+  color: #333;
+  line-height: 60px;
+  text-align: center;
+}
+.total {
+  text-align: right;
+}
+.el-menu {
+  color: #333;
+  line-height: 60px;
+}
+.element.style {
+  padding: 0%;
+}
+.v-application ul,
+.v-application ol {
+  padding-left: 0px;
+}
+.el-aside {
+  color: #333;
+}
+
+.el-input--suffix .el-input__inner {
+  padding-right: 200px;
+}
+.el-submenu .el-menu-item {
+  padding: 0 25px;
+}
+.row {
+  margin-left: 5px;
+  flex: unset;
+}
+.col {
+  padding: 2px;
+}
+.v-card__subtitle,
+.v-card__text,
+.v-card__title {
+  padding: 5px;
+}
+
+.v-list-item {
+  min-height: 0px;
+}
+</style>
