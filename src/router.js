@@ -124,21 +124,21 @@ export default new Router({
           name: "Table Quote",
           component: () => import('@/views/dashboard/menu/TableQuoteList.vue')
         },
-         {
-           name: 'Quotes',
-           path: '/quotes',
-           component: () => import('@/views/dashboard/menu/QuoteList'),
+        {
+          name: 'Quotes',
+          path: '/quotes',
+          component: () => import('@/views/dashboard/menu/QuoteList'),
         },
-         {
-           name: 'Payments',
-           path: '/menu/payments',
-           component: () => import('@/views/dashboard/menu/PaymentsList'),
-         },
-         {
-           name: 'Task Monitor',
-           path: '/menu/task',
-           component: () => import('@/views/dashboard/menu/TaskMonitorList'),
-         },
+        {
+          name: 'Payments',
+          path: '/menu/payments',
+          component: () => import('@/views/dashboard/menu/PaymentsList'),
+        },
+        {
+          name: 'Task Monitor',
+          path: '/menu/task',
+          component: () => import('@/views/dashboard/menu/TaskMonitorList'),
+        },
 
       ],
     }

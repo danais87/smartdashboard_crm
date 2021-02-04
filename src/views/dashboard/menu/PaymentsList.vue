@@ -636,6 +636,13 @@ export default {
     },
 
     async getInvoice() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Get Task...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+
       var installments = [];
       this.quotes = [];
       this.received_payment = [];
@@ -728,6 +735,7 @@ export default {
       console.log(this.pend_payment);
       this.total_pr = this.formattedCurrencyValue(this.total_pr);
       this.total_pp = this.formattedCurrencyValue(this.total_pp);
+      loading.close();
     },
 
     async editItem(item) {

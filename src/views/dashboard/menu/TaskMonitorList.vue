@@ -189,7 +189,6 @@ import {
   getOrganization,
   getSmTeam,
   listQuoteItems,
-
 } from "../../../graphql/queries";
 import { updateServicesLineQ } from "../../../graphql/mutations";
 import Vuex from "vuex";
@@ -232,8 +231,8 @@ export default {
         value: "resp",
       },
     ],
-    teams : [],
-    task_status : [],
+    teams: [],
+    task_status: [],
     options: [],
     chil: [],
     dialog: false,
@@ -256,10 +255,7 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
-    ...Vuex.mapState([
-      "organizationID",
-      "usuario"
-    ]),
+    ...Vuex.mapState(["organizationID", "usuario"]),
   },
 
   watch: {},
@@ -318,7 +314,6 @@ export default {
         }
       }
 
-
       //TASK
       if (this.organization.l_taskStatusType[0]) {
         for (
@@ -345,7 +340,6 @@ export default {
         }
       }
 
-
       loading.close();
     },
 
@@ -366,7 +360,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: "PRO#",
+              eq: "QIT#",
             },
             indexs: {
               eq: "table",
@@ -383,24 +377,13 @@ export default {
       this.chil = [];
 
       for (let i = 0; i < this.task.length; i++) {
-        if (this.task[i].isVariant != "N") {
-          this.chil.push({
-            label: this.task[i].smName,
-            name:
-              this.task[i].smName + " Is Variant: " + this.task[i].variantName,
-            status: this.task[i].taskStatus,
-            resp: this.task[i].taskNameresp,
-            id_serv: this.task[i].SK,
-          });
-        } else {
-          this.chil.push({
-            label: this.task[i].smName,
-            name: this.task[i].smName,
-            status: this.task[i].taskStatus,
-            resp: this.task[i].taskNameresp,
-            id_serv: this.task[i].SK,
-          });
-        }
+        this.chil.push({
+          label: this.task[i].customerName,
+          name: this.task[i].smName,
+          status: this.task[i].taskStatus,
+          resp: this.task[i].taskNameresp,
+          id_serv: this.task[i].SK,
+        });
       }
       loading.close();
       console.log(this.task);

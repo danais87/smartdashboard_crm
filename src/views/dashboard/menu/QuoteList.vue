@@ -2203,6 +2203,7 @@ export default {
         const isRecurrent = this.q_services[i].service.isRecurrent;
         const isVariant = this.q_services[i].service.isVariant;
         const internalComments = this.q_services[i].service.internalComments;
+        const customerName = this.editedItemLeads.name;
 
         const t = {
           PK,
@@ -2225,6 +2226,7 @@ export default {
           isRecurrent,
           isVariant,
           internalComments,
+          customerName
         };
         await API.graphql({
           query: createRecord,
@@ -2251,6 +2253,7 @@ export default {
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
           const isPaid = "N";
+          const customerName = this.editedItemLeads.name;
 
           inst = {
             PK,
@@ -2270,6 +2273,7 @@ export default {
             startDate,
             amount,
             isPaid,
+            customerName
           };
           await API.graphql({
             query: createRecord,
@@ -2420,6 +2424,7 @@ export default {
           const isRecurrent = this.q_services[i].service.is_recurrent;
           const isVariant = this.q_services[i].service.is_variant;
           const internalComments = this.q_services[i].service.comments;
+          const customerName = this.editedItemLeads.name;
 
           const t = {
             PK,
@@ -2437,6 +2442,7 @@ export default {
             isRecurrent,
             isVariant,
             internalComments,
+            customerName
           };
           const sq = await API.graphql({
             query: updateRecord,
@@ -2462,6 +2468,7 @@ export default {
           const isRecurrent = this.q_services[i].service.isRecurrent;
           const isVariant = this.q_services[i].service.isVariant;
           const internalComments = this.q_services[i].service.internalComments;
+          const customerName = this.editedItemLeads.name;
 
           const t = {
             PK,
@@ -2484,6 +2491,7 @@ export default {
             isRecurrent,
             isVariant,
             internalComments,
+            customerName
           };
           await API.graphql({
             query: createRecord,
@@ -2508,6 +2516,7 @@ export default {
             const startDate = this.installments[i].startDate;
             const amount = this.installments[i].amount;
             const isPaid = "N";
+            const customerName = this.editedItemLeads.name;
 
             inst = {
               PK,
@@ -2522,6 +2531,7 @@ export default {
               startDate,
               amount,
               isPaid,
+              customerName
             };
             await API.graphql({
               query: updateRecord,
@@ -2544,6 +2554,7 @@ export default {
             const startDate = this.installments[i].startDate;
             const amount = this.installments[i].amount;
             const isPaid = "N";
+            const customerName = this.editedItemLeads.name;
 
             inst = {
               PK,
@@ -2563,6 +2574,7 @@ export default {
               startDate,
               amount,
               isPaid,
+              customerName
             };
             await API.graphql({
               query: createRecord,
@@ -2610,6 +2622,7 @@ export default {
         const isVariant = item.isVariant;
         const internalComments = item.internalComments;
         const l_variant = l_team.slice(0, -1);
+        const customerName = this.editedItemLeads.name;
         if (!smName || !description || !price) {
           this.alert = false;
           this.openMS();
@@ -2627,6 +2640,7 @@ export default {
             isVariant,
             internalComments,
             l_variant,
+            customerName
           };
           const prod = await API.graphql({
             query: updateRecord,

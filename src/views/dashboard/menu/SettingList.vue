@@ -1964,7 +1964,9 @@ export default {
           i < JSON.parse(this.organization.l_quoteStatus).length;
           i++
         ) {
-          if (JSON.parse(this.organization.l_quoteStatus)[i].description != "") {
+          if (
+            JSON.parse(this.organization.l_quoteStatus)[i].description != ""
+          ) {
             let description = JSON.parse(this.organization.l_quoteStatus)[i]
               .description;
             let abbreviation = JSON.parse(this.organization.l_quoteStatus)[i]

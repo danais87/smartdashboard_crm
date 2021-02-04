@@ -408,20 +408,73 @@ export const listQuoteItems = /* GraphQL */ `
       updateAt
       active
       createdBy
+      l_smName
+      l_email
+      l_smAddress
+      leadStatus
+      seekingService
+      adquisition
+      account
+      notes
       smName
+      smAddress
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_discount
+      l_team
+      l_leadsStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_variant
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
+      subject
+      introduction
+      conclusion
+      internalComments
+      emailSent
+      sentDate
+      sentBy
+      isDiscount
+      isInstallment
+      downPayment
+      numInstallments
+      disccountAmount
+      l_disccount
+      quotationAmount
+      finalAmount
+      paymentStatus
+      orderNumber
+      processStatus
       description
       price
       typeName
       otherType
       isRecurrent
       isVariant
+      variants
       variantName
       variantPrice
-      internalComments
       taskStatus
       taskStart
       taskEnd
-      taskNameresp
+      taskNameResponsible
+      startDate
+      amount
+      isPaid
+      reference
+      method
+      payDate
+      value
+      type
+      live
+      revisitDate
+      customerID
+      customerName
     }
   }
 `;
@@ -458,6 +511,7 @@ export const getQuoteItem = /* GraphQL */ `
       taskStart
       taskEnd
       taskNameresp
+      customerName
     }
   }
 `;
