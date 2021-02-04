@@ -76,13 +76,7 @@
             <v-card-title>
               <span class="headline">Task</span>
               <v-spacer></v-spacer>
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-                circle
-                @click="deleteItem()"
-              ></el-button>
+
               <el-button
                 id="c"
                 type="info"
@@ -190,7 +184,7 @@ import {
   getSmTeam,
   listQuoteItems,
 } from "../../../graphql/queries";
-import { updateServicesLineQ } from "../../../graphql/mutations";
+import { updateRecord, updateServicesLineQ } from "../../../graphql/mutations";
 import Vuex from "vuex";
 import { uuid } from "vue-uuid";
 
@@ -241,13 +235,13 @@ export default {
       label: "",
       name: "",
       resp: "",
-      state: "IP",
+      state: "In Progress",
     },
     defaultItem: {
       label: "",
       name: "",
       resp: "",
-      state: "IP",
+      state: "In Progress",
     },
   }),
 
@@ -381,8 +375,9 @@ export default {
           label: this.task[i].customerName,
           name: this.task[i].smName,
           status: this.task[i].taskStatus,
-          resp: this.task[i].taskNameresp,
-          id_serv: this.task[i].SK,
+          resp: this.task[i].taskNameResponsible,
+          servi_PK: this.task[i].PK,
+          servi_SK: this.task[i].SK,
         });
       }
       loading.close();
@@ -397,25 +392,19 @@ export default {
 
     async updateTask(item) {
       console.log(item);
-      const id = item.id_serv;
-      const task_status = item.status;
-      const task_descstatus = item.status;
-      const task_responsible = item.responsible;
-      const l = await API.graphql({
-        query: getSmTeam,
-        variables: { id: task_responsible },
-      });
-      const task_nameresp = l.data.getSmTeam.name;
+      const SK = item.servi_SK;
+      const PK = item.servi_PK;
+      const taskStatus = item.status;
+      const taskNameResponsible = item.responsible;
 
       const lineq = {
-        task_status,
-        task_descstatus,
-        task_responsible,
-        task_nameresp,
-        id,
+        SK,
+        PK,
+        taskStatus,
+        taskNameResponsible,
       };
       await API.graphql({
-        query: updateServicesLineQ,
+        query: updateRecord,
         variables: { input: lineq },
       });
 
