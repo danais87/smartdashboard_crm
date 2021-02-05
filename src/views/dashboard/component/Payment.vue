@@ -628,7 +628,7 @@ export default {
             if (pullResults.MessageId) {
               const emailSent = "Y";
               const sentDate = new Date().toLocaleString();
-              const sentBy = usuario;
+              const sentBy = this.usuario;
               const PK = this.item.PK;
               const SK= this.item.SK;
               const todo = { emailSent, sentDate,sentBy, PK,SK };

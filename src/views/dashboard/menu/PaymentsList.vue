@@ -187,9 +187,9 @@
                 :search="search_c"
                 :items-per-page="-1"
               >
-                <template v-slot:[`item.amount`]="{ item }">
+                <template v-slot:[`item.payment`]="{ item }">
                   <v-chip class="ma-2" color="green" outlined light small>{{
-                    formattedCurrencyValue(item.amount)
+                    formattedCurrencyValue(item.payment)
                   }}</v-chip>
                 </template>
                 <template v-slot:top>
@@ -236,7 +236,7 @@
 <script>
 import { API, Auth } from "aws-amplify";
 
-import { 
+import {
   getOrganization,
   listCustomers,
   listInstallments,
