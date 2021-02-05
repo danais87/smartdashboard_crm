@@ -236,14 +236,11 @@
 <script>
 import { API, Auth } from "aws-amplify";
 
-import {
-  getCompany,
+import { 
   getOrganization,
   listCustomers,
   listInstallments,
-  listQuotes,
-  listSmInstallments,
-  listSmInvoices,
+
 } from "../../../graphql/queries";
 
 import Vuex from "vuex";

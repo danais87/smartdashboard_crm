@@ -919,7 +919,11 @@
 import LineChart from "../component/dashboard/LineChart.js";
 import DoughnutChart from "../component/dashboard/DoughnutChart.js";
 import { API } from "aws-amplify";
-import { createRecord, updateRecord } from "../../../graphql/mutations";
+import {
+  createRecord,
+  deleteInstallments,
+  updateRecord,
+} from "../../../graphql/mutations";
 import {
   listQuotes,
   getOrganization,
@@ -2226,7 +2230,7 @@ export default {
           isRecurrent,
           isVariant,
           internalComments,
-          customerName
+          customerName,
         };
         await API.graphql({
           query: createRecord,
@@ -2273,7 +2277,7 @@ export default {
             startDate,
             amount,
             isPaid,
-            customerName
+            customerName,
           };
           await API.graphql({
             query: createRecord,
@@ -2442,7 +2446,7 @@ export default {
             isRecurrent,
             isVariant,
             internalComments,
-            customerName
+            customerName,
           };
           const sq = await API.graphql({
             query: updateRecord,
@@ -2491,7 +2495,7 @@ export default {
             isRecurrent,
             isVariant,
             internalComments,
-            customerName
+            customerName,
           };
           await API.graphql({
             query: createRecord,
@@ -2500,87 +2504,90 @@ export default {
         }
       }
       //update installments
+
       if (this.installments != null) {
+        const seq = await API.graphql({
+          query: listQuotes,
+          variables: {
+            filter: {
+              PK: {
+                eq: this.organizationID,
+              },
+              SK: {
+                eq: id_quote,
+              },
+              indexs: {
+                eq: "2",
+              },
+              active: {
+                eq: "1",
+              },
+            },
+          },
+        });
+        var datas = seq.data.listQuotes;
+        var ins = [];
+        for (let i = 0; i < datas.length; i++) {
+          if (datas[i].entityType == "INSTALLMENT") {
+            ins.push(datas[i]);
+          }
+        }
+        for (let i = 0; i < ins.length; i++) {
+          const PK = ins[i].PK;
+          const SK = ins[i].SK;
+          const todo = {
+            PK,
+            SK,
+          };
+          await API.graphql({
+            query: deleteInstallments,
+            variables: { input: todo },
+          });
+        }
         let inst = "";
         for (let i = 0; i < this.installments.length; i++) {
-          if (this.installments[i].SK) {
-            const SK = this.installments[i].SK;
-            const PK = this.installments[i].PK;
-            const GSP1PK1 = this.editedItemLeads.SK;
-            const GSP1SK1 = SK;
-            const GSP2PK1 = id_quote;
-            const GSP2SK1 = SK;
-            const GSP4PK1 = this.organizationID;
-            const GSP4SK1 = new Date().toISOString().substr(0, 10);
-            const updateAt = new Date().toISOString().substr(0, 10);
-            const startDate = this.installments[i].startDate;
-            const amount = this.installments[i].amount;
-            const isPaid = "N";
-            const customerName = this.editedItemLeads.name;
+          const id = uuid.v1();
+          const SK = "INS#" + id;
+          const GSP1PK1 = this.editedItemLeads.SK;
+          const GSP1SK1 = SK;
+          const GSP2PK1 = id_quote;
+          const GSP2SK1 = SK;
+          const GSP4PK1 = this.organizationID;
+          const GSP4SK1 = new Date().toISOString().substr(0, 10);
+          const entityType = "INSTALLMENT";
+          const createdAt = new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
+          const createdBy = this.usuario;
+          const active = "1";
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const isPaid = "N";
+          const customerName = this.editedItemLeads.name;
 
-            inst = {
-              PK,
-              SK,
-              GSP1PK1,
-              GSP1SK1,
-              GSP2PK1,
-              GSP2SK1,
-              GSP4PK1,
-              GSP4SK1,
-              updateAt,
-              startDate,
-              amount,
-              isPaid,
-              customerName
-            };
-            await API.graphql({
-              query: updateRecord,
-              variables: { input: inst },
-            });
-          } else {
-            const id = uuid.v1();
-            const SK = "INS#" + id;
-            const GSP1PK1 = this.editedItemLeads.SK;
-            const GSP1SK1 = SK;
-            const GSP2PK1 = id_quote;
-            const GSP2SK1 = SK;
-            const GSP4PK1 = this.organizationID;
-            const GSP4SK1 = new Date().toISOString().substr(0, 10);
-            const entityType = "INSTALLMENT";
-            const createdAt = new Date().toISOString().substr(0, 10);
-            const updateAt = new Date().toISOString().substr(0, 10);
-            const createdBy = this.usuario;
-            const active = "1";
-            const startDate = this.installments[i].startDate;
-            const amount = this.installments[i].amount;
-            const isPaid = "N";
-            const customerName = this.editedItemLeads.name;
-
-            inst = {
-              PK,
-              SK,
-              id,
-              GSP1PK1,
-              GSP1SK1,
-              GSP2PK1,
-              GSP2SK1,
-              GSP4PK1,
-              GSP4SK1,
-              entityType,
-              createdAt,
-              updateAt,
-              createdBy,
-              active,
-              startDate,
-              amount,
-              isPaid,
-              customerName
-            };
-            await API.graphql({
-              query: createRecord,
-              variables: { input: inst },
-            });
-          }
+          inst = {
+            PK,
+            SK,
+            id,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            GSP4PK1,
+            GSP4SK1,
+            entityType,
+            createdAt,
+            updateAt,
+            createdBy,
+            active,
+            startDate,
+            amount,
+            isPaid,
+            customerName,
+          };
+          await API.graphql({
+            query: createRecord,
+            variables: { input: inst },
+          });
         }
       }
 
@@ -2640,7 +2647,7 @@ export default {
             isVariant,
             internalComments,
             l_variant,
-            customerName
+            customerName,
           };
           const prod = await API.graphql({
             query: updateRecord,
@@ -2781,7 +2788,10 @@ export default {
             '","source":"' +
             com.funcSource +
             '","subject":"' +
-            "Your Quote: (" +this.editedItem_c.smName+ ") from BizPlanEasy: "+this.editedItem_c.subject+
+            "Your Quote: (" +
+            this.editedItem_c.smName +
+            ") from BizPlanEasy: " +
+            this.editedItem_c.subject +
             '","body":"' +
             this.body +
             '"}',
@@ -2969,8 +2979,6 @@ export default {
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
-      
-      console.log(JSON.parse(item.l_discount)[0].discount_code);
 
       if (JSON.parse(item.l_discount)[0]) {
         this.discount_id = JSON.parse(item.l_discount)[0].discount_code;
@@ -3175,7 +3183,11 @@ export default {
       this.SetAddress(this.list_address);
 
       if (JSON.parse(this.editedItemLeads.l_email)[0]) {
-        for (let i = 0; i < JSON.parse(this.editedItemLeads.l_email).length; i++) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
           let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
           let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
           const todo = {
@@ -3205,12 +3217,18 @@ export default {
       }
 
       if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
-        for (let i = 0; i < JSON.parse(this.editedItemLeads.l_smAddress).length; i++) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_smAddress).length;
+          i++
+        ) {
           let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
           let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
           let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
-          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i].street_address;
-          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i].zip_code;
+          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .street_address;
+          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .zip_code;
           let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
           const todo = {
             country,

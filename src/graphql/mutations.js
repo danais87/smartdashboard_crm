@@ -203,3 +203,31 @@ export const deletePhoneNumber = /* GraphQL */ `
     }
   }
 `;
+export const deleteInstallments = /* GraphQL */ `
+  mutation DeleteInstallments($input: DeleteInput!) {
+    deleteInstallments(input: $input) {
+      GSP1PK1
+      GSP1SK1
+      GSP2PK1
+      GSP2SK1
+      GSP3PK1
+      GSP3SK1
+      GSP4PK1
+      GSP4SK1
+      PK
+      SK
+      id
+      entityType
+      createdAt
+      updateAt
+      active
+      createdBy
+      startDate
+      amount
+      isPaid
+      reference
+      method
+      payDate
+    }
+  }
+`;
