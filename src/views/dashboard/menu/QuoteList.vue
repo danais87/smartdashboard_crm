@@ -464,6 +464,16 @@
                                 class="elevation-1"
                                 :items-per-page="-1"
                               >
+                              <template v-slot:[`item.type`]="{ item }">
+                                <v-chip
+                                  class="ma-2"
+                                  :color="getColor(item.type)"
+                                  outlined
+                                  light
+                                  small
+                                  >{{ item.type }}</v-chip
+                                >
+                              </template>
                                 <template v-slot:top>
                                   <v-toolbar flat color="white">
                                     <v-toolbar-title
@@ -556,13 +566,33 @@
                       label="Internal Comments:"
                     ></v-textarea>
                   </v-col>
-                  <v-col class="d-flex" cols="5" sm="5" md="5">
+                  <v-row>
+                    <v-col class="d-flex" cols="12" sm="5" md="5">
+                      <v-select
+                        v-model="editedItem_c.processStatus"
+                        :items="options"
+                        label="Status"
+                        item-text="description"
+                        item-value="description"
+                        outlined
+                      ></v-select>
+                    </v-col>
+
+                    <v-col class="d-flex" cols="12" sm="5" md="5">
+                      <v-text-field
+                        v-model="editedItem_c.revisitDate"
+                        label="Revisit Date(YYYY-MM-DD)"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-col class="d-flex" cols="12" sm="4" md="4">
                     <v-select
-                      v-model="editedItem_c.processStatus"
-                      :items="options"
-                      label="Status"
-                      item-text="description"
-                      item-value="description"
+                      v-model="editedItem_c.live"
+                      :items="options_live"
+                      label="Live"
+                      item-text="label"
+                      item-value="value"
                       outlined
                     ></v-select>
                   </v-col>
@@ -1038,6 +1068,7 @@ export default {
         value: "startDate",
       },
       { text: "Amount", align: "start", sortable: true, value: "amount" },
+      { text: "Type of Payment", align: "start", sortable: true, value: "type" },
       { text: "Actions", value: "actions", sortable: false },
     ],
     headers_v: [
@@ -1090,8 +1121,6 @@ export default {
     editedItem_c: {
       id: "",
       smName: "",
-      lead_id: "",
-      lead_name: "",
       emailSent: "",
       sentDate: "",
       isDiscount: "",
@@ -1102,22 +1131,24 @@ export default {
       discountAmount: "",
       quotationAmount: "",
       finalAmount: "",
-      services: "",
-      leads: "",
       isInstallment: "",
       downPayment: "",
       numInstallments: "",
       createdAt: "",
+      updateAt: "",
+      createdBy: "",
       conclusion: "",
+      introduction: "",
       internalComments: "",
       subject: "",
+      customerName: "",
       processStatus: "Created",
+      live: "Y",
+      revisitDate: new Date().toISOString().substr(0, 10),
     },
     defaultItem_c: {
       id: "",
       smName: "",
-      lead_id: "",
-      lead_name: "",
       emailSent: "",
       sentDate: "",
       isDiscount: "",
@@ -1128,16 +1159,20 @@ export default {
       discountAmount: "",
       quotationAmount: "",
       finalAmount: "",
-      services: "",
-      leads: "",
       isInstallment: "",
       downPayment: "",
       numInstallments: "",
       createdAt: "",
+      updateAt: "",
+      createdBy: "",
       conclusion: "",
-      internalcomments: "",
+      introduction: "",
+      internalComments: "",
       subject: "",
+      customerName: "",
       processStatus: "Created",
+      live: "Y",
+      revisitDate: new Date().toISOString().substr(0, 10),
     },
     editedItem_s: {
       id: "",
@@ -1304,6 +1339,16 @@ export default {
     librarys: [],
     quote_status: [],
     l_discount: [],
+    options_live: [
+      {
+        value: "Y",
+        label: "Active",
+      },
+      {
+        value: "N",
+        label: "Inactive",
+      },
+    ],
   }),
 
   computed: {
@@ -2044,9 +2089,19 @@ export default {
       this.calc = true;
       let cant_amounts = 0;
       this.installments = [];
+      const startDate = new Date().toISOString().substr(0, 10);
+      const amount = this.payment;
+      const type = 'DPAY';
+      const pay = {
+        startDate,
+        amount,
+        type
+      };
+      this.installments = [...this.installments, pay];
       cant_amounts = (this.total_disc - this.payment) / this.number;
 
       for (let i = 0; i < this.number; i++) {
+        const type = 'INST';
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
@@ -2056,6 +2111,7 @@ export default {
         const todo = {
           startDate,
           amount,
+          type
         };
         this.installments = [...this.installments, todo];
       }
@@ -2104,7 +2160,8 @@ export default {
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
       const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = new Date().toISOString().substr(0, 10);
+      const GSP4SK1 = "QUO#" + new Date().toISOString().substr(0, 10);
+      const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
       const createdAt = new Date().toISOString().substr(0, 10);
       var updateAt = new Date().toISOString().substr(0, 10);
@@ -2131,7 +2188,6 @@ export default {
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = "Y";
-      const customerID = this.editedItemLeads.SK;
       const customerName = this.editedItemLeads.name;
 
       const todo = {
@@ -2147,10 +2203,10 @@ export default {
         entityType,
         createdAt,
         updateAt,
+        revisitDate,
         createdBy,
         active,
         smName,
-        customerID,
         customerName,
         conclusion,
         internalComments,
@@ -2194,6 +2250,10 @@ export default {
         const GSP1SK1 = SK;
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
+        const GSP3PK1 = this.organizationID + "#TASK";
+        const GSP3SK1 = "STATUS#";
+        const GSP4PK1 = this.organizationID;
+        const GSP4SK1 = "QIT#" + new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2217,6 +2277,10 @@ export default {
           GSP1SK1,
           GSP2PK1,
           GSP2SK1,
+          GSP3PK1,
+          GSP3SK1,
+          GSP4PK1,
+          GSP4SK1,
           entityType,
           createdAt,
           updateAt,
@@ -2230,7 +2294,7 @@ export default {
           isRecurrent,
           isVariant,
           internalComments,
-          customerName,
+          customerName, 
         };
         await API.graphql({
           query: createRecord,
@@ -2247,8 +2311,10 @@ export default {
           const GSP1SK1 = SK;
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
+          const GSP3PK1 = this.organizationID + "#PAY";
+          const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = new Date().toISOString().substr(0, 10);
+          const GSP4SK1 = "INS#" + this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2256,6 +2322,7 @@ export default {
           const active = "1";
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
           const isPaid = "N";
           const customerName = this.editedItemLeads.name;
 
@@ -2267,6 +2334,8 @@ export default {
             GSP1SK1,
             GSP2PK1,
             GSP2SK1,
+            GSP3PK1,
+            GSP3SK1,
             GSP4PK1,
             GSP4SK1,
             entityType,
@@ -2276,6 +2345,7 @@ export default {
             active,
             startDate,
             amount,
+            type,
             isPaid,
             customerName,
           };
@@ -2321,6 +2391,8 @@ export default {
       var todo = [];
       var PK = item.PK;
       var SK = item.SK;
+      const GSP1PK1 = this.editedItemLeads.SK;
+      const GSP4SK1 = "QUO#" + item.revisitDate;
       var updateAt = new Date().toISOString().substr(0, 10);
       const subject = item.subject;
       const introduction = item.introduction;
@@ -2344,14 +2416,14 @@ export default {
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
-      const live = "Y";
-      const customerID = this.editedItemLeads.SK;
+      const live = item.live;
       const customerName = this.editedItemLeads.name;
       todo = {
         PK,
         SK,
+        GSP1PK1,
+        GSP4SK1,
         updateAt,
-        customerID,
         customerName,
         conclusion,
         internalComments,
@@ -2391,117 +2463,103 @@ export default {
       });
       console.log(this.q_services);
       //update quoteitems
-      let price = 0;
-      for (let i = 0; i < this.q_services.length; i++) {
-        const todos = await API.graphql({
-          query: listQuoteItems,
-          variables: {
-            filter: {
-              active: { eq: "1" },
-              SK: {
-                eq: "QIT#",
-              },
-              PK: { eq: this.organizationID },
-              indexs: {
-                eq: "table_items",
-              },
-              GSP1SK1: {
-                eq: this.q_services[i].service.SK,
-              },
+      const list_q = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: id_quote,
+            },
+            indexs: {
+              eq: "2",
+            },
+            active: {
+              eq: "1",
             },
           },
-        });
-        console.log(todos.data.listQuoteItems[0]);
-        if (todos.data.listQuoteItems[0]) {
-          const SK = this.q_services[i].service.SK;
-          const PK = this.q_services[i].service.PK;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = this.q_services[i].service.SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = this.q_services[i].service.SK;
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const smName = this.q_services[i].service.name;
-          const description = this.q_services[i].service.description;
-          price = parseFloat(this.q_services[i].service.price);
-          const typeName = this.q_services[i].service.type_name;
-          const otherType = this.q_services[i].service.other_type;
-          const isRecurrent = this.q_services[i].service.is_recurrent;
-          const isVariant = this.q_services[i].service.is_variant;
-          const internalComments = this.q_services[i].service.comments;
-          const customerName = this.editedItemLeads.name;
-
-          const t = {
-            PK,
-            SK,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            updateAt,
-            smName,
-            description,
-            price,
-            typeName,
-            otherType,
-            isRecurrent,
-            isVariant,
-            internalComments,
-            customerName,
-          };
-          const sq = await API.graphql({
-            query: updateRecord,
-            variables: { input: t },
-          });
-        } else {
-          const id = uuid.v1();
-          const SK = "QIT#" + id;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = SK;
-          const entityType = "QUOTEITEM";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const smName = this.q_services[i].service.smName;
-          const description = this.q_services[i].service.description;
-          price = parseFloat(this.q_services[i].service.price);
-          const typeName = this.q_services[i].service.typeName;
-          const otherType = this.q_services[i].service.otherType;
-          const isRecurrent = this.q_services[i].service.isRecurrent;
-          const isVariant = this.q_services[i].service.isVariant;
-          const internalComments = this.q_services[i].service.internalComments;
-          const customerName = this.editedItemLeads.name;
-
-          const t = {
-            PK,
-            SK,
-            id,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            smName,
-            description,
-            price,
-            typeName,
-            otherType,
-            isRecurrent,
-            isVariant,
-            internalComments,
-            customerName,
-          };
-          await API.graphql({
-            query: createRecord,
-            variables: { input: t },
-          });
+        },
+      });
+      var list_quote = list_q.data.listQuotes;
+      var qitem = [];
+      for (let i = 0; i < list_quote.length; i++) {
+        if (list_quote[i].entityType == "QUOTEITEM") {
+          qitem.push(list_quote[i]);
         }
+      }
+      for (let i = 0; i < qitem.length; i++) {
+        const PK = qitem[i].PK;
+        const SK = qitem[i].SK;
+        const todo = {
+          PK,
+          SK,
+        };
+        await API.graphql({
+          query: deleteInstallments,
+          variables: { input: todo },
+        });
+      }
+      let price = 0;
+      for (let i = 0; i < this.q_services.length; i++) {
+        const id = uuid.v1();
+        const PK = this.organizationID;
+        const SK = "QIT#" + id;
+        const GSP1PK1 = this.editedItemLeads.SK;
+        const GSP1SK1 = SK;
+        const GSP2PK1 = id_quote;
+        const GSP2SK1 = SK;
+        const GSP3PK = this.organizationID + "#TASK";
+        const GSP3SK = "STATUS#";
+        const GSP4PK = this.organizationID;
+        const GSP4SK = "QIT#";
+        const entityType = "QUOTEITEM";
+        const createdAt = new Date().toISOString().substr(0, 10);
+        const updateAt = new Date().toISOString().substr(0, 10);
+        const createdBy = this.usuario;
+        const active = "1";
+        const smName = this.q_services[i].service.smName;
+        const description = this.q_services[i].service.description;
+        price = parseFloat(this.q_services[i].service.price);
+        const typeName = this.q_services[i].service.typeName;
+        const otherType = this.q_services[i].service.otherType;
+        const isRecurrent = this.q_services[i].service.isRecurrent;
+        const isVariant = this.q_services[i].service.isVariant;
+        const internalComments = this.q_services[i].service.internalComments;
+        const customerName = this.editedItemLeads.name;
+
+        const t = {
+          PK,
+          SK,
+          id,
+          GSP1PK1,
+          GSP1SK1,
+          GSP2PK1,
+          GSP2SK1,
+          GSP3PK,
+          GSP3SK,
+          GSP4PK,
+          GSP4SK,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          smName,
+          description,
+          price,
+          typeName,
+          otherType,
+          isRecurrent,
+          isVariant,
+          internalComments,
+          customerName,
+        };
+        await API.graphql({
+          query: createRecord,
+          variables: { input: t },
+        });
       }
       //update installments
 
@@ -2552,8 +2610,10 @@ export default {
           const GSP1SK1 = SK;
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
+          const GSP3PK1 = this.organizationID + "#PAY";
+          const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = new Date().toISOString().substr(0, 10);
+          const GSP4SK1 = "INS#" + this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2561,6 +2621,7 @@ export default {
           const active = "1";
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
           const isPaid = "N";
           const customerName = this.editedItemLeads.name;
 
@@ -3323,6 +3384,11 @@ export default {
       this.md_negotiation = "4";
       this.sm_verbal = "4";
       this.md_verbal = "4";
+    },
+    getColor(item) {
+      if (item == "INST") return "blue";
+      else if (item == "DPAY") return "green";
+      else return "orange";
     },
   },
 };

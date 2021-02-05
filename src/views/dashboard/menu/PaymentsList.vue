@@ -240,7 +240,6 @@ import {
   getOrganization,
   listCustomers,
   listInstallments,
-
 } from "../../../graphql/queries";
 
 import Vuex from "vuex";
@@ -331,7 +330,6 @@ export default {
       { text: "Email", sortable: true, value: "email", align: "start" },
     ],
     headers_ins: [
-      { text: "Name", sortable: true, value: "name", align: "start" },
       { text: "Client", sortable: true, value: "full_name", align: "start" },
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
       {
@@ -640,12 +638,11 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
 
-      var installments = [];
+
       this.quotes = [];
       this.received_payment = [];
       this.pend_payment = [];
       this.item = [];
-      var leads = [];
       this.total_pr = 0;
       this.total_pp = 0;
 
@@ -654,13 +651,13 @@ export default {
         variables: {
           filter: {
             PK: {
-              eq: this.organizationID,
+              eq: this.organizationID + "#PAY",
             },
             SK: {
-              eq: "ORD#",
+              eq: "STATUS#",
             },
             indexs: {
-              eq: "4_ins",
+              eq: "3",
             },
             active: {
               eq: "1",
@@ -676,57 +673,21 @@ export default {
       });
       var datas = todos.data.listInstallments;
       console.log(datas);
+
       for (let i = 0; i < datas.length; i++) {
-        if (datas[i].entityType == "QUOTE") {
-          this.quotes.push(datas[i]);
-        }
-        if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
-        }
+        this.item_inst = [...this.item_inst, datas[i]];
       }
-      for (let i = 0; i < this.quotes.length; i++) {
-        this.item_inst = [];
-
-        for (let k = 0; k < installments.length; k++) {
-          if (installments[k].GSP2PK1 == this.quotes[i].SK) {
-            this.item_inst = [...this.item_inst, installments[k]];
-          }
-        }
-
-        this.item.push({
-          quote: this.quotes[i],
-          inst: this.item_inst,
-        });
-      }
-      console.log(this.item);
-      for (let i = 0; i < this.item.length; i++) {
-        console.log(this.item[i].quote.orderNumber);
-        if (this.item[i].quote.orderNumber != undefined) {
-          this.received_payment.push({
-            type: "DP",
-            name: this.item[i].quote.orderNumber,
-            date: this.item[i].quote.createdAt.substr(0, 10),
-            full_name: this.item[i].quote.customerName,
-            payment: this.item[i].quote.downPayment,
-            quote: this.item[i].quote,
+      console.log(this.item_inst);
+      for (let i = 0; i < this.item_inst.length; i++) {
+        if (this.item_inst[i].isPaid != "Y") {
+          this.pend_payment.push({
+            type: "IN",
+            name: "",
+            date: this.item_inst[i].startDate,
+            full_name: this.item_inst[i].customerName,
+            payment: this.item_inst[i].amount,
           });
-        }
-      }
-      console.log(this.received_payment);
-      for (let i = 0; i < this.item.length; i++) {
-        if (this.item[i].quote.orderNumber != undefined) {
-          for (let j = 0; j < this.item[i].inst.length; j++) {
-            if (this.item[i].inst[j].isPaid != "Y") {
-              this.pend_payment.push({
-                type: "IN",
-                name: this.item[i].quote.orderNumber,
-                date: this.item[i].inst[j].startDate,
-                full_name: this.item[i].quote.customerName,
-                payment: this.item[i].inst[j].amount,
-                quote: this.item[i].quote,
-              });
-            }
-          }
+          this.total_pp = this.total_pp + this.item_inst[i].amount
         }
       }
       console.log(this.pend_payment);
@@ -804,7 +765,6 @@ export default {
     },
 
     async OpenSentEmail(item) {
-
       this.editedItem_c = item;
       const todos = await API.graphql({
         query: listCustomers,
@@ -892,7 +852,7 @@ export default {
 
       this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
       this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];
-      console.log(this.selectedEmails)
+      console.log(this.selectedEmails);
       for (let i = 0; i < this.selectedEmails.length; i++) {
         var pullParams = {
           FunctionName: com.funcName,
