@@ -137,6 +137,75 @@
                       default="Active"
                     ></v-select>
                   </v-col>
+                  <v-col cols="12" sm="4" md="4" align="center">
+                    <v-menu
+                      ref="menu2"
+                      v-model="menu2"
+                      :close-on-content-click="false"
+                      :return-value.sync="startDate2"
+                      transition="scale-transition"
+                      offset-y
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="startDate2"
+                          label="Start Date"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker v-model="startDate2" no-title scrollable>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="menu2 = false">
+                          Cancel
+                        </v-btn>
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="$refs.menu2.save(startDate2)"
+                        >
+                          OK
+                        </v-btn>
+                      </v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" sm="2" md="2" align="center">
+                    <v-menu
+                      ref="menu3"
+                      v-model="menu3"
+                      :close-on-content-click="false"
+                      :return-value.sync="endDate2"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field
+                          v-model="endDate2"
+                          label="End Date"
+                          prepend-icon="mdi-calendar"
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </template>
+                      <v-date-picker v-model="endDate2" no-title scrollable>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="menu3 = false">
+                          Cancel
+                        </v-btn>
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="$refs.menu3.save(endDate2)"
+                        >
+                          OK
+                        </v-btn>
+                      </v-date-picker>
+                    </v-menu>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-card-text>
@@ -150,6 +219,7 @@
         <v-data-table
           :headers="headers"
           :items="chil"
+          sort-by="label"
           class="elevation-1"
           :search="search"
           :items-per-page="-1"
@@ -204,6 +274,12 @@ export default {
     endDate: new Date().toISOString().substr(0, 10),
     menu1: false,
     modal1: false,
+    startDate2: "",
+    menu2: false,
+    modal2: false,
+    endDate2: new Date().toISOString().substr(0, 10),
+    menu3: false,
+    modal3: false,
     headers: [
       { text: "Contact", align: "start", sortable: true, value: "label" },
       {
@@ -256,10 +332,12 @@ export default {
 
   created() {
     const d = new Date();
-    this.startDate = new Date(d.setMonth(d.getMonth() - 3))
+    this.startDate1 = new Date(d.setMonth(d.getMonth() - 3))
       .toISOString()
       .substr(0, 10);
-
+    this.startDate2 = new Date(d.setMonth(d.getMonth() - 3))
+      .toISOString()
+      .substr(0, 10);
     this.getTask();
     this.getTeam();
   },

@@ -638,7 +638,7 @@ export default {
     async getInvoice() {
       const loading = this.$loading({
         lock: true,
-        text: "Get Task...",
+        text: "Get Payments...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });

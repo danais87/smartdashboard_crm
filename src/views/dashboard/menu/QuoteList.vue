@@ -2969,11 +2969,11 @@ export default {
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
-      console.log(JSON.parse(item.l_discount));
-      console.log(JSON.parse(item.l_discount[0]).discount_code);
+      
+      console.log(JSON.parse(item.l_discount)[0].discount_code);
 
-      if (JSON.parse(item.l_discount[0])) {
-        this.discount_id = JSON.parse(item.l_discount[0]).discount_code;
+      if (JSON.parse(item.l_discount)[0]) {
+        this.discount_id = JSON.parse(item.l_discount)[0].discount_code;
       }
 
       this.total = item.quotationAmount;
