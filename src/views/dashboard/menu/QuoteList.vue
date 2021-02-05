@@ -2250,8 +2250,6 @@ export default {
         const GSP1SK1 = SK;
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
-        const GSP3PK1 = this.organizationID + "#TASK";
-        const GSP3SK1 = "STATUS#";
         const GSP4PK1 = this.organizationID;
         const GSP4SK1 = new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
@@ -2277,8 +2275,6 @@ export default {
           GSP1SK1,
           GSP2PK1,
           GSP2SK1,
-          GSP3PK1,
-          GSP3SK1,
           GSP4PK1,
           GSP4SK1,
           entityType,
@@ -2311,8 +2307,6 @@ export default {
           const GSP1SK1 = SK;
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
           const GSP4SK1 =  this.installments[i].startDate;
           const entityType = "INSTALLMENT";
@@ -2334,8 +2328,6 @@ export default {
             GSP1SK1,
             GSP2PK1,
             GSP2SK1,
-            GSP3PK1,
-            GSP3SK1,
             GSP4PK1,
             GSP4SK1,
             entityType,
@@ -2510,8 +2502,6 @@ export default {
         const GSP1SK1 = SK;
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
-        const GSP3PK1 = this.organizationID + "#TASK";
-        const GSP3SK1 = "STATUS#";
         const GSP4PK1 = this.organizationID;
         const GSP4SK1 = "QIT#";
         const entityType = "QUOTEITEM";
@@ -2537,8 +2527,6 @@ export default {
           GSP1SK1,
           GSP2PK1,
           GSP2SK1,
-          GSP3PK1,
-          GSP3SK1,
           GSP4PK1,
           GSP4SK1,
           entityType,
@@ -2610,8 +2598,6 @@ export default {
           const GSP1SK1 = SK;
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
           const GSP4SK1 =  this.installments[i].startDate;
           const entityType = "INSTALLMENT";
@@ -2633,8 +2619,6 @@ export default {
             GSP1SK1,
             GSP2PK1,
             GSP2SK1,
-            GSP3PK1,
-            GSP3SK1,
             GSP4PK1,
             GSP4SK1,
             entityType,
@@ -2822,6 +2806,7 @@ export default {
 
       const com = todos.data.getOrganization[0];
       const quotePK = this.organizationID;
+      const user =  this.usuario;
       var REGION = com.funcRegion;
       var identityPoolId = com.funcIdentityPoolId;
 
@@ -2871,8 +2856,8 @@ export default {
 
             if (pullResults.MessageId) {
               const emailSent = "Y";
-              const sentDate = new Date().toLocaleString();
-              const sentBy = this.usuario;
+              const sentDate = new Date().toISOString().substr(0, 10);
+              const sentBy = user;
               const PK = quotePK;
               const SK = quoteSK;
               const todo = { emailSent, sentDate, sentBy, PK, SK };

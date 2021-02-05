@@ -71,7 +71,7 @@
           </v-col>
           <v-spacer></v-spacer>
         </v-row>
-        <v-dialog v-model="dialog" max-width="800px">
+        <v-dialog v-model="dialog" max-width="600px">
           <v-card>
             <v-card-title>
               <span class="headline">Task</span>
@@ -137,7 +137,7 @@
                       default="Active"
                     ></v-select>
                   </v-col>
-                  <v-col cols="12" sm="4" md="4" align="center">
+                  <v-col cols="12" sm="5" md="5" align="center">
                     <v-menu
                       ref="menu2"
                       v-model="menu2"
@@ -171,7 +171,7 @@
                       </v-date-picker>
                     </v-menu>
                   </v-col>
-                  <v-col cols="12" sm="2" md="2" align="center">
+                  <v-col cols="12" sm="5" md="5" align="center">
                     <v-menu
                       ref="menu3"
                       v-model="menu3"
@@ -332,7 +332,7 @@ export default {
 
   created() {
     const d = new Date();
-    this.startDate1 = new Date(d.setMonth(d.getMonth() - 3))
+    this.startDate = new Date(d.setMonth(d.getMonth() - 3))
       .toISOString()
       .substr(0, 10);
     this.startDate2 = new Date(d.setMonth(d.getMonth() - 3))
@@ -417,7 +417,6 @@ export default {
 
     async getTask() {
       this.task = [];
-
       const loading = this.$loading({
         lock: true,
         text: "Get Task...",
@@ -427,27 +426,31 @@ export default {
       const todos = await API.graphql({
         query: listQuoteItems,
         variables: {
-          filter: {
+           filter: {
             PK: {
-              eq: this.organizationID,
+              eq: this.organizationID + "#TASK",
             },
             SK: {
-              eq: "QIT#",
+              eq: "STATUS#",
             },
             indexs: {
-              eq: "table",
+              eq: "3",
             },
             active: {
               eq: "1",
+            },
+            startDate: {
+              eq: this.startDate,
+            },
+            endDate: {
+              eq: this.end_date,
             },
           },
         },
       });
 
       this.task = todos.data.listQuoteItems;
-
       this.chil = [];
-
       for (let i = 0; i < this.task.length; i++) {
         this.chil.push({
           label: this.task[i].customerName,

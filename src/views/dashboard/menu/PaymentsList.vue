@@ -315,7 +315,6 @@ export default {
     apiRequest: false,
     valid: true,
     headers: [
-      { text: "Invoice", sortable: true, value: "name", align: "start" },
       { text: "Client", sortable: true, value: "full_name", align: "start" },
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
       { text: "Payment Type", sortable: true, value: "type", align: "start" },
@@ -681,13 +680,23 @@ export default {
       for (let i = 0; i < this.item_inst.length; i++) {
         if (this.item_inst[i].isPaid != "Y") {
           this.pend_payment.push({
-            type: "IN",
+            type:  this.item_inst[i].type,
             name: "",
             date: this.item_inst[i].startDate,
             full_name: this.item_inst[i].customerName,
             payment: this.item_inst[i].amount,
           });
           this.total_pp = this.total_pp + this.item_inst[i].amount
+        }
+        if (this.item_inst[i].isPaid == "Y") {
+          this.received_payment.push({
+            type:  this.item_inst[i].type,
+            name: "",
+            date: this.item_inst[i].startDate,
+            full_name: this.item_inst[i].customerName,
+            payment: this.item_inst[i].amount,
+          });
+          this.total_pr= this.total_pr + this.item_inst[i].amount
         }
       }
       console.log(this.pend_payment);
@@ -935,8 +944,8 @@ export default {
     },
 
     getColor(item) {
-      if (item == "IN") return "blue";
-      else if (item == "DP") return "green";
+      if (item == "INST") return "blue";
+      else if (item == "DPAY") return "green";
       else return "orange";
     },
   },

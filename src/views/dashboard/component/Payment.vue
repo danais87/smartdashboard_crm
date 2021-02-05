@@ -349,7 +349,7 @@ export default {
     this.ConfirmQuote(this.id);
   },
   computed: {
-    ...Vuex.mapState(["response", "usuario", "bodyquote",]),
+    ...Vuex.mapState(["response", "usuario", "bodyquote"]),
   },
   methods: {
     ...Vuex.mapMutations([
@@ -534,7 +534,7 @@ export default {
       const PK = this.item.PK;
       const SK = this.item.SK;
       const paymentStatus = "GS";
-      const orderNumber = "ORD" + c;
+      const orderNumber = "INV#" + c;
       const processStatus = "Invoice";
 
       const todo = {
@@ -549,6 +549,111 @@ export default {
         query: updateRecord,
         variables: { input: todo },
       });
+
+      console.log(this.item);
+      const quote = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: this.item.SK,
+            },
+            indexs: {
+              eq: "2",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      console.log(quote);
+      var datas = quote.data.listQuotes;
+      var installments = [];
+      var services = [];
+      for (let i = 0; i < datas.length; i++) {
+        if (datas[i].entityType == "INSTALLMENT") {
+          installments.push(datas[i]);
+        }
+        if (datas[i].entityType == "QUOTEITEM") {
+          services.push(datas[i]);
+        }
+      }
+      //update QUOTEITEM
+      console.log(services);
+      for (let i = 0; i < services.length; i++) {
+        const PK = services[i].PK;
+        const SK = services[i].SK;
+        const GSP3PK1 = this.organizationID + "#TASK";
+        const GSP3SK1 = "STATUS#" + "IP";
+        const GSP4PK1 = this.organizationID;
+        const GSP4SK1 = new Date().toISOString().substr(0, 10);
+        const taskStatus = "In Progress";
+        const taskStart = new Date().toISOString().substr(0, 10);
+        const todo = {
+          PK,
+          SK,
+          GSP3PK1,
+          GSP3SK1,
+          GSP4PK1,
+          GSP4SK1,
+          taskStatus,
+          taskStart,
+          paymentStatus,
+          orderNumber,
+          processStatus,
+        };
+        await API.graphql({
+          query: updateRecord,
+          variables: { input: todo },
+        });
+      }
+
+      //update INSTALLMENT
+      for (let i = 0; i < installments.length; i++) {
+        var inst = "";
+
+        if (installments[i].type == "DPAY") {
+          const PK = installments[i].PK;
+          const SK = installments[i].SK;
+          const GSP3PK1 = this.organizationID + "#PAY";
+          const GSP3SK1 = "STATUS#N";
+          const GSP4PK1 = this.organizationID;
+          const GSP4SK1 = installments[i].startDate;
+          const isPaid = "Y";
+          inst = {
+            PK,
+            SK,
+            GSP3PK1,
+            GSP3SK1,
+            GSP4PK1,
+            GSP4SK1,
+            isPaid,
+          };
+        } else {
+          const PK = installments[i].PK;
+          const SK = installments[i].SK;
+          const GSP3PK1 = this.organizationID + "#PAY";
+          const GSP3SK1 = "STATUS#N";
+          const GSP4PK1 = this.organizationID;
+          const GSP4SK1 = installments[i].startDate;
+          inst = {
+            PK,
+            SK,
+            GSP3PK1,
+            GSP3SK1,
+            GSP4PK1,
+            GSP4SK1,
+          };
+        }
+        await API.graphql({
+          query: updateRecord,
+          variables: { input: inst },
+        });
+      }
 
       console.log(invo);
       loading.close();
@@ -626,16 +731,6 @@ export default {
             pullResults = JSON.parse(data.Payload);
             console.log(pullResults);
             if (pullResults.MessageId) {
-              const emailSent = "Y";
-              const sentDate = new Date().toLocaleString();
-              const sentBy = this.usuario;
-              const PK = this.item.PK;
-              const SK= this.item.SK;
-              const todo = { emailSent, sentDate,sentBy, PK,SK };
-              await API.graphql({
-                query: updateRecord,
-                variables: { input: todo },
-              });
               this.alert = true;
             }
           }
