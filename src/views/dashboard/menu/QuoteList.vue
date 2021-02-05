@@ -2160,7 +2160,7 @@ export default {
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
       const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = "QUO#" + new Date().toISOString().substr(0, 10);
+      const GSP4SK1 = new Date().toISOString().substr(0, 10);
       const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
       const createdAt = new Date().toISOString().substr(0, 10);
@@ -2253,7 +2253,7 @@ export default {
         const GSP3PK1 = this.organizationID + "#TASK";
         const GSP3SK1 = "STATUS#";
         const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = "QIT#" + new Date().toISOString().substr(0, 10);
+        const GSP4SK1 = new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2294,7 +2294,7 @@ export default {
           isRecurrent,
           isVariant,
           internalComments,
-          customerName, 
+          customerName,
         };
         await API.graphql({
           query: createRecord,
@@ -2314,7 +2314,7 @@ export default {
           const GSP3PK1 = this.organizationID + "#PAY";
           const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "INS#" + this.installments[i].startDate;
+          const GSP4SK1 =  this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2392,7 +2392,7 @@ export default {
       var PK = item.PK;
       var SK = item.SK;
       const GSP1PK1 = this.editedItemLeads.SK;
-      const GSP4SK1 = "QUO#" + item.revisitDate;
+      const GSP4SK1 =  item.revisitDate;
       var updateAt = new Date().toISOString().substr(0, 10);
       const subject = item.subject;
       const introduction = item.introduction;
@@ -2510,10 +2510,10 @@ export default {
         const GSP1SK1 = SK;
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
-        const GSP3PK = this.organizationID + "#TASK";
-        const GSP3SK = "STATUS#";
-        const GSP4PK = this.organizationID;
-        const GSP4SK = "QIT#";
+        const GSP3PK1 = this.organizationID + "#TASK";
+        const GSP3SK1 = "STATUS#";
+        const GSP4PK1 = this.organizationID;
+        const GSP4SK1 = "QIT#";
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2537,10 +2537,10 @@ export default {
           GSP1SK1,
           GSP2PK1,
           GSP2SK1,
-          GSP3PK,
-          GSP3SK,
-          GSP4PK,
-          GSP4SK,
+          GSP3PK1,
+          GSP3SK1,
+          GSP4PK1,
+          GSP4SK1,
           entityType,
           createdAt,
           updateAt,
@@ -2613,7 +2613,7 @@ export default {
           const GSP3PK1 = this.organizationID + "#PAY";
           const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "INS#" + this.installments[i].startDate;
+          const GSP4SK1 =  this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2633,6 +2633,8 @@ export default {
             GSP1SK1,
             GSP2PK1,
             GSP2SK1,
+            GSP3PK1,
+            GSP3SK1,
             GSP4PK1,
             GSP4SK1,
             entityType,
@@ -2643,6 +2645,7 @@ export default {
             startDate,
             amount,
             isPaid,
+            type,
             customerName,
           };
           await API.graphql({
