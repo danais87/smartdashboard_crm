@@ -157,7 +157,8 @@
                             <v-list-item three-line>
                               <v-list-item-content>
                                 <v-list-item-subtitle>
-                                  Name: {{ editedItemLeads.name }}
+                                 Name: {{ editedItemLeads.name }}
+                                  {{ editedItemLeads.last_name }}
                                 </v-list-item-subtitle>
                               </v-list-item-content>
                             </v-list-item>
@@ -2782,12 +2783,15 @@ export default {
       for (let l = 0; l < leads.length; l++) {
         this.editedItemLeads = leads[l];
       }
-      console.log(JSON.parse(
-        this.editedItemLeads.l_smName
-      )[0].fullName);
+
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
-      )[0].fullName;
+      )[0].firstName;
+
+      this.editedItemLeads.last_name = JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].lastName;
+
       if (JSON.parse(this.editedItemLeads.l_email)[0]) {
         for (
           let i = 0;
