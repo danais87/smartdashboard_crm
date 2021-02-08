@@ -2,15 +2,14 @@
   <v-row align="center" justify="center">
     <br />
     <v-col cols="12" sm="8" md="4">
-
-        <router-link to="/">
-          <v-img
-            :src="require('../../../assets/logo.svg')"
-            class="my-3"
-            contain
-            height="50"
-          />
-        </router-link>
+      <router-link to="/">
+        <v-img
+          :src="require('../../../assets/logo.svg')"
+          class="my-3"
+          contain
+          height="50"
+        />
+      </router-link>
 
       <v-card class="elevation-2">
         <v-toolbar color="primary" dark flat>
@@ -56,8 +55,8 @@
 
 <script >
 import { Auth } from "aws-amplify";
-import LoginOrSingupLayout from "../../../layouts/LoginOrSingupLayout";
-import store from "../../../store";
+import Vuex from "vuex";
+import store from "../../../store"
 export default {
   components: {},
 
@@ -72,11 +71,22 @@ export default {
   },
 
   created() {
-    this.$emit(`update:router-view`, LoginOrSingupLayout);
     this.isUserSignedIn();
-    console.log(store.state.usuario);
+    console.log(this.usuario);
   },
+
+  computed: {
+    ...Vuex.mapState(["organizationID", "usuario"]),
+  },
+
   methods: {
+    ...Vuex.mapMutations([
+      "SetUsuario",
+      "SetOrganization",
+      "SetRole",
+    ]),
+    ...Vuex.mapActions(["GetCatalogs"]),
+
     async isUserSignedIn() {
       try {
         const userObj = await Auth.currentAuthenticatedUser();
@@ -95,11 +105,12 @@ export default {
           console.log(
             user.signInUserSession.accessToken["payload"]["cognito:groups"]
           );
-          store.state.usuario = user.username;
-          store.state.organizationID = user.attributes["custom:organizationID"];
-          store.state.role =
+          this.SetUsuario = user.username;
+          this.SetOrganization = user.attributes["custom:organizationID"];
+          this.SetRole =
             user.signInUserSession.accessToken["payload"]["cognito:groups"];
-          console.log(store.state);
+          this.GetCatalogs();
+
           this.$router.push({
             path: "/index",
             query: {
@@ -109,6 +120,7 @@ export default {
                 user.signInUserSession.accessToken["payload"]["cognito:groups"],
             },
           });
+          console.log(store.state);
           this.apiRequest = false;
         })
         .catch((err) => console.log(err));

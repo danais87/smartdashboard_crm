@@ -77,21 +77,17 @@
                   label="Select Account"
                   item-text="smName"
                   item-value="smName"
-                  required
-                  dense
-                  solo
+                  outlined
                 ></v-select>
               </v-col>
               <v-col class="d-flex" cols="12" sm="3" md="3">
                 <v-select
                   v-model="item.leadStatus"
-                  :items="options_status"
+                  :items="leadStatus"
                   label="Contact Status"
                   item-text="description"
                   item-value="description"
-                  required
-                  dense
-                  solo
+                  outlined
                 ></v-select>
               </v-col>
               <v-col class="d-flex" cols="12" sm="3" md="3">
@@ -101,21 +97,17 @@
                   label="Seeking Service"
                   item-text="label"
                   item-value="value"
-                  required
-                  dense
-                  solo
+                  outlined
                 ></v-select>
               </v-col>
               <v-col class="d-flex" cols="12" sm="3" md="3">
                 <v-select
                   v-model="item.adquisition"
-                  :items="options_acquisition"
+                  :items="acquisitions"
                   label="Acquisition"
                   item-text="description"
                   item-value="description"
-                  required
-                  dense
-                  solo
+                  outlined
                 ></v-select>
               </v-col>
             </v-row>
@@ -189,7 +181,6 @@ export default {
         adquisition: "",
         full_name: "",
       },
-      options_status: [],
       options_service: [
         {
           value: "Y",
@@ -200,9 +191,8 @@ export default {
           label: "NO",
         },
       ],
-      accounts: [],
+
       options: [],
-      options_acquisition: [],
       editedIndex: -1,
     };
   },
@@ -216,6 +206,9 @@ export default {
       "listphone",
       "listemails",
       "listaddress",
+      "accounts",
+      "acquisitions",
+      "leadStatus",
     ]),
 
     show: {
@@ -229,116 +222,15 @@ export default {
   },
 
   created() {
-    this.getAccounts();
-    this.getCatalogs();
+    this.GetAccounts();
+    this.GetCatalogs();
   },
 
   watch: {},
 
   methods: {
-    ...Vuex.mapActions(["GetLeads"]),
+    ...Vuex.mapActions(["GetLeads", "GetCatalogs", "GetAccounts"]),
     ...Vuex.mapMutations(["SetLead"]),
-
-    //ACCOUNTS
-    async getAccounts() {
-      const todos = await API.graphql({
-        query: listAccounts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "ACC#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      console.log(todos);
-      this.accounts = todos.data.listAccounts;
-    },
-
-    async getCatalogs() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Get Catalogs",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-
-      console.log(this.organizationID);
-      this.options_acquisition = [];
-      this.options_status = [];
-      const todos = await API.graphql({
-        query: getOrganization,
-        variables: {
-          filter: {
-            active: { eq: "1" },
-            SK: {
-              eq: "#META#",
-            },
-            PK: { eq: this.organizationID },
-          },
-        },
-      });
-
-      this.organization = todos.data.getOrganization[0];
-      console.log(this.organization);
-
-      //Acquisition
-      if (this.organization.l_acquisition[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_acquisition).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_acquisition)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_acquisition)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_acquisition)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_acquisition)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.options_acquisition = [...this.options_acquisition, todo];
-          }
-        }
-      }
-      //Lead Status
-      if (this.organization.l_leadStatus[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_leadStatus).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_leadStatus)[i].description != "") {
-            let description = JSON.parse(this.organization.l_leadStatus)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_leadStatus)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_leadStatus)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.options_status = [...this.options_status, todo];
-          }
-        }
-      }
-      loading.close();
-    },
 
     async createLeads(item) {
       const loading = this.$loading({
@@ -406,7 +298,6 @@ export default {
         variables: { input: todo },
       });
       const id_cust = "CUS#" + id;
-
 
       this.SetLead(l.data.createRecord);
       console.log(phones);
@@ -483,7 +374,7 @@ export default {
       const PK = item.PK;
       const SK = item.SK;
       const updateAt = new Date().toISOString().substr(0, 10);
-       const account = item.account;
+      const account = item.account;
       const l_smName = JSON.stringify(names[0]);
       const l_email = list_e.slice(0, -1);
       const l_smAddress = list_a.slice(0, -1);
@@ -578,6 +469,7 @@ export default {
       console.log("entra");
       this.GetLeads();
       this.show = false;
+      this.item;
     },
 
     async save() {

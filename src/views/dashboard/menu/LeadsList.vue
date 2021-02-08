@@ -105,6 +105,7 @@ export default {
       entityType: "",
       createdAt: "",
       updateAt: "",
+      createdBy:"",
       active: "",
       createdBy: "",
       account: "",
@@ -116,7 +117,7 @@ export default {
       name: "",
       last_name: "",
       l_email: '[{"type":"","value":""}]',
-      l_address:
+      l_smAddress:
         '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
     },
 
@@ -156,7 +157,7 @@ export default {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
     ...Vuex.mapState([
-      "company",
+      "organizationID",
       "leads",
       "listphone",
       "listemails",

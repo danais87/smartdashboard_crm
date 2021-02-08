@@ -464,16 +464,16 @@
                                 class="elevation-1"
                                 :items-per-page="-1"
                               >
-                              <template v-slot:[`item.type`]="{ item }">
-                                <v-chip
-                                  class="ma-2"
-                                  :color="getColor(item.type)"
-                                  outlined
-                                  light
-                                  small
-                                  >{{ item.type }}</v-chip
-                                >
-                              </template>
+                                <template v-slot:[`item.type`]="{ item }">
+                                  <v-chip
+                                    class="ma-2"
+                                    :color="getColor(item.type)"
+                                    outlined
+                                    light
+                                    small
+                                    >{{ item.type }}</v-chip
+                                  >
+                                </template>
                                 <template v-slot:top>
                                   <v-toolbar flat color="white">
                                     <v-toolbar-title
@@ -609,7 +609,11 @@
                             v-model="lead_id"
                             filterable
                             clearable
+                            remote
+                            reserve-keyword
                             placeholder="Select a Customer"
+                            :remote-method="remoteMethod"
+                            :loading="loading"
                           >
                             <el-option
                               v-for="item in leads_seek"
@@ -1068,7 +1072,12 @@ export default {
         value: "startDate",
       },
       { text: "Amount", align: "start", sortable: true, value: "amount" },
-      { text: "Type of Payment", align: "start", sortable: true, value: "type" },
+      {
+        text: "Type of Payment",
+        align: "start",
+        sortable: true,
+        value: "type",
+      },
       { text: "Actions", value: "actions", sortable: false },
     ],
     headers_v: [
@@ -1399,7 +1408,6 @@ export default {
   },
 
   created() {
-    this.getAccounts();
     this.getCatalogs();
     this.getServices();
     this.GetLeads();
@@ -1758,28 +1766,7 @@ export default {
       });
     },
 
-    async getAccounts() {
-      const todos = await API.graphql({
-        query: listAccounts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "ACC#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      this.accounts = todos.data.listAccounts;
-    },
+
 
     async getServices() {
       const todos = await API.graphql({
@@ -2091,17 +2078,17 @@ export default {
       this.installments = [];
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
-      const type = 'DPAY';
+      const type = "DPAY";
       const pay = {
         startDate,
         amount,
-        type
+        type,
       };
       this.installments = [...this.installments, pay];
       cant_amounts = (this.total_disc - this.payment) / this.number;
 
       for (let i = 0; i < this.number; i++) {
-        const type = 'INST';
+        const type = "INST";
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
@@ -2111,7 +2098,7 @@ export default {
         const todo = {
           startDate,
           amount,
-          type
+          type,
         };
         this.installments = [...this.installments, todo];
       }
@@ -2160,7 +2147,7 @@ export default {
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
       const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = new Date().toISOString().substr(0, 10);
+      const GSP4SK1 = item.revisitDate;
       const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
       const createdAt = new Date().toISOString().substr(0, 10);
@@ -2308,7 +2295,7 @@ export default {
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 =  this.installments[i].startDate;
+          const GSP4SK1 = this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2384,7 +2371,7 @@ export default {
       var PK = item.PK;
       var SK = item.SK;
       const GSP1PK1 = this.editedItemLeads.SK;
-      const GSP4SK1 =  item.revisitDate;
+      const GSP4SK1 = item.revisitDate;
       var updateAt = new Date().toISOString().substr(0, 10);
       const subject = item.subject;
       const introduction = item.introduction;
@@ -2599,7 +2586,7 @@ export default {
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 =  this.installments[i].startDate;
+          const GSP4SK1 = this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2806,7 +2793,7 @@ export default {
 
       const com = todos.data.getOrganization[0];
       const quotePK = this.organizationID;
-      const user =  this.usuario;
+      const user = this.usuario;
       var REGION = com.funcRegion;
       var identityPoolId = com.funcIdentityPoolId;
 
@@ -3377,6 +3364,19 @@ export default {
       if (item == "INST") return "blue";
       else if (item == "DPAY") return "green";
       else return "orange";
+    },
+    remoteMethod(query) {
+      if (query !== "") {
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.options = this.list.filter((item) => {
+            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
+          });
+        }, 200);
+      } else {
+        this.options = [];
+      }
     },
   },
 };

@@ -5,6 +5,8 @@ import {
   API
 } from "aws-amplify";
 import {
+  getOrganization,
+  listAccounts,
   listCustomers,
   listQuotes,
   listSmInstallments
@@ -32,15 +34,74 @@ export default new Vuex.Store({
     conclusion: "",
     date: new Date().toDateString(),
     response: "",
-    items: []
+    items: [],
+    organization: [],
+    teams: [],
+    serviceTypes: [],
+    discounts: [],
+    acquisitions: [],
+    taskStatus: [],
+    payments: [],
+    leadStatus: [],
+    librarys: [],
+    quoteStatus: [],
+    accounts:[],
   },
   mutations: {
     SET_BAR_IMAGE(state, payload) {
       state.barImage = payload
     },
+
     SET_DRAWER(state, payload) {
       state.drawer = payload
     },
+
+    SetUsuario(state, p_user) {
+      state.usuario = p_user;
+    },
+
+    SetOrganization(state, p_org) {
+      state.organizationID = p_org;
+    },
+
+    SetRole(state, p_rol) {
+      state.role = p_rol;
+    },
+
+    SetTeams(state, p_teams) {
+      state.teams = p_teams;
+    },
+    SetServiceTypes(state, p_serv) {
+      state.serviceTypes = p_serv;
+    },
+    SetDiscounts(state, p_dis) {
+      state.discounts = p_dis;
+    },
+    SetAcquisitions(state, p_acq) {
+      state.acquisitions = p_acq;
+    },
+    SetTaskStatus(state, p_task) {
+      state.taskStatus = p_task;
+    },
+    SetPayments(state, p_pay) {
+      state.payments = p_pay;
+    },
+    SetLeadStatus(state, p_lead) {
+      state.leadStatus = p_lead;
+    },
+    SetLibrarys(state, p_lib) {
+      state.librarys = p_lib;
+    },
+    SetQuoteStatus(state, p_quot) {
+      state.quoteStatus = p_quot;
+    },
+    SetOrganization(state, p_org) {
+      state.organization = p_org;
+    },
+    SetAccounts(state, p_acc) {
+      state.accounts = p_acc;
+    },
+
     SetLead(state, lead) {
       state.lead = lead;
     },
@@ -52,9 +113,11 @@ export default new Vuex.Store({
     SetLeads(state, p_leads) {
       state.leads = p_leads;
     },
+
     SetLeads_Seek(state, p_leads) {
       state.leads_seek = p_leads;
     },
+
     SetPhone(state, p_phones) {
       state.listphone = p_phones;
     },
@@ -650,7 +713,7 @@ export default new Vuex.Store({
         "<td valign=top style='padding:.75pt .75pt .75pt .75pt'> " +
         "<p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify; line-height:15.0pt'><strong><span style='font-family:'Calibri',sans-serif'>Subject:</span></strong>" +
         "Dear customer we are pleased to inform you that according to the payment schedule established in your quote, the next pending payment is" + "<br> <br>" +
-        parseFloat(p_item.payment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") +"</p>" +
+        parseFloat(p_item.payment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "</p>" +
         "</td></tr></table>" +
 
         detalle_installments +
@@ -672,6 +735,8 @@ export default new Vuex.Store({
         "</body></canvas></html>";
 
     },
+
+
 
   },
   actions: {
@@ -728,7 +793,281 @@ export default new Vuex.Store({
       });
       const items = todos.data.listCustomers;
       commit('SetLeads_Seek', items);
-    }
+    },
+
+    async GetCatalogs({
+      commit
+    }) {
+      const todos = await API.graphql({
+        query: getOrganization,
+        variables: {
+          filter: {
+            active: {
+              eq: "1"
+            },
+            SK: {
+              eq: "#META#",
+            },
+            PK: {
+              eq: this.state.organizationID
+            },
+          },
+        },
+      });
+      const items = todos.data.getOrganization[0];
+      var teams = [];
+      //TEAMS
+      if (items.l_team[0]) {
+        for (let i = 0; i < JSON.parse(items.l_team).length; i++) {
+          if (JSON.parse(items.l_team)[i].teamName != "") {
+            let teamName = JSON.parse(items.l_team)[i].teamName;
+            let teamEmail = JSON.parse(items.l_team)[i].teamEmail;
+            let status = JSON.parse(items.l_team)[i].status;
+            const todo = {
+              teamName,
+              teamEmail,
+              status,
+            };
+            teams.push(todo);
+          }
+        }
+      }
+      //ServiceTypes
+      var service_type = [];
+      if (items.l_productType[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_productType).length; i++
+        ) {
+          if (JSON.parse(items.l_productType)[i].name != "") {
+            let name = JSON.parse(items.l_productType)[i].name;
+            let description = JSON.parse(items.l_productType)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_productType)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_productType)[i].status;
+            const todo = {
+              name,
+              description,
+              abbreviation,
+              status,
+            };
+            service_type.push(todo);
+          }
+        }
+      }
+      //Discount
+      var discounts = [];
+      if (items.l_discount[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_discount).length; i++
+        ) {
+          if (JSON.parse(items.l_discount)[i].discount_code != "") {
+            let discount_code = JSON.parse(items.l_discount)[i]
+              .discount_code;
+            let discount_name = JSON.parse(items.l_discount)[i]
+              .discount_name;
+            let discount_desc = JSON.parse(items.l_discount)[i]
+              .discount_desc;
+            let discount_type = JSON.parse(items.l_discount)[i]
+              .discount_type;
+            let discount_value = JSON.parse(items.l_discount)[i]
+              .discount_value;
+            let valid_from = JSON.parse(items.l_discount)[i]
+              .valid_from;
+            let valid_to = JSON.parse(items.l_discount)[i].valid_to;
+            let status = JSON.parse(items.l_discount)[i].status;
+            const todo = {
+              discount_code,
+              discount_name,
+              discount_desc,
+              discount_type,
+              discount_value,
+              valid_from,
+              valid_to,
+              status,
+            };
+            discounts.push(todo);
+          }
+        }
+      }
+      //Acquisition
+      var acquisition = [];
+      if (items.l_acquisition[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_acquisition).length; i++
+        ) {
+          if (
+            JSON.parse(items.l_acquisition)[i].description != ""
+          ) {
+            let description = JSON.parse(items.l_acquisition)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_acquisition)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_acquisition)[i].status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            acquisition.push(todo);
+          }
+        }
+      }
+      //TASK
+      var task_status = [];
+      if (items.l_taskStatusType[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_taskStatusType).length; i++
+        ) {
+          if (
+            JSON.parse(items.l_taskStatusType)[i].description != ""
+          ) {
+            let description = JSON.parse(items.l_taskStatusType)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_taskStatusType)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_taskStatusType)[i]
+              .status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            task_status.push(todo);
+          }
+        }
+      }
+      //PAYMENT
+      var payments = [];
+      if (items.l_paymentMethod[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_paymentMethod).length; i++
+        ) {
+          if (
+            JSON.parse(items.l_paymentMethod)[i].description != ""
+          ) {
+            let description = JSON.parse(items.l_paymentMethod)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_paymentMethod)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_paymentMethod)[i]
+              .status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            payments.push(todo);
+          }
+        }
+      }
+      //Lead Status
+      var lead_status = [];
+      if (items.l_leadStatus[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_leadStatus).length; i++
+        ) {
+          if (JSON.parse(items.l_leadStatus)[i].description != "") {
+            let description = JSON.parse(items.l_leadStatus)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_leadStatus)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_leadStatus)[i].status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            lead_status.push(todo);
+          }
+        }
+      }
+      //Library
+      var librarys = [];
+      if (items.l_quoteLibrary[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_quoteLibrary).length; i++
+        ) {
+          if (
+            JSON.parse(items.l_quoteLibrary)[i].description != ""
+          ) {
+            let title = JSON.parse(items.l_quoteLibrary)[i].title;
+            let description = JSON.parse(items.l_quoteLibrary)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_quoteLibrary)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_quoteLibrary)[i].status;
+            const todo = {
+              title,
+              description,
+              abbreviation,
+              status,
+            };
+            librarys.push(todo);
+          }
+        }
+      }
+      //Quote Status
+      var quote_status = [];
+      if (items.l_quoteStatus[0]) {
+        for (
+          let i = 0; i < JSON.parse(items.l_quoteStatus).length; i++
+        ) {
+          if (
+            JSON.parse(items.l_quoteStatus)[i].description != ""
+          ) {
+            let description = JSON.parse(items.l_quoteStatus)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_quoteStatus)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_quoteStatus)[i].status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            quote_status.push(todo);
+          }
+        }
+      }
+      commit('SetOrganization', items);
+      commit('SetTeams', teams);
+      commit('SetAcquisitions', acquisition);
+      commit('SetServiceTypes', service_type);
+      commit('SetDiscounts', discounts);
+      commit('SetTaskStatus', task_status);
+      commit('SetPayments', payments);
+      commit('SetLeadStatus', lead_status);
+      commit('SetLibrarys', librarys);
+      commit('SetQuoteStatus', quote_status);
+
+    },
+    async GetAccounts({
+      commit
+    }) {
+      const todos = await API.graphql({
+        query: listAccounts,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.state.organizationID
+            },
+            SK: {
+              eq: "ACC#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      const items = todos.data.listAccounts;
+      commit('SetAccounts', items);
+    },
+
   },
   plugins: [createPersistedState()]
 

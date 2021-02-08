@@ -393,7 +393,7 @@
     <br />
     <v-data-table
       :headers="headers_stype"
-      :items="service_type"
+      :items="serviceTypes"
       sort-by="name"
       class="elevation-1"
       :search="search_stype"
@@ -821,7 +821,7 @@
     <br />
     <v-data-table
       :headers="headers_acquisition"
-      :items="acquisition"
+      :items="acquisitions"
       sort-by="description"
       class="elevation-1"
       :search="search_acq"
@@ -834,7 +834,7 @@
       </template>
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>Acquisition</v-toolbar-title>
+          <v-toolbar-title>Acquisitions</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search_acq"
@@ -861,7 +861,7 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="headline">Acquisition</span>
+                <span class="headline">Acquisitions</span>
               </v-card-title>
               <v-card-text>
                 <v-container>
@@ -926,7 +926,7 @@
     <br />
     <v-data-table
       :headers="headers_task"
-      :items="task_status"
+      :items="taskStatus"
       sort-by="description"
       class="elevation-1"
       :search="search_task"
@@ -1029,7 +1029,7 @@
     <br />
     <v-data-table
       :headers="headers_leads"
-      :items="lead_status"
+      :items="leadStatus"
       sort-by="description"
       class="elevation-1"
       :search="search_leads"
@@ -1249,7 +1249,7 @@
 
     <v-data-table
       :headers="headers_quote"
-      :items="quote_status"
+      :items="quoteStatus"
       sort-by="name"
       class="elevation-1"
       :search="search_quote"
@@ -1400,17 +1400,7 @@ export default {
     search_library: "",
     search_quote: "",
     show: false,
-    organization: [],
-    teams: [],
-    accounts: [],
-    service_type: [],
-    discounts: [],
-    payments: [],
-    acquisition: [],
-    task_status: [],
-    lead_status: [],
-    librarys: [],
-    quote_status: [],
+    accounts:[],
     dialog_team: false,
     dialog_account: false,
     dialog_stype: false,
@@ -1682,7 +1672,21 @@ export default {
     },
   }),
   computed: {
-    ...Vuex.mapState(["usuario", "organizationID", "leads"]),
+    ...Vuex.mapState([
+      "usuario",
+      "organizationID",
+      "leads",
+      "teams",
+      "serviceTypes",
+      "discounts",
+      "acquisitions",
+      "taskStatus",
+      "payments",
+      "leadStatus",
+      "librarys",
+      "quoteStatus",
+      "organization"
+    ]),
   },
 
   watch: {
@@ -1719,270 +1723,12 @@ export default {
   },
 
   created() {
-    this.getOrganization();
+    this.GetCatalogs();
     this.getAccounts();
   },
 
   methods: {
-    //ORGANIZATION
-    async getOrganization() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      console.log(this.organizationID);
-      this.teams = [];
-      this.service_type = [];
-      this.discounts = [];
-      this.acquisition = [];
-      this.task_status = [];
-      this.payments = [];
-      this.lead_status = [];
-      this.librarys = [];
-      this.quote_status = [];
-
-      const todos = await API.graphql({
-        query: getOrganization,
-        variables: {
-          filter: {
-            active: { eq: "1" },
-            SK: {
-              eq: "#META#",
-            },
-            PK: { eq: this.organizationID },
-          },
-        },
-      });
-
-      this.organization = todos.data.getOrganization[0];
-      console.log(this.organization);
-
-      //TEAMS
-      if (this.organization.l_team[0]) {
-        for (let i = 0; i < JSON.parse(this.organization.l_team).length; i++) {
-          if (JSON.parse(this.organization.l_team)[i].teamName != "") {
-            let teamName = JSON.parse(this.organization.l_team)[i].teamName;
-            let teamEmail = JSON.parse(this.organization.l_team)[i].teamEmail;
-            let status = JSON.parse(this.organization.l_team)[i].status;
-            const todo = {
-              teamName,
-              teamEmail,
-              status,
-            };
-            this.teams = [...this.teams, todo];
-          }
-        }
-      }
-      //ServiceTypes
-      if (this.organization.l_productType[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_productType).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_productType)[i].name != "") {
-            let name = JSON.parse(this.organization.l_productType)[i].name;
-            let description = JSON.parse(this.organization.l_productType)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_productType)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_productType)[i].status;
-            const todo = {
-              name,
-              description,
-              abbreviation,
-              status,
-            };
-            this.service_type = [...this.service_type, todo];
-          }
-        }
-      }
-      //Discount
-      if (this.organization.l_discount[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_discount).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_discount)[i].discount_code != "") {
-            let discount_code = JSON.parse(this.organization.l_discount)[i]
-              .discount_code;
-            let discount_name = JSON.parse(this.organization.l_discount)[i]
-              .discount_name;
-            let discount_desc = JSON.parse(this.organization.l_discount)[i]
-              .discount_desc;
-            let discount_type = JSON.parse(this.organization.l_discount)[i]
-              .discount_type;
-            let discount_value = JSON.parse(this.organization.l_discount)[i]
-              .discount_value;
-            let valid_from = JSON.parse(this.organization.l_discount)[i]
-              .valid_from;
-            let valid_to = JSON.parse(this.organization.l_discount)[i].valid_to;
-            let status = JSON.parse(this.organization.l_discount)[i].status;
-            const todo = {
-              discount_code,
-              discount_name,
-              discount_desc,
-              discount_type,
-              discount_value,
-              valid_from,
-              valid_to,
-              status,
-            };
-            this.discounts = [...this.discounts, todo];
-          }
-        }
-      }
-      //Acquisition
-      if (this.organization.l_acquisition[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_acquisition).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_acquisition)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_acquisition)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_acquisition)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_acquisition)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.acquisition = [...this.acquisition, todo];
-          }
-        }
-      }
-      //TASK
-      if (this.organization.l_taskStatusType[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_taskStatusType).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_taskStatusType)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_taskStatusType)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_taskStatusType)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_taskStatusType)[i]
-              .status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.task_status = [...this.task_status, todo];
-          }
-        }
-      }
-      //PAYMENT
-      if (this.organization.l_paymentMethod[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_paymentMethod).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_paymentMethod)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_paymentMethod)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_paymentMethod)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_paymentMethod)[i]
-              .status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.payments = [...this.payments, todo];
-          }
-        }
-      }
-      //Lead Status
-      if (this.organization.l_leadStatus[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_leadStatus).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_leadStatus)[i].description != "") {
-            let description = JSON.parse(this.organization.l_leadStatus)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_leadStatus)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_leadStatus)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.lead_status = [...this.lead_status, todo];
-          }
-        }
-      }
-      //Library
-      if (this.organization.l_quoteLibrary[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_quoteLibrary).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_quoteLibrary)[i].description != ""
-          ) {
-            let title = JSON.parse(this.organization.l_quoteLibrary)[i].title;
-            let description = JSON.parse(this.organization.l_quoteLibrary)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_quoteLibrary)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_quoteLibrary)[i].status;
-            const todo = {
-              title,
-              description,
-              abbreviation,
-              status,
-            };
-            this.librarys = [...this.librarys, todo];
-          }
-        }
-      }
-      //Quote Status
-      if (this.organization.l_quoteStatus[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_quoteStatus).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_quoteStatus)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_quoteStatus)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_quoteStatus)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_quoteStatus)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.quote_status = [...this.quote_status, todo];
-          }
-        }
-      }
-      loading.close();
-    },
+    ...Vuex.mapActions(["GetCatalogs"]),
 
     //TEAM
     async createTeam(item) {
@@ -2021,7 +1767,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateTeam(item) {
@@ -2059,7 +1805,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemTeam(item) {
@@ -2133,7 +1879,7 @@ export default {
         console.log(this.teams);
         loading.close();
       }
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeTeam() {
@@ -2368,7 +2114,7 @@ export default {
       if (!name || !description) return alert("error service type");
       const type = { name, description, abbreviation, status };
 
-      list_t = [...this.service_type, type];
+      list_t = [...this.serviceTypes, type];
       for (let i = 0; i < list_t.length; i++) {
         l_type += JSON.stringify(list_t[i]) + ",";
       }
@@ -2388,7 +2134,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateType(item) {
@@ -2400,11 +2146,11 @@ export default {
       if (!name || !description) return alert("error service type");
 
       const type = { name, description, abbreviation, status };
-      Object.assign(this.service_type[this.editedIndexStype], type);
-      console.log(this.service_type);
+      Object.assign(this.serviceTypes[this.editedIndexStype], type);
+      console.log(this.serviceTypes);
       var l_type = "";
-      for (let i = 0; i < this.service_type.length; i++) {
-        l_type += JSON.stringify(this.service_type[i]) + ",";
+      for (let i = 0; i < this.serviceTypes.length; i++) {
+        l_type += JSON.stringify(this.serviceTypes[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -2423,11 +2169,11 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemStype(item) {
-      this.editedIndexStype = this.service_type.indexOf(item);
+      this.editedIndexStype = this.serviceTypes.indexOf(item);
       this.editedItemStype = Object.assign({}, item);
       this.dialog_stype = true;
     },
@@ -2444,12 +2190,12 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      const index = this.service_type.indexOf(this.editedItemStype);
-      this.service_type.splice(index, 1);
-      console.log(this.service_type);
+      const index = this.serviceTypes.indexOf(this.editedItemStype);
+      this.serviceTypes.splice(index, 1);
+      console.log(this.serviceTypes);
       var l_type = "";
-      for (let i = 0; i < this.service_type.length; i++) {
-        l_type += JSON.stringify(this.service_type[i]) + ",";
+      for (let i = 0; i < this.serviceTypes.length; i++) {
+        l_type += JSON.stringify(this.serviceTypes[i]) + ",";
       }
       const list = await API.graphql({
         query: listSmartDash,
@@ -2489,16 +2235,16 @@ export default {
 
         this.dialog_deleteST = false;
         this.dialog = false;
-        console.log(this.service_type);
+        console.log(this.serviceTypes);
         loading.close();
       } else {
         this.dialog_conf_delete = true;
         this.dialog_deleteST = false;
         this.dialog = false;
-        console.log(this.service_type);
+        console.log(this.serviceTypes);
         loading.close();
       }
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeStype() {
@@ -2567,7 +2313,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateDiscount(item) {
@@ -2616,7 +2362,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemDiscount(item) {
@@ -2663,7 +2409,7 @@ export default {
       this.dialog = false;
       console.log(this.teams);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeDiscount() {
@@ -2718,7 +2464,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updatePaymentM(item) {
@@ -2753,7 +2499,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemPaymentM(item) {
@@ -2801,7 +2547,7 @@ export default {
       this.dialog = false;
       console.log(this.payments);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closePaymentM() {
@@ -2824,7 +2570,7 @@ export default {
       }
     },
 
-    //Acquisition
+    //acquisitions
     async createAcquisition(item) {
       var list_pay = [];
       var l_pay = "";
@@ -2835,7 +2581,7 @@ export default {
       if (!description) return alert("error service type");
       const type = { description, abbreviation, status };
 
-      list_pay = [...this.acquisition, type];
+      list_pay = [...this.acquisitions, type];
       for (let i = 0; i < list_pay.length; i++) {
         l_pay += JSON.stringify(list_pay[i]) + ",";
       }
@@ -2855,7 +2601,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateAcquisition(item) {
@@ -2866,12 +2612,12 @@ export default {
       if (!description) return alert("error service type");
 
       const type = { description, abbreviation, status };
-      Object.assign(this.acquisition[this.editedIndexAcquisition], type);
-      console.log(this.acquisition);
+      Object.assign(this.acquisitions[this.editedIndexAcquisition], type);
+      console.log(this.acquisitions);
 
       var l_type = "";
-      for (let i = 0; i < this.acquisition.length; i++) {
-        l_type += JSON.stringify(this.acquisition[i]) + ",";
+      for (let i = 0; i < this.acquisitions.length; i++) {
+        l_type += JSON.stringify(this.acquisitions[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -2890,11 +2636,11 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemAcquisition(item) {
-      this.editedIndexAcquisition = this.acquisition.indexOf(item);
+      this.editedIndexAcquisition = this.acquisitions.indexOf(item);
       this.editedItemAcquisition = Object.assign({}, item);
       this.dialog_acquisition = true;
     },
@@ -2907,16 +2653,16 @@ export default {
     async deleteItemAcquisition() {
       const loading = this.$loading({
         lock: true,
-        text: "Delete Acquisition",
+        text: "Delete acquisitions",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      const index = this.acquisition.indexOf(this.editedItemAcquisition);
-      this.acquisition.splice(index, 1);
-      console.log(this.acquisition);
+      const index = this.acquisitions.indexOf(this.editedItemAcquisition);
+      this.acquisitions.splice(index, 1);
+      console.log(this.acquisitions);
       var l_type = "";
-      for (let i = 0; i < this.acquisition.length; i++) {
-        l_type += JSON.stringify(this.acquisition[i]) + ",";
+      for (let i = 0; i < this.acquisitions.length; i++) {
+        l_type += JSON.stringify(this.acquisitions[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -2936,9 +2682,9 @@ export default {
 
       this.dialog_deleteAcqui = false;
       this.dialog = false;
-      console.log(this.acquisition);
+      console.log(this.acquisitions);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeAcquisition() {
@@ -2975,7 +2721,7 @@ export default {
       if (!description) return alert("error service type");
       const type = { description, abbreviation, status };
 
-      list_pay = [...this.task_status, type];
+      list_pay = [...this.taskStatus, type];
       for (let i = 0; i < list_pay.length; i++) {
         l_pay += JSON.stringify(list_pay[i]) + ",";
       }
@@ -2995,7 +2741,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateTaskStatus(item) {
@@ -3006,12 +2752,12 @@ export default {
       if (!description) return alert("error service type");
 
       const type = { description, abbreviation, status };
-      Object.assign(this.task_status[this.editedIndexTask], type);
-      console.log(this.task_status);
+      Object.assign(this.taskStatus[this.editedIndexTask], type);
+      console.log(this.taskStatus);
 
       var l_type = "";
-      for (let i = 0; i < this.task_status.length; i++) {
-        l_type += JSON.stringify(this.task_status[i]) + ",";
+      for (let i = 0; i < this.taskStatus.length; i++) {
+        l_type += JSON.stringify(this.taskStatus[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -3030,11 +2776,11 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemTask(item) {
-      this.editedIndexTask = this.task_status.indexOf(item);
+      this.editedIndexTask = this.taskStatus.indexOf(item);
       this.editedItemTask = Object.assign({}, item);
       this.dialog_task = true;
     },
@@ -3051,12 +2797,12 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      const index = this.task_status.indexOf(this.editedItemTask);
-      this.task_status.splice(index, 1);
-      console.log(this.task_status);
+      const index = this.taskStatus.indexOf(this.editedItemTask);
+      this.taskStatus.splice(index, 1);
+      console.log(this.taskStatus);
       var l_type = "";
-      for (let i = 0; i < this.task_status.length; i++) {
-        l_type += JSON.stringify(this.task_status[i]) + ",";
+      for (let i = 0; i < this.taskStatus.length; i++) {
+        l_type += JSON.stringify(this.taskStatus[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -3076,9 +2822,9 @@ export default {
 
       this.dialog_deleteTask = false;
       this.dialog = false;
-      console.log(this.task_status);
+      console.log(this.taskStatus);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeTask() {
@@ -3112,7 +2858,7 @@ export default {
       if (!description) return alert("error service type");
       const type = { description, abbreviation, status };
 
-      list_pay = [...this.lead_status, type];
+      list_pay = [...this.leadStatus, type];
       for (let i = 0; i < list_pay.length; i++) {
         l_pay += JSON.stringify(list_pay[i]) + ",";
       }
@@ -3132,7 +2878,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateLeadsStatus(item) {
@@ -3143,12 +2889,12 @@ export default {
       if (!description) return alert("error service type");
 
       const type = { description, abbreviation, status };
-      Object.assign(this.lead_status[this.editedIndexLeads], type);
-      console.log(this.lead_status);
+      Object.assign(this.leadStatus[this.editedIndexLeads], type);
+      console.log(this.leadStatus);
 
       var l_type = "";
-      for (let i = 0; i < this.lead_status.length; i++) {
-        l_type += JSON.stringify(this.lead_status[i]) + ",";
+      for (let i = 0; i < this.leadStatus.length; i++) {
+        l_type += JSON.stringify(this.leadStatus[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -3167,11 +2913,11 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemLeads(item) {
-      this.editedIndexLeads = this.lead_status.indexOf(item);
+      this.editedIndexLeads = this.leadStatus.indexOf(item);
       this.editedItemLeads = Object.assign({}, item);
       this.dialog_leads = true;
     },
@@ -3188,12 +2934,12 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      const index = this.lead_status.indexOf(this.editedItemLeads);
-      this.lead_status.splice(index, 1);
-      console.log(this.lead_status);
+      const index = this.leadStatus.indexOf(this.editedItemLeads);
+      this.leadStatus.splice(index, 1);
+      console.log(this.leadStatus);
       var l_type = "";
-      for (let i = 0; i < this.lead_status.length; i++) {
-        l_type += JSON.stringify(this.lead_status[i]) + ",";
+      for (let i = 0; i < this.leadStatus.length; i++) {
+        l_type += JSON.stringify(this.leadStatus[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -3213,9 +2959,9 @@ export default {
 
       this.dialog_deleteLeads = false;
       this.dialog = false;
-      console.log(this.lead_status);
+      console.log(this.leadStatus);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeLeadsStatus() {
@@ -3270,7 +3016,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateLibrary(item) {
@@ -3305,7 +3051,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemLibrary(item) {
@@ -3354,7 +3100,7 @@ export default {
       this.dialog = false;
       console.log(this.librarys);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeLibrary() {
@@ -3388,7 +3134,7 @@ export default {
       if (!description) return alert("error service type");
       const type = { description, abbreviation, status };
 
-      list_pay = [...this.quote_status, type];
+      list_pay = [...this.quoteStatus, type];
       for (let i = 0; i < list_pay.length; i++) {
         l_pay += JSON.stringify(list_pay[i]) + ",";
       }
@@ -3408,7 +3154,7 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     async updateQuoteStatus(item) {
@@ -3419,12 +3165,12 @@ export default {
       if (!description) return alert("error service type");
 
       const type = { description, abbreviation, status };
-      Object.assign(this.quote_status[this.editedIndexQuote], type);
-      console.log(this.quote_status);
+      Object.assign(this.quoteStatus[this.editedIndexQuote], type);
+      console.log(this.quoteStatus);
 
       var l_type = "";
-      for (let i = 0; i < this.quote_status.length; i++) {
-        l_type += JSON.stringify(this.quote_status[i]) + ",";
+      for (let i = 0; i < this.quoteStatus.length; i++) {
+        l_type += JSON.stringify(this.quoteStatus[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -3443,11 +3189,11 @@ export default {
         query: updateRecord,
         variables: { input: org },
       });
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     editItemQuote(item) {
-      this.editedIndexQuote = this.quote_status.indexOf(item);
+      this.editedIndexQuote = this.quoteStatus.indexOf(item);
       this.editedItemQuote = Object.assign({}, item);
       this.dialog_quote = true;
     },
@@ -3464,12 +3210,12 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      const index = this.quote_status.indexOf(this.editedItemQuote);
-      this.quote_status.splice(index, 1);
-      console.log(this.quote_status);
+      const index = this.quoteStatus.indexOf(this.editedItemQuote);
+      this.quoteStatus.splice(index, 1);
+      console.log(this.quoteStatus);
       var l_type = "";
-      for (let i = 0; i < this.quote_status.length; i++) {
-        l_type += JSON.stringify(this.quote_status[i]) + ",";
+      for (let i = 0; i < this.quoteStatus.length; i++) {
+        l_type += JSON.stringify(this.quoteStatus[i]) + ",";
       }
 
       const SK = this.organization.SK;
@@ -3489,9 +3235,9 @@ export default {
 
       this.dialog_deleteQuo = false;
       this.dialog = false;
-      console.log(this.quote_status);
+      console.log(this.quoteStatus);
       loading.close();
-      this.getOrganization();
+      this.GetCatalogs();
     },
 
     closeQuote() {
