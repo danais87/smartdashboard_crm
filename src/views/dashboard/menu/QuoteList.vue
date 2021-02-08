@@ -355,7 +355,7 @@
                     <v-col sm="4" md="6">
                       <v-select
                         v-model="discount_id"
-                        :items="discount"
+                        :items="discounts"
                         label="Discount"
                         item-text="discount_name"
                         item-value="discount_code"
@@ -1043,7 +1043,6 @@ export default {
     quotes_datava: [],
     lista: [],
     types: [],
-    discount: [],
     installments: [],
     data: [],
     list_email: [],
@@ -1344,7 +1343,7 @@ export default {
     process_status: "Created",
     filterText: "",
     service_type: [],
-    discounts: [],
+
     librarys: [],
     quote_status: [],
     l_discount: [],
@@ -1370,6 +1369,7 @@ export default {
       "leads",
       "lead",
       "leads_seek",
+      "discounts",
       "list_services",
       "quoteStatus",
       "listphone",
@@ -1601,150 +1601,6 @@ export default {
 
     handleClickQVA(value) {
       this.editItem(value);
-    },
-
-    async getCatalogs() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Get Catalogs",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-
-      console.log(this.organizationID);
-      this.types = [];
-      this.discount = [];
-      this.librarys = [];
-      this.options = [];
-
-      const todos = await API.graphql({
-        query: getOrganization,
-        variables: {
-          filter: {
-            active: { eq: "1" },
-            SK: {
-              eq: "#META#",
-            },
-            PK: { eq: this.organizationID },
-          },
-        },
-      });
-
-      this.organization = todos.data.getOrganization[0];
-      console.log(this.organization);
-
-      //ServiceTypes
-      if (this.organization.l_productType[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_productType).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_productType)[i].name != "") {
-            let name = JSON.parse(this.organization.l_productType)[i].name;
-            let description = JSON.parse(this.organization.l_productType)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_productType)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_productType)[i].status;
-            const todo = {
-              name,
-              description,
-              abbreviation,
-              status,
-            };
-            this.types = [...this.types, todo];
-          }
-        }
-      }
-      //Discount
-      if (this.organization.l_discount[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_discount).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_discount)[i].discount_code != "") {
-            let discount_code = JSON.parse(this.organization.l_discount)[i]
-              .discount_code;
-            let discount_name = JSON.parse(this.organization.l_discount)[i]
-              .discount_name;
-            let discount_desc = JSON.parse(this.organization.l_discount)[i]
-              .discount_desc;
-            let discount_type = JSON.parse(this.organization.l_discount)[i]
-              .discount_type;
-            let discount_value = JSON.parse(this.organization.l_discount)[i]
-              .discount_value;
-            let valid_from = JSON.parse(this.organization.l_discount)[i]
-              .valid_from;
-            let valid_to = JSON.parse(this.organization.l_discount)[i].valid_to;
-            let status = JSON.parse(this.organization.l_discount)[i].status;
-            const todo = {
-              discount_code,
-              discount_name,
-              discount_desc,
-              discount_type,
-              discount_value,
-              valid_from,
-              valid_to,
-              status,
-            };
-            this.discount = [...this.discount, todo];
-          }
-        }
-      }
-      console.log(this.discount);
-      //Library
-      if (this.organization.l_quoteLibrary[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_quoteLibrary).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_quoteLibrary)[i].description != ""
-          ) {
-            let title = JSON.parse(this.organization.l_quoteLibrary)[i].title;
-            let description = JSON.parse(this.organization.l_quoteLibrary)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_quoteLibrary)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_quoteLibrary)[i].status;
-            const todo = {
-              title,
-              description,
-              abbreviation,
-              status,
-            };
-            this.librarys = [...this.librarys, todo];
-          }
-        }
-      }
-      //Quote Status
-      if (this.organization.l_quoteStatus[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_quoteStatus).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_quoteStatus)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_quoteStatus)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_quoteStatus)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_quoteStatus)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.options = [...this.options, todo];
-          }
-        }
-      }
-      loading.close();
     },
 
     formattedCurrencyValue(value) {
@@ -2031,13 +1887,13 @@ export default {
       this.discount_value = 0;
       this.discount_amount = 0;
       if (this.discount_id != "") {
-        for (let i = 0; i < this.discount.length; i++) {
-          if (this.discount_id == this.discount[i].discount_code) {
-            this.discount_code = this.discount[i].discount_code;
-            this.discount_type = this.discount[i].discount_type;
-            this.discount_value = this.discount[i].discount_value;
+        for (let i = 0; i < this.discounts.length; i++) {
+          if (this.discount_id == this.discounts[i].discount_code) {
+            this.discount_code = this.discounts[i].discount_code;
+            this.discount_type = this.discounts[i].discount_type;
+            this.discount_value = this.discounts[i].discount_value;
             this.is_discount = "Y";
-            this.l_discount.push(this.discount[i]);
+            this.l_discount.push(this.discounts[i]);
           }
         }
       }
@@ -2346,10 +2202,8 @@ export default {
       if (this.lead.id != undefined) {
         this.editedItemLeads = this.lead;
       }
-
       var downPayment = 0;
       var numInstallments = 0;
-
       var todo = [];
       var PK = item.PK;
       var SK = item.SK;
@@ -2520,7 +2374,6 @@ export default {
         });
       }
       //update installments
-
       if (this.installments != null) {
         const seq = await API.graphql({
           query: listQuotes,
@@ -2893,7 +2746,6 @@ export default {
       var services = [];
       let vari = [];
       let servi = [];
-      var itemsquote = [];
       this.editedItemLeads = [];
 
       for (let i = 0; i < datas.length; i++) {
@@ -2930,7 +2782,9 @@ export default {
       for (let l = 0; l < leads.length; l++) {
         this.editedItemLeads = leads[l];
       }
-
+      console.log(JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].fullName);
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
       )[0].fullName;

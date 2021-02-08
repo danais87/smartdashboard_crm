@@ -221,94 +221,8 @@
                                 <el-input v-model="number"></el-input>
                               </el-form-item>
                             </v-col>
-
                           </v-row>
                           <v-row v-if="calc == true">
-                            <v-dialog v-model="dialog_v" max-width="500px">
-                              <v-card>
-                                <v-card-title>
-                                  <span class="headline">Installment</span>
-                                </v-card-title>
-                                <v-card-text>
-                                  <v-container>
-                                    <v-row>
-                                      <v-col cols="12" sm="6" md="4">
-                                        <v-menu
-                                          ref="menu"
-                                          v-model="menu"
-                                          :close-on-content-click="false"
-                                          :return-value.sync="
-                                            editedItem_v.startDate
-                                          "
-                                          transition="scale-transition"
-                                          offset-y
-                                          min-width="290px"
-                                        >
-                                          <template
-                                            v-slot:activator="{ on, attrs }"
-                                          >
-                                            <v-text-field
-                                              v-model="editedItem_v.startDate"
-                                              label="Picker in menu"
-                                              prepend-icon="mdi-calendar"
-                                              readonly
-                                              v-bind="attrs"
-                                              v-on="on"
-                                            ></v-text-field>
-                                          </template>
-                                          <v-date-picker
-                                            v-model="editedItem_v.startDate"
-                                            no-title
-                                            scrollable
-                                          >
-                                            <v-spacer></v-spacer>
-                                            <v-btn
-                                              text
-                                              color="primary"
-                                              @click="menu = false"
-                                            >
-                                              Cancel
-                                            </v-btn>
-                                            <v-btn
-                                              text
-                                              color="primary"
-                                              @click="
-                                                $refs.menu.save(
-                                                  editedItem_v.startDate
-                                                )
-                                              "
-                                            >
-                                              OK
-                                            </v-btn>
-                                          </v-date-picker>
-                                        </v-menu>
-                                      </v-col>
-                                      <v-col cols="4" sm="4" md="4">
-                                        <v-text-field
-                                          v-model="editedItem_v.amount"
-                                          label="Amount"
-                                        ></v-text-field>
-                                      </v-col>
-                                    </v-row>
-                                  </v-container>
-                                </v-card-text>
-                                <v-card-actions>
-                                  <v-spacer></v-spacer>
-                                  <v-btn
-                                    color="blue darken-1"
-                                    text
-                                    @click="close_v"
-                                    >Cancel</v-btn
-                                  >
-                                  <v-btn
-                                    color="blue darken-1"
-                                    text
-                                    @click="save_v"
-                                    >Save</v-btn
-                                  >
-                                </v-card-actions>
-                              </v-card>
-                            </v-dialog>
                             <v-col
                               class="d-flex"
                               cols="12"
@@ -322,7 +236,7 @@
                                 class="elevation-1"
                                 :items-per-page="-1"
                               >
-                               <template v-slot:[`item.type`]="{ item }">
+                                <template v-slot:[`item.type`]="{ item }">
                                   <v-chip
                                     class="ma-2"
                                     :color="getColor(item.type)"
@@ -347,65 +261,6 @@
                                 </template>
                                 <template v-slot:[`item.amount`]="{ item }"
                                   >${{ formattedValInstal(item.amount) }}
-                                </template>
-                                <template v-slot:[`item.actions`]="{ item }">
-                                  <el-button
-                                    type="primary"
-                                    icon="el-icon-edit"
-                                    size="mini"
-                                    circle
-                                    @click="editItem_v(item)"
-                                  ></el-button>
-                                  <el-button
-                                    type="danger"
-                                    icon="el-icon-delete"
-                                    size="mini"
-                                    circle
-                                    @click="deleteItem_v(item)"
-                                  ></el-button>
-                                </template>
-                              </v-data-table>
-                            </v-col>
-                            <v-col
-                              class="d-flex"
-                              cols="4"
-                              sm="5"
-                              md="5"
-                              v-if="vari == 'edit'"
-                            >
-                              <v-data-table
-                                :headers="headers_v"
-                                :items="editedItem"
-                                class="elevation-1"
-                                :items-per-page="-1"
-                                v-if="editedItem.is_variant == 'Y'"
-                              >
-                                <template v-slot:top>
-                                  <v-toolbar flat color="white">
-                                    <v-toolbar-title>Variants</v-toolbar-title>
-                                    <v-divider
-                                      class="mx-4"
-                                      inset
-                                      vertical
-                                    ></v-divider>
-                                    <v-spacer></v-spacer>
-                                  </v-toolbar>
-                                </template>
-                                <template v-slot:[`item.actions`]="{ item }">
-                                  <el-button
-                                    type="primary"
-                                    icon="el-icon-edit"
-                                    size="mini"
-                                    circle
-                                    @click="editItem_v(item)"
-                                  ></el-button>
-                                  <el-button
-                                    type="danger"
-                                    icon="el-icon-delete"
-                                    size="mini"
-                                    circle
-                                    @click="deleteItem_v(item)"
-                                  ></el-button>
                                 </template>
                               </v-data-table>
                             </v-col>
@@ -543,7 +398,6 @@ export default {
     select_type: "",
     dialog: false,
     dialogs: false,
-    dialog_service: false,
     value_opt: [],
     dialog_detalle: false,
     dialog_lead: false,
@@ -576,7 +430,6 @@ export default {
         sortable: true,
         value: "type",
       },
-
     ],
     headers: [
       { text: "Name", sortable: true, value: "orderNumber", align: "start" },
@@ -589,13 +442,13 @@ export default {
       {
         text: "Email Sent",
         sortable: true,
-        value: "email_sent",
+        value: "emailSent",
         align: "start",
       },
       {
         text: "Sent Date",
         sortable: true,
-        value: "sent_date",
+        value: "sentDate",
         align: "start",
       },
       {
@@ -775,21 +628,6 @@ export default {
     dialog(val) {
       val || this.close();
     },
-    dialogs(val) {
-      val || this.closeservice();
-    },
-    dialog_detalle(val) {
-      val || this.closedetalle();
-    },
-    dialog_service(val) {
-      val || this.closeservice();
-    },
-    dialog_v(val) {
-      val || this.close_v();
-    },
-    dialog_email(val) {
-      val || this.close_email();
-    },
   },
 
   created() {
@@ -883,7 +721,6 @@ export default {
         },
       });
       this.invoices = todos.data.listQuotes;
-
     },
 
     async editItem(item) {
@@ -1039,27 +876,17 @@ export default {
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
-      console.log(JSON.parse(item.l_discount));
-      console.log(JSON.parse(item.l_discount[0]).discount_code);
 
-      if (JSON.parse(item.l_discount[0])) {
-        this.discount_id = JSON.parse(item.l_discount[0]).discount_code;
+
+
+      if (JSON.parse(item.l_discount)[0]) {
+        this.discount_id =  JSON.parse(item.l_discount)[0].discount_code;
       }
 
       this.total = item.quotationAmount;
       this.total_disc = item.finalAmount;
 
       this.dialog = true;
-    },
-
-    closedetalle() {
-      this.dialog_detalle = false;
-    },
-
-    deleteItem(item) {
-      const index = this.services.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.services.splice(index, 1);
     },
 
     close() {
@@ -1101,63 +928,12 @@ export default {
       this.close();
     },
 
-    closeservice() {
-      this.dialog_service = false;
-      this.$nextTick(() => {
-        this.editedServiceItem = Object.assign({}, this.defaulServicetItem);
-        // this.editedIndex = -1;
-      });
-    },
-
-    editItem_v(item) {
-      console.log(item);
-      this.editedIndex_v = this.installments.indexOf(item);
-      this.editedItem_v = Object.assign({}, item);
-      this.dialog_v = true;
-    },
-
-    deleteItem_v(item) {
-      const index = this.installments.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.installments.splice(index, 1);
-    },
-
-    close_v() {
-      this.dialog_v = false;
-      this.$nextTick(() => {
-        this.editedItem_v = Object.assign({}, this.defaultItem_v);
-        this.editedIndex_v = -1;
-      });
-    },
-
-    async save_v() {
-      console.log("edit");
-      this.updateInstallment();
-      this.close_v();
-    },
-
-    async updateInstallment() {
-      Object.assign(this.installments[this.editedIndex_v], this.editedItem_v);
-    },
-
-    deleteItemLead() {
-      console.log("delete");
-      this.editedItemLeads.name = "";
-    },
-
-    close_email() {
-      this.dialog_email = false;
-      this.send_email = {};
-      this.selectedEmails = [];
-    },
-
     getColor(item) {
       if (item == "INST") return "blue";
       else if (item == "DPAY") return "green";
       else return "orange";
     },
   },
-
 };
 </script>
 

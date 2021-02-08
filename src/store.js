@@ -379,7 +379,6 @@ export default new Vuex.Store({
         "</body></canvas></html>";
     },
 
-
     async SetBodyQuote(state, data) {
       var quotes = [];
       var leads = [];
@@ -1099,7 +1098,7 @@ export default new Vuex.Store({
       const items = todos.data.listProducts;
       commit('SetListServices', items);
     },
-   
+
 
   },
   plugins: [createPersistedState()]
