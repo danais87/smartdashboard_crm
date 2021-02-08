@@ -570,7 +570,7 @@
                     <v-col class="d-flex" cols="12" sm="5" md="5">
                       <v-select
                         v-model="editedItem_c.processStatus"
-                        :items="options"
+                        :items="quoteStatus"
                         label="Status"
                         item-text="description"
                         item-value="description"
@@ -961,7 +961,6 @@ import {
 import {
   listQuotes,
   getOrganization,
-  listAccounts,
   listProducts,
   listPhoneNumber,
   listCustomers,
@@ -995,6 +994,7 @@ export default {
     dchartdata: null,
     doptions: null,
     alert: false,
+    loading: false,
     sm_analized: "3",
     md_analized: "3",
     sm_negotiation: "3",
@@ -1370,6 +1370,8 @@ export default {
       "leads",
       "lead",
       "leads_seek",
+      "list_services",
+      "quoteStatus",
       "listphone",
       "listemails",
       "listaddress",
@@ -1408,7 +1410,7 @@ export default {
   },
 
   created() {
-    this.getCatalogs();
+    this.GetListServices();
     this.getServices();
     this.GetLeads();
     this.GetLeads_Seek();
@@ -1419,7 +1421,11 @@ export default {
   },
 
   methods: {
-    ...Vuex.mapActions(["GetLeads", "GetLeads_Seek"]),
+    ...Vuex.mapActions([
+      "GetLeads",
+      "GetLeads_Seek",
+      "GetListServices",
+    ]),
     ...Vuex.mapMutations([
       "SetPhone",
       "SetEmails",
@@ -1766,58 +1772,35 @@ export default {
       });
     },
 
-
-
     async getServices() {
-      const todos = await API.graphql({
-        query: listProducts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "PRO#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      this.services = todos.data.listProducts;
-      console.log(this.services);
       let chil = [];
-
-      for (let i = 0; i < this.services.length; i++) {
+      for (let i = 0; i < this.list_services.length; i++) {
         chil = [];
-
         for (
           let j = 0;
-          j < JSON.parse(this.services[i].l_variant).length;
+          j < JSON.parse(this.list_services[i].l_variant).length;
           j++
         ) {
-          if (JSON.parse(this.services[i].l_variant)[j].name != "")
+          if (JSON.parse(this.list_services[i].l_variant)[j].name != "")
             chil.push({
               value:
-                JSON.parse(this.services[i].l_variant)[j].name +
+                JSON.parse(this.list_services[i].l_variant)[j].name +
                 "/" +
                 JSON.stringify(
-                  JSON.parse(this.services[i].l_variant)[j].product
+                  JSON.parse(this.list_services[i].l_variant)[j].product
                 ),
               label:
-                JSON.parse(this.services[i].l_variant)[j].name +
+                JSON.parse(this.list_services[i].l_variant)[j].name +
                 "/ Price:$ " +
-                JSON.parse(this.services[i].l_variant)[j].price,
+                JSON.parse(this.list_services[i].l_variant)[j].price,
             });
         }
         this.data.push({
           label:
-            this.services[i].smName + "/ Price:$ " + this.services[i].price,
-          value: this.services[i].id,
+            this.list_services[i].smName +
+            "/ Price:$ " +
+            this.list_services[i].price,
+          value: this.list_services[i].id,
           children: chil,
         });
       }
@@ -1963,7 +1946,7 @@ export default {
       this.total_s = 0;
       var lista = [];
       var servi = [];
-      var id = "";
+
       for (let i = 0; i < this.values_services.length; i++) {
         servi = [];
         const id_s = this.values_services[i];

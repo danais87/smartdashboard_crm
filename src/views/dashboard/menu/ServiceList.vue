@@ -19,7 +19,7 @@
       </v-dialog>
       <v-data-table
         :headers="headers"
-        :items="services"
+        :items="list_services"
         sort-by="name"
         class="elevation-1"
         :search="search"
@@ -34,7 +34,7 @@
         </template>
         <template v-slot:top>
           <v-toolbar flat color="white">
-            <v-toolbar-title>Services</v-toolbar-title>
+            <v-toolbar-title>Products</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-text-field
               v-model="search"
@@ -114,10 +114,11 @@
                         <v-col cols="4" sm="4" md="4">
                           <v-select
                             v-model="editedItem.typeName"
-                            :items="types"
-                            label="Type"
+                            :items="serviceTypes"
+                            label="Product Type"
                             item-text="name"
                             item-value="id"
+                            outlined
                           ></v-select>
                         </v-col>
                         <v-col cols="4" sm="5" md="5">
@@ -135,9 +136,7 @@
                             item-value="value"
                             hint="Is Recurrent?"
                             persistent-hint
-                            required
-                            dense
-                            solo
+                            outlined
                           ></v-select>
                         </v-col>
                         <v-col class="d-flex" cols="4" sm="2" md="2">
@@ -149,9 +148,7 @@
                             item-value="value"
                             hint="Has Variants?"
                             persistent-hint
-                            required
-                            dense
-                            solo
+                            outlined
                           ></v-select>
                         </v-col>
                         <v-dialog v-model="dialog_v" max-width="500px">
@@ -287,7 +284,6 @@
 <script>
 import { API } from "aws-amplify";
 import { updateRecord, createRecord } from "../../../graphql/mutations";
-import { getOrganization, listProducts } from "../../../graphql/queries";
 import Vuex from "vuex";
 import { uuid } from "vue-uuid";
 
@@ -305,8 +301,6 @@ export default {
     description: "",
     price: "",
     compare: "",
-    services: [],
-    types: [],
     v: [],
     variants: [],
     form: "",
@@ -405,7 +399,12 @@ export default {
     formTitle_v() {
       return this.editedIndex_v === -1 ? "New Item" : "Edit Item";
     },
-    ...Vuex.mapState(["usuario", "organizationID"]),
+    ...Vuex.mapState([
+      "usuario",
+      "organizationID",
+      "serviceTypes",
+      "list_services",
+    ]),
   },
 
   watch: {
@@ -418,8 +417,15 @@ export default {
   },
 
   created() {
-    this.getServices();
-    this.getCatalogs();
+    const loading = this.$loading({
+      lock: true,
+      text: "Loading Products",
+      spinner: "el-icon-loading",
+      background: "rgba(0, 0, 0, 0.7)",
+    });
+    this.GetListServices();
+
+    loading.close();
   },
 
   methods: {
@@ -427,92 +433,11 @@ export default {
       return "$ " + parseFloat(value).toFixed(2);
     },
 
+    ...Vuex.mapActions(["GetListServices"]),
+
     handleClick(value) {
       this.editItem(value);
       console.log(value);
-    },
-
-    async getCatalogs() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Loading...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      console.log(this.organizationID);
-
-      this.types = [];
-
-      const todos = await API.graphql({
-        query: getOrganization,
-        variables: {
-          filter: {
-            active: { eq: "1" },
-            SK: {
-              eq: "#META#",
-            },
-            PK: { eq: this.organizationID },
-          },
-        },
-      });
-
-      this.organization = todos.data.getOrganization[0];
-      //ServiceTypes
-      if (this.organization.l_productType[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_productType).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_productType)[i].name != "") {
-            let name = JSON.parse(this.organization.l_productType)[i].name;
-            let description = JSON.parse(this.organization.l_productType)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_productType)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_productType)[i].status;
-            const todo = {
-              name,
-              description,
-              abbreviation,
-              status,
-            };
-            this.types = [...this.types, todo];
-          }
-        }
-      }
-      loading.close();
-    },
-
-    async getServices() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Get Products...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      const todos = await API.graphql({
-        query: listProducts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "PRO#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      this.services = todos.data.listProducts;
-      loading.close();
-      console.log(this.services);
     },
 
     validate() {
@@ -579,7 +504,7 @@ export default {
         this.alert = true;
         this.close();
         loading.close();
-        this.getServices();
+        this.GetListServices();
         this.variants = [];
       }
     },
@@ -635,7 +560,7 @@ export default {
 
         this.alert = true;
         this.close();
-        this.getServices();
+        this.GetListServices();
       }
       this.variants = [];
       loading.close();
@@ -658,7 +583,7 @@ export default {
     editItem(item) {
       this.variants = [];
       this.vari = "edit";
-      this.editedIndex = this.services.indexOf(item);
+      this.editedIndex = this.list_services.indexOf(item);
       this.editedItem = Object.assign({}, item);
 
       if (JSON.parse(item.l_variant)[0]) {
@@ -688,7 +613,7 @@ export default {
     async deleteServiceItem() {
       const loading = this.$loading({
         lock: true,
-        text: "Delete Services...",
+        text: "Delete service...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
@@ -710,7 +635,7 @@ export default {
       this.dialog_delete = false;
       this.dialog = false;
       loading.close();
-      this.getServices();
+      this.GetListServices();
     },
 
     deleteItem_v(item) {

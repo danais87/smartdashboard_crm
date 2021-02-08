@@ -8,6 +8,7 @@ import {
   getOrganization,
   listAccounts,
   listCustomers,
+  listProducts,
   listQuotes,
   listSmInstallments
 } from "../src/graphql/queries";
@@ -45,7 +46,9 @@ export default new Vuex.Store({
     leadStatus: [],
     librarys: [],
     quoteStatus: [],
-    accounts:[],
+    accounts: [],
+    list_services: [],
+    list_invoices: [],
   },
   mutations: {
     SET_BAR_IMAGE(state, payload) {
@@ -100,6 +103,12 @@ export default new Vuex.Store({
     },
     SetAccounts(state, p_acc) {
       state.accounts = p_acc;
+    },
+    SetListServices(state, p_serv) {
+      state.list_services = p_serv;
+    },
+    SetListInvoices(state, p_inv) {
+      state.list_invoices = p_inv;
     },
 
     SetLead(state, lead) {
@@ -765,7 +774,6 @@ export default new Vuex.Store({
       this.state.items = todos.data.listCustomers;
       commit('SetLeads', this.state.items);
     },
-
     async GetLeads_Seek({
       commit
     }) {
@@ -794,7 +802,6 @@ export default new Vuex.Store({
       const items = todos.data.listCustomers;
       commit('SetLeads_Seek', items);
     },
-
     async GetCatalogs({
       commit
     }) {
@@ -1067,6 +1074,32 @@ export default new Vuex.Store({
       const items = todos.data.listAccounts;
       commit('SetAccounts', items);
     },
+    async GetListServices({
+      commit
+    }) {
+      const todos = await API.graphql({
+        query: listProducts,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.state.organizationID,
+            },
+            SK: {
+              eq: "PRO#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      const items = todos.data.listProducts;
+      commit('SetListServices', items);
+    },
+   
 
   },
   plugins: [createPersistedState()]

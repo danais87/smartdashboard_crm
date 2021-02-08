@@ -223,7 +223,7 @@ export default {
 
   created() {
     this.GetAccounts();
-    this.GetCatalogs();
+   // this.GetCatalogs();
   },
 
   watch: {},
