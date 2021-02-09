@@ -63,12 +63,12 @@ export default {
         title: "invo",
         to: "/menu/invoice",
       },
-       {
+      {
         icon: "mdi-information-outline",
         title: "pay",
         to: "/menu/payments",
       },
-       {
+      {
         icon: "mdi-information-outline",
         title: "task",
         to: "/menu/task",
@@ -77,6 +77,11 @@ export default {
         icon: "mdi-information-outline",
         title: "se",
         to: "/menu/setting",
+      },
+      {
+        title: "user",
+        icon: "mdi-clipboard-outline",
+        to: "/pages/user",
       },
 
       /* {

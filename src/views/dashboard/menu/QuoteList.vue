@@ -803,55 +803,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col sm="3" md="3" v-if="see_leads">
-          <v-card max-width="400">
-            <v-app-bar flat color="blue lighten-3" dark>
-              <v-toolbar flat color="blue lighten-3" dark> Leads</v-toolbar
-              ><v-spacer></v-spacer>
-              <v-btn @click="closeLead" color="white" icon>
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-app-bar>
-
-            <v-card-text>
-              <v-data-table
-                :headers="headers_l"
-                :items="leads_seek"
-                sort-by="name"
-                class="elevation-1"
-                :search="search_l"
-                :items-per-page="20"
-                :footer-props="footerProps"
-              >
-                <template v-slot:top>
-                  <v-toolbar flat color="white">
-                    <v-text-field
-                      v-model="search_l"
-                      append-icon="mdi-magnify"
-                      label="Search"
-                      single-line
-                      hide-details
-                    ></v-text-field>
-                  </v-toolbar>
-                </template>
-                <template v-slot:[`item.full_name`]="{ item }">{{
-                  JSON.parse(item.l_smName)[0].fullName
-                }}</template>
-                <template v-slot:[`item.actions`]="{ item }">
-                  <el-button
-                    id="s"
-                    type="primary"
-                    icon="el-icon-circle-plus-outline"
-                    circle
-                    @click="ItemLeadT(item)"
-                    size="mini"
-                  ></el-button>
-                </template>
-              </v-data-table>
-            </v-card-text>
-          </v-card>
-        </v-col>
-        <v-col :sm="sm_analized" :md="md_analized">
+        <v-col sm="4" md="4">
           <v-card max-width="400">
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="6" md="6">Analyzed</v-col>
@@ -881,7 +833,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col :sm="sm_negotiation" :md="md_negotiation">
+        <v-col sm="4" md="4">
           <v-card max-width="400">
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="6" md="6">Negotiation</v-col>
@@ -910,7 +862,7 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col :sm="sm_verbal" :md="md_verbal">
+        <v-col sm="4" md="4">
           <v-card max-width="400">
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="8" md="8">Verbal Agreement</v-col>
@@ -1964,8 +1916,11 @@ export default {
       });
       console.log(item);
       console.log(this.l_discount);
+      console.log(this.lead);
+      console.log(this.editedItemLeads);
       if (this.lead.id != undefined) {
         this.editedItemLeads = this.lead;
+        this.editedItemLeads.name = JSON.parse(this.lead.l_smName)[0].fullName;
       }
       var downPayment = 0;
       var numInstallments = 0;
