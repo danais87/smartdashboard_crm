@@ -629,6 +629,7 @@ export const getInstallment = /* GraphQL */ `
       createdBy
       startDate
       amount
+      type
       isPaid
       reference
       method

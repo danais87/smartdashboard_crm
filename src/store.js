@@ -63,7 +63,7 @@ export default new Vuex.Store({
       state.usuario = p_user;
     },
 
-    SetOrganization(state, p_org) {
+    SetOrganizationID(state, p_org) {
       state.organizationID = p_org;
     },
 
@@ -743,10 +743,8 @@ export default new Vuex.Store({
         "</body></canvas></html>";
 
     },
-
-
-
   },
+
   actions: {
     async GetLeads({
       commit
@@ -775,7 +773,8 @@ export default new Vuex.Store({
     },
     async GetLeads_Seek({
       commit
-    }) {
+    }, param) {
+      console.log(param);
       const todos = await API.graphql({
         query: listCustomers,
         variables: {
@@ -786,8 +785,8 @@ export default new Vuex.Store({
             SK: {
               eq: 'CUS#'
             },
-            seekingService: {
-              eq: 'Y'
+            customer: {
+              eq: param
             },
             indexs: {
               eq: 'table_seeking'
@@ -799,6 +798,7 @@ export default new Vuex.Store({
         },
       });
       const items = todos.data.listCustomers;
+      console.log(items);
       commit('SetLeads_Seek', items);
     },
     async GetCatalogs({
@@ -1098,8 +1098,6 @@ export default new Vuex.Store({
       const items = todos.data.listProducts;
       commit('SetListServices', items);
     },
-
-
   },
   plugins: [createPersistedState()]
 

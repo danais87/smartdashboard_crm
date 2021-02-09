@@ -581,11 +581,11 @@ export default {
       .substr(0, 10);
     console.log(this.body);
     this.getInvoice();
-    this.GetLeads_Seek();
+
   },
 
   methods: {
-    ...Vuex.mapActions(["GetLeads", "GetLeads_Seek"]),
+    
     ...Vuex.mapMutations([
       "SetPhone",
       "SetEmails",

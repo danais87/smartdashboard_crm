@@ -157,7 +157,7 @@
                             <v-list-item three-line>
                               <v-list-item-content>
                                 <v-list-item-subtitle>
-                                 Name: {{ editedItemLeads.name }}
+                                  Name: {{ editedItemLeads.name }}
                                   {{ editedItemLeads.last_name }}
                                 </v-list-item-subtitle>
                               </v-list-item-content>
@@ -578,7 +578,6 @@
                         outlined
                       ></v-select>
                     </v-col>
-
                     <v-col class="d-flex" cols="12" sm="5" md="5">
                       <v-text-field
                         v-model="editedItem_c.revisitDate"
@@ -599,89 +598,85 @@
                   </v-col>
                 </v-col>
                 <v-col cols="12" sm="5" md="5">
-                  <el-menu :default-openeds="['1', '3']">
-                    <el-submenu index="1">
-                      <template slot="title"
-                        ><i class="el-icon-message"></i>Contacts</template
+                  <template slot="title"
+                    ><i class="el-icon-message"></i>Contacts</template
+                  >
+                  <v-col cols="12" sm="12">
+                    <v-text-field
+                      v-model="customer"
+                      label="Customer Name"
+                      outlined
+                      @keyup.native.enter="focusFilter"
+                    ></v-text-field>
+                  </v-col>
+                  <v-row>
+                    <v-col cols="12" sm="8">
+                      <v-select
+                        v-model="lead_id"
+                        :items="select_leads"
+                        label="Select a Customer"
+                        item-text="name"
+                        item-value="id"
+                        outlined
+                        filterable
+                        clearable
+                      ></v-select>
+                    </v-col>
+                    <br />
+                    <v-col cols="12" sm="2">
+                      <v-btn
+                        class="ma-2"
+                        outlined
+                        x-small
+                        fab
+                        color="indigo"
+                        @click="addLead"
                       >
-                      <el-menu-item-group>
-                        <el-menu-item index="1-1">
-                          <el-select
-                            v-model="lead_id"
-                            filterable
-                            clearable
-                            remote
-                            reserve-keyword
-                            placeholder="Select a Customer"
-                            :remote-method="remoteMethod"
-                            :loading="loading"
-                          >
-                            <el-option
-                              v-for="item in leads_seek"
-                              :key="item.id"
-                              :label="JSON.parse(item.l_smName)[0].fullName"
-                              :value="item.id"
-                            >
-                            </el-option>
-                          </el-select>
-                        </el-menu-item>
-                        <el-menu-item index="1-2">
-                          <v-btn
-                            class="ma-2"
-                            outlined
-                            x-small
-                            fab
-                            color="indigo"
-                            @click="addLead"
-                          >
-                            <v-icon>el-icon-d-arrow-left</v-icon>
-                          </v-btn>
-                        </el-menu-item>
-                      </el-menu-item-group>
-                    </el-submenu>
-
-                    <el-submenu index="3" max-height="700">
-                      <template slot="title"
-                        ><i class="el-icon-setting"></i>Services</template
+                        <v-icon>el-icon-d-arrow-left</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <br />
+                  <template slot="title"
+                    ><i class="el-icon-setting"></i>Services</template
+                  >
+                  <br />
+                  <v-row>
+                    <v-col cols="12" sm="8">
+                      <el-input
+                        placeholder="Filter keyword"
+                        v-model="filterText"
                       >
-                      <el-menu-item-group>
-                        <el-menu-item index="3-1">
-                          <v-btn
-                            class="ma-2"
-                            outlined
-                            x-small
-                            fab
-                            color="indigo"
-                            @click="addService"
-                          >
-                            <v-icon>el-icon-d-arrow-left</v-icon>
-                          </v-btn></el-menu-item
-                        >
-                        <el-menu-item index="3-2">
-                          <el-input
-                            placeholder="Filter keyword"
-                            v-model="filterText"
-                          >
-                          </el-input>
-                          <el-tree
-                            class="filter-tree"
-                            :data="data"
-                            show-checkbox
-                            check-strictly
-                            filterable
-                            default-expand-all
-                            node-key="value"
-                            highlight-current
-                            ref="tree"
-                            check-on-click-node
-                            :props="defaultProps"
-                            :filter-node-method="filterNode"
-                          >
-                          </el-tree>
-                        </el-menu-item>
-                      </el-menu-item-group>
-                    </el-submenu>
-                  </el-menu>
+                      </el-input>
+                      <el-tree
+                        class="filter-tree"
+                        :data="data"
+                        show-checkbox
+                        check-strictly
+                        filterable
+                        default-expand-all
+                        node-key="value"
+                        highlight-current
+                        ref="tree"
+                        check-on-click-node
+                        :props="defaultProps"
+                        :filter-node-method="filterNode"
+                      >
+                      </el-tree>
+                    </v-col>
+                    <v-col>
+                      <v-btn
+                        class="ma-2"
+                        outlined
+                        x-small
+                        fab
+                        color="indigo"
+                        @click="addService"
+                      >
+                        <v-icon>el-icon-d-arrow-left</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </el-main>
@@ -1062,6 +1057,7 @@ export default {
     dialog_email: false,
     accounts: [],
     apiRequest: false,
+    customer: "",
     valid: true,
     item_service: [],
     headers_i: [
@@ -1344,7 +1340,7 @@ export default {
     process_status: "Created",
     filterText: "",
     service_type: [],
-
+    select_leads: [],
     librarys: [],
     quote_status: [],
     l_discount: [],
@@ -1413,20 +1409,16 @@ export default {
   created() {
     this.GetListServices();
     this.getServices();
-    this.GetLeads();
-    this.GetLeads_Seek();
     const d = new Date();
     this.startDate = new Date(d.setMonth(d.getMonth() - 1))
       .toISOString()
       .substr(0, 10);
+    const l = [];
+    this.SetLeads_Seek(l);
   },
 
   methods: {
-    ...Vuex.mapActions([
-      "GetLeads",
-      "GetLeads_Seek",
-      "GetListServices",
-    ]),
+    ...Vuex.mapActions(["GetLeads_Seek", "GetListServices"]),
     ...Vuex.mapMutations([
       "SetPhone",
       "SetEmails",
@@ -1434,7 +1426,25 @@ export default {
       "SetLead",
       "SetBody",
       "SetConclusion",
+      "SetLeads_Seek",
     ]),
+
+    async focusFilter(e) {
+      await this.GetLeads_Seek(this.customer);
+      this.GetSelectLeads();
+    },
+
+    GetSelectLeads() {
+      console.log(this.leads_seek);
+      this.select_leads = [];
+      for (let i = 0; i < this.leads_seek.length; i++) {
+        this.select_leads.push({
+          name: JSON.parse(this.leads_seek[i].l_smName)[0].fullName,
+          id: this.leads_seek[i].id,
+        });
+      }
+      console.log(this.select_leads);
+    },
 
     filterNode(value, data) {
       if (!value) return true;
@@ -1768,6 +1778,7 @@ export default {
       this.SetAddress(this.list_address);
 
       this.lead_id = "";
+      this.customer = "";
     },
 
     NewLead() {
@@ -2187,8 +2198,6 @@ export default {
       this.payment = 1;
       this.conclusion = "";
       loading.close();
-      this.GetLeads();
-      this.GetLeads_Seek();
     },
 
     async updateQuote(item) {
@@ -2475,8 +2484,6 @@ export default {
       this.payment = 1;
       this.conclusion = "";
       loading.close();
-      this.GetLeads();
-      this.GetLeads_Seek();
     },
 
     async updateServices(item) {
@@ -2919,8 +2926,6 @@ export default {
       }
       this.close();
       this.fillData();
-      this.GetLeads();
-      this.GetLeads_Seek();
     },
 
     editServiceItem(item) {

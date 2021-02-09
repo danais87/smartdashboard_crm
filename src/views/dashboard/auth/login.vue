@@ -75,14 +75,10 @@ export default {
     console.log(this.usuario);
   },
 
-  computed: {
-    ...Vuex.mapState(["organizationID", "usuario"]),
-  },
-
   methods: {
     ...Vuex.mapMutations([
       "SetUsuario",
-      "SetOrganization",
+      "SetOrganizationID",
       "SetRole",
     ]),
     ...Vuex.mapActions(["GetCatalogs"]),
@@ -105,10 +101,9 @@ export default {
           console.log(
             user.signInUserSession.accessToken["payload"]["cognito:groups"]
           );
-          this.SetUsuario = user.username;
-          this.SetOrganization = user.attributes["custom:organizationID"];
-          this.SetRole =
-            user.signInUserSession.accessToken["payload"]["cognito:groups"];
+          this.SetUsuario(user.username);
+          this.SetOrganizationID(user.attributes["custom:organizationID"]);
+          this.SetRole(user.signInUserSession.accessToken["payload"]["cognito:groups"]);
           this.GetCatalogs();
 
           this.$router.push({

@@ -224,6 +224,7 @@ export const deleteInstallments = /* GraphQL */ `
       createdBy
       startDate
       amount
+      type
       isPaid
       reference
       method
