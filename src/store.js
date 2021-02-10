@@ -49,6 +49,7 @@ export default new Vuex.Store({
     accounts: [],
     list_services: [],
     list_invoices: [],
+    businessType: []
   },
   mutations: {
     SET_BAR_IMAGE(state, payload) {
@@ -97,6 +98,9 @@ export default new Vuex.Store({
     },
     SetQuoteStatus(state, p_quot) {
       state.quoteStatus = p_quot;
+    },
+    SetBusinessType(state, p_type) {
+      state.businessType = p_type;
     },
     SetOrganization(state, p_org) {
       state.organization = p_org;
@@ -821,6 +825,7 @@ export default new Vuex.Store({
         },
       });
       const items = todos.data.getOrganization[0];
+      console.log(items);
       var teams = [];
       //TEAMS
       if (items.l_team[0]) {
@@ -1036,6 +1041,31 @@ export default new Vuex.Store({
           }
         }
       }
+      //Business Type
+      var business_Type = [];
+      if (items.l_businessType[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(items.l_businessType).length;
+          i++
+        ) {
+          if (
+            JSON.parse(items.l_businessType)[i].description != ""
+          ) {
+            let description = JSON.parse(items.l_businessType)[i]
+              .description;
+            let abbreviation = JSON.parse(items.l_businessType)[i]
+              .abbreviation;
+            let status = JSON.parse(items.l_businessType)[i].status;
+            const todo = {
+              description,
+              abbreviation,
+              status,
+            };
+            business_Type.push(todo);
+          }
+        }
+      }
       commit('SetOrganization', items);
       commit('SetTeams', teams);
       commit('SetAcquisitions', acquisition);
@@ -1046,6 +1076,7 @@ export default new Vuex.Store({
       commit('SetLeadStatus', lead_status);
       commit('SetLibrarys', librarys);
       commit('SetQuoteStatus', quote_status);
+      commit('SetBusinessType', business_Type);
 
     },
     async GetAccounts({

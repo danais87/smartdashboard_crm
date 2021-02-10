@@ -57,7 +57,7 @@
 import Vuex from "vuex";
 import { API } from "aws-amplify";
 import { listPhoneNumber } from "../../../graphql/queries";
-import  DialogLeads  from "../dialogs/DialogLeads";
+import DialogLeads from "../dialogs/DialogLeads";
 export default {
   name: "Leads",
   components: { DialogLeads },
@@ -102,20 +102,24 @@ export default {
       PK: "",
       SK: "",
       id: "",
-      entityType: "",
-      createdAt: "",
-      updateAt: "",
-      createdBy:"",
-      active: "",
-      createdBy: "",
-      account: "",
+      entityType: " ",
+      createdAt: " ",
+      updateAt: " ",
+      createdBy: " ",
+      active: " ",
+      createdBy: " ",
+      account: " ",
       leadStatus: "No Status",
       seekingService: "Y",
-      adquisition: "",
-      notes: "",
+      adquisition: " ",
+      notes: " ",
+      businessType: " ",
+      jobTitle: " ",
+      levelAuthority: " ",
+      numberEmployee: " ",
       l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
-      name: "",
-      last_name: "",
+      name: " ",
+      last_name: " ",
       l_email: '[{"type":"","value":""}]',
       l_smAddress:
         '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
@@ -130,19 +134,23 @@ export default {
       PK: "",
       SK: "",
       id: "",
-      entityType: "",
-      createdAt: "",
-      updateAt: "",
-      active: "",
-      createdBy: "",
-      account: "",
+      entityType: " ",
+      createdAt: " ",
+      updateAt: " ",
+      active: " ",
+      createdBy: " ",
+      account: " ",
       leadStatus: "NS",
       seekingService: "Y",
-      adquisition: "",
-      notes: "",
+      adquisition: " ",
+      notes: " ",
+      businessType: " ",
+      jobTitle: " ",
+      levelAuthority: " ",
+      numberEmployee: " ",
       l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
-      name: "",
-      last_name: "",
+      name: " ",
+      last_name: " ",
       l_email: '[{"type":"","value":""}]',
       l_address:
         '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
@@ -207,11 +215,12 @@ export default {
     },
 
     async editItem(item) {
+      console.log(item);
       this.editedIndex = this.leads.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editedItem.name = JSON.parse(item.l_smName)[0].firstName;
       this.editedItem.last_name = JSON.parse(item.l_smName)[0].lastName;
-      console.log(this.editedItem);
+
 
       this.editedCompare = Object.assign({}, item);
       this.list_phone = [];
@@ -238,7 +247,6 @@ export default {
         variables: { filter: { GSP1PK1: { eq: item.SK } } },
       });
       this.phones = todos.data.listPhoneNumber;
-      console.log(this.phones);
 
       if (this.phones.length > 0) {
         for (let i = 0; i < this.phones.length; i++) {

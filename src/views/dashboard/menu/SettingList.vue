@@ -168,6 +168,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialog_deleteBT" max-width="400">
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this item?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="dialog_deleteBT = false">
+            Disagree
+          </v-btn>
+          <v-btn color="green darken-1" text @click="deleteItemBusinessType()">
+            Agree
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog v-model="dialog_conf_delete" persistent max-width="400">
       <v-card>
         <v-card-title class="headline">
@@ -1132,7 +1148,6 @@
       </template>
     </v-data-table>
     <br />
-
     <v-data-table
       :headers="headers_library"
       :items="librarys"
@@ -1246,7 +1261,6 @@
       </template>
     </v-data-table>
     <br />
-
     <v-data-table
       :headers="headers_quote"
       :items="quoteStatus"
@@ -1352,6 +1366,111 @@
       </template>
     </v-data-table>
     <br />
+    <v-data-table
+      :headers="headers_bt"
+      :items="businessType"
+      sort-by="name"
+      class="elevation-1"
+      :search="search_bt"
+      :items-per-page="5"
+    >
+      <template v-slot:[`item.status`]="{ item }">
+        <v-chip :color="getColor(item.status)" dark small
+          >{{ item.status }}
+        </v-chip>
+      </template>
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>Business Type</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="search_bt"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog_bt" max-width="800px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="ma-2"
+                outlined
+                x-small
+                fab
+                color="indigo"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">Business Type</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="2" md="2">
+                      <v-text-field
+                        v-model="editedItemBT.abbreviation"
+                        label="Abbreviation"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="4">
+                      <v-text-field
+                        v-model="editedItemBT.description"
+                        label="Descripcion"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                      <v-select
+                        v-model="editedItemBT.status"
+                        :items="options_status"
+                        label="Status"
+                        item-text="label"
+                        item-value="value"
+                        required
+                        dense
+                        solo
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeBusinessType"
+                  >Cancel</v-btn
+                >
+                <v-btn color="blue darken-1" text @click="saveBusinessType"
+                  >Save</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          circle
+          size="mini"
+          @click="editItemBusinessType(item)"
+        ></el-button>
+        <el-button
+          type="danger"
+          icon="el-icon-delete"
+          circle
+          size="mini"
+          @click="deleteItemBT(item)"
+        ></el-button>
+      </template>
+    </v-data-table>
+    <br />
   </div>
 </template>
 
@@ -1382,6 +1501,7 @@ export default {
     dialog_deleteLeads: false,
     dialog_deleteLib: false,
     dialog_deleteQuo: false,
+    dialog_deleteBT: false,
     date: new Date().toISOString().substr(0, 10),
     menu: false,
     modal: false,
@@ -1399,8 +1519,9 @@ export default {
     search_leads: "",
     search_library: "",
     search_quote: "",
+    search_bt: "",
     show: false,
-    accounts:[],
+    accounts: [], 
     dialog_team: false,
     dialog_account: false,
     dialog_stype: false,
@@ -1411,6 +1532,7 @@ export default {
     dialog_leads: false,
     dialog_library: false,
     dialog_quote: false,
+    dialog_bt: false,
     apiRequest: false,
     options_status: [
       {
@@ -1568,6 +1690,22 @@ export default {
       { text: "Status", align: "start", sortable: true, value: "status" },
       { text: "Actions", value: "actions", sortable: false },
     ],
+    headers_bt: [
+      {
+        text: "Description",
+        align: "start",
+        sortable: true,
+        value: "description",
+      },
+      {
+        text: "Abbreviation",
+        align: "start",
+        sortable: true,
+        value: "abbreviation",
+      },
+      { text: "Status", align: "start", sortable: true, value: "status" },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
     editedIndexTeam: -1,
     editedIndexAccount: -1,
     editedIndexStype: -1,
@@ -1578,6 +1716,7 @@ export default {
     editedIndexLeads: -1,
     editedIndexLibrary: -1,
     editedIndexQuote: -1,
+    editedIndexBusinessType: -1,
     editedItemPayment: { status: "A" },
     defaultItemPayment: { status: "A" },
     editedItemAcquisition: { status: "A" },
@@ -1620,6 +1759,20 @@ export default {
       status: "A",
     },
     defaultItemStype: {
+      id: "",
+      name: "",
+      description: "",
+      abbreviation: "",
+      status: "A",
+    },
+    editedItemBT: {
+      id: "",
+      name: "",
+      description: "",
+      abbreviation: "",
+      status: "A",
+    },
+    defaultItemBT: {
       id: "",
       name: "",
       description: "",
@@ -1685,7 +1838,8 @@ export default {
       "leadStatus",
       "librarys",
       "quoteStatus",
-      "organization"
+      "organization",
+      "businessType",
     ]),
   },
 
@@ -2264,6 +2418,143 @@ export default {
         console.log("crear");
         await this.createType(this.editedItemStype);
         this.closeStype();
+      }
+    },
+
+    //Business Type
+    async createBusinessType(item) {
+      console.log(this.organization);
+      var list_t = [];
+      var l_type = "";
+
+      const description = item.description;
+      const abbreviation = item.abbreviation;
+      const status = item.status;
+
+      if (!description) return alert("error service type");
+      const type = { description, abbreviation, status };
+
+      list_t = [...this.businessType, type];
+      for (let i = 0; i < list_t.length; i++) {
+        l_type += JSON.stringify(list_t[i]) + ",";
+      }
+      const SK = this.organization.SK;
+      const PK = this.organization.PK;
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const l_businessType = l_type.slice(0, -1);
+
+      const org = {
+        SK,
+        PK,
+        updateAt,
+        l_businessType,
+      };
+
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: org },
+      });
+      this.GetCatalogs();
+    },
+
+    async updateBusinessType(item) {
+
+      const description = item.description;
+      const abbreviation = item.abbreviation;
+      const status = item.status;
+
+      if (  !description) return alert("error service type");
+
+      const type = {   description, abbreviation, status };
+      Object.assign(this.businessType[this.editedIndexBusinessType], type);
+      console.log(this.businessType);
+      var l_type = "";
+      for (let i = 0; i < this.businessType.length; i++) {
+        l_type += JSON.stringify(this.businessType[i]) + ",";
+      }
+
+      const SK = this.organization.SK;
+      const PK = this.organization.PK;
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const l_businessType = l_type.slice(0, -1);
+
+      const org = {
+        SK,
+        PK,
+        updateAt,
+        l_businessType,
+      };
+
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: org },
+      });
+      this.GetCatalogs();
+    },
+
+    editItemBusinessType(item) {
+      this.editedIndexBusinessType = this.businessType.indexOf(item);
+      this.editedItemBT = Object.assign({}, item);
+      this.dialog_bt = true;
+    },
+
+    deleteItemBT(item) {
+      this.editedItemBT = Object.assign({}, item);
+      this.dialog_deleteBT = true;
+    },
+
+    async deleteItemBusinessType() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Delete Business Type",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      const index = this.businessType.indexOf(this.editedItemBT);
+      this.businessType.splice(index, 1);
+      console.log(this.businessType);
+      var l_dis = "";
+      for (let i = 0; i < this.businessType.length; i++) {
+        l_dis += JSON.stringify(this.businessType[i]) + ",";
+      }
+      const SK = this.organization.SK;
+      const PK = this.organization.PK;
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const l_businessType = l_dis.slice(0, -1);
+
+      const todo = {
+        SK,
+        PK,
+        updateAt,
+        l_businessType,
+      };
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: todo },
+      });
+      this.dialog_deleteBT = false;
+      this.dialog = false;
+      loading.close();
+      this.GetCatalogs();
+    },
+
+    closeBusinessType() {
+      this.$nextTick(() => {
+        this.editedItemBT = Object.assign({}, this.defaultItemBT);
+        this.editedIndexBusinessType = -1;
+      });
+      this.dialog_bt = false;
+    },
+
+    async saveBusinessType() {
+      if (this.editedIndexBusinessType > -1) {
+        console.log("edit");
+        await this.updateBusinessType(this.editedItemBT);
+        this.closeBusinessType();
+      } else {
+        console.log("crear");
+        await this.createBusinessType(this.editedItemBT);
+        this.closeBusinessType();
       }
     },
 

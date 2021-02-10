@@ -35,6 +35,7 @@ export const listOrganizations = /* GraphQL */ `
       l_leadStatus
       l_quoteLibrary
       l_quoteStatus
+      l_businessType
       funcRegion
       funcIdentityPoolId
       funcName
@@ -72,6 +73,7 @@ export const getOrganization = /* GraphQL */ `
       l_leadStatus
       l_quoteLibrary
       l_quoteStatus
+      l_businessType
       funcRegion
       funcIdentityPoolId
       funcName
@@ -110,6 +112,10 @@ export const listCustomers = /* GraphQL */ `
       adquisition
       account
       notes
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -140,6 +146,10 @@ export const getCustomer = /* GraphQL */ `
       adquisition
       account
       notes
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -293,6 +303,11 @@ export const listQuotes = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -382,6 +397,11 @@ export const getQuote = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -475,6 +495,11 @@ export const listQuoteItems = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -605,6 +630,11 @@ export const listInstallments = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -883,6 +913,11 @@ export const listSmartDash = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;

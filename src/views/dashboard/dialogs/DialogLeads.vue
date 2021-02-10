@@ -52,15 +52,34 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="6" md="6">
+              <v-col cols="12" sm="2" md="2">
                 <v-text-field v-model="item.name" label="Name"></v-text-field>
               </v-col>
-              <v-col cols="12" sm="6" md="6">
+              <v-col cols="12" sm="2" md="2">
                 <v-text-field
                   v-model="item.last_name"
                   label="Lastname"
                 ></v-text-field>
               </v-col>
+              <v-col cols="12" sm="2" md="2">
+                <v-text-field
+                  v-model="item.jobTitle"
+                  label="Job Title"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
+                <v-text-field
+                  v-model="item.levelAuthority"
+                  label="Level Authority"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="2" md="2">
+                <v-text-field
+                  v-model="item.numberEmployee"
+                  label="Number Employee"
+                ></v-text-field>
+              </v-col>
+
               <v-col sm="6" md="6">
                 <DialogPhone v-model="showPhone"></DialogPhone>
               </v-col>
@@ -100,6 +119,16 @@
                   outlined
                 ></v-select>
               </v-col>
+              <v-col cols="12" sm="2" md="2">
+                <v-select
+                  v-model="item.businessType"
+                  :items="businessType"
+                  label="Business Type"
+                  item-text="description"
+                  item-value="description"
+                  outlined
+                ></v-select>
+              </v-col>
               <v-col class="d-flex" cols="12" sm="3" md="3">
                 <v-select
                   v-model="item.adquisition"
@@ -113,9 +142,6 @@
             </v-row>
           </v-container>
         </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </div>
@@ -159,28 +185,7 @@ export default {
       showAddress: true,
       dialog_delete: false,
       dialog_conf_delete: false,
-      editedItemLocal: {
-        id: "",
-        smName: "",
-        lastname: "",
-        street_address: "",
-        country: "",
-        city: "",
-        state: "",
-        zip_code: "",
-        a_type: "",
-        phone: "",
-        p_type: "",
-        email: "",
-        e_type: "",
-        status: "A",
-        account_id: "",
-        account_name: "",
-        lead_status: "No Status",
-        seekingService: "Y",
-        adquisition: "",
-        full_name: "",
-      },
+
       options_service: [
         {
           value: "Y",
@@ -209,6 +214,7 @@ export default {
       "accounts",
       "acquisitions",
       "leadStatus",
+      "businessType"
     ]),
 
     show: {
@@ -223,7 +229,7 @@ export default {
 
   created() {
     this.GetAccounts();
-   // this.GetCatalogs();
+    // this.GetCatalogs();
   },
 
   watch: {},
@@ -268,6 +274,10 @@ export default {
       const adquisition = item.adquisition;
       const leadStatus = item.leadStatus;
       const notes = item.notes;
+      const businessType = item.businessType;
+      const jobTitle = item.jobTitle;
+      const levelAuthority = item.levelAuthority;
+      const numberEmployee = item.numberEmployee;
 
       if (!l_smName) return alert("error en datos incompletos leads");
 
@@ -292,6 +302,10 @@ export default {
         seekingService,
         adquisition,
         notes,
+        businessType,
+        jobTitle,
+        levelAuthority,
+        numberEmployee,
       };
       const l = await API.graphql({
         query: createRecord,
@@ -343,7 +357,7 @@ export default {
     },
 
     async updateLeads(item) {
-      console.log(this.itemcompare);
+      console.log(this.item);
       const loading = this.$loading({
         lock: true,
         text: "Update Lead",
@@ -382,6 +396,10 @@ export default {
       const adquisition = item.adquisition;
       const leadStatus = item.leadStatus;
       const notes = item.notes;
+      const businessType = item.businessType;
+      const jobTitle = item.jobTitle;
+      const levelAuthority = item.levelAuthority;
+      const numberEmployee = item.numberEmployee;
 
       if (!l_smName) return alert("error en datos update leads");
 
@@ -397,6 +415,10 @@ export default {
         adquisition,
         leadStatus,
         notes,
+        businessType,
+        jobTitle,
+        levelAuthority,
+        numberEmployee,
       };
       console.log(todo);
       await API.graphql({

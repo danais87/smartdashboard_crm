@@ -87,6 +87,11 @@ export const createRecord = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
@@ -176,6 +181,11 @@ export const updateRecord = /* GraphQL */ `
       revisitDate
       customerID
       customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
     }
   }
 `;
