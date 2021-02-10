@@ -377,15 +377,9 @@
                   <v-col>
                     <el-card class="box-card">
                       <div slot="header" class="clearfix">
-                        <span>Installment:</span>
+                        <span>Payments and Installments:</span>
                       </div>
-                      <div class="text item">
-                        <el-checkbox
-                          v-model="is_installment"
-                          label="Is Installment?"
-                          border
-                        ></el-checkbox>
-                      </div>
+
                       <br />
                       <div v-if="is_installment == true" class="text item">
                         <el-form
@@ -958,7 +952,7 @@ export default {
     total_qc: 0,
     total_va: 0,
     expanded: [],
-    is_installment: false,
+    is_installment: true,
     singleExpand: false,
     dialog_v: false,
     search_c: "",
@@ -1838,7 +1832,19 @@ export default {
       this.total = this.total_s + this.total_v;
       this.total_disc = this.total;
       this.quotation_amount = this.total;
+      this.payment = this.total;
+      this.calc = true;
 
+      this.installments = [];
+      const startDate = new Date().toISOString().substr(0, 10);
+      const amount = this.payment;
+      const type = "DPAY";
+      const pay = {
+        startDate,
+        amount,
+        type,
+      };
+      this.installments = [...this.installments, pay];
       this.value_opt = "";
       this.aply();
       loading.close();
@@ -2147,7 +2153,7 @@ export default {
       this.quotes_created = [];
       this.quotes_s = [];
       this.quotes_va = [];
-      this.is_installment = false;
+      this.is_installment = true;
       this.calc = false;
       this.number = 1;
       this.payment = 1;
@@ -2433,7 +2439,7 @@ export default {
       this.quotes_created = [];
       this.quotes_s = [];
       this.quotes_va = [];
-      this.is_installment = false;
+      this.is_installment = true;
       this.calc = false;
       this.number = 1;
       this.payment = 1;
@@ -2550,15 +2556,11 @@ export default {
       this.dialog_email = true;
       this.list_email = [];
       this.send_email = [];
-
-      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.editedItemLeads.l_email).length;
-          i++
-        ) {
-          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
-          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+      console.log(this.listemails);
+      if (this.listemails.length > 0) {
+        for (let i = 0; i < this.listemails.length; i++) {
+          let e_type = this.listemails[i].e_type;
+          let email = this.listemails[i].email;
           const todo = {
             email,
             e_type,
@@ -2856,7 +2858,7 @@ export default {
       this.total = "";
       this.total_disc = "";
       this.installments = [];
-      this.is_installment = false;
+      this.is_installment = true;
       this.calc = false;
       this.number = 1;
       this.payment = 1;
