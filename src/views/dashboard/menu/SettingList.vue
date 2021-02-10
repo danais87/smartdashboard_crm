@@ -8,10 +8,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteTeam = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemTeam()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -24,10 +24,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteAcc = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemAccount()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -40,10 +40,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteST = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemST()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -56,10 +56,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteDis = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemDis()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -72,10 +72,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteTask = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemTaskStatus()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -88,10 +88,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deletePay = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemPayment()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -108,10 +108,10 @@
             text
             @click="dialog_deleteAcqui = false"
           >
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemAcquisition()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -128,10 +128,10 @@
             text
             @click="dialog_deleteLeads = false"
           >
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemLeadsStatus()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -144,10 +144,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteLib = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemQuoteLibrary()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -160,10 +160,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteQuo = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemQuoteStatus()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -176,10 +176,10 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green darken-1" text @click="dialog_deleteBT = false">
-            Disagree
+            Cancel
           </v-btn>
           <v-btn color="green darken-1" text @click="deleteItemBusinessType()">
-            Agree
+            Yes
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -196,7 +196,7 @@
             text
             @click="dialog_conf_delete = false"
           >
-            Agree
+            Close
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -1521,7 +1521,7 @@ export default {
     search_quote: "",
     search_bt: "",
     show: false,
-    accounts: [], 
+    accounts: [],
     dialog_team: false,
     dialog_account: false,
     dialog_stype: false,

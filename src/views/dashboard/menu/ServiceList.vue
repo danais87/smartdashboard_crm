@@ -9,10 +9,10 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" text @click="dialog_delete = false">
-              Disagree
+              Cancel
             </v-btn>
             <v-btn color="green darken-1" text @click="deleteServiceItem">
-              Agree
+              Yes
             </v-btn>
           </v-card-actions>
         </v-card>
