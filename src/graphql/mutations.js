@@ -92,6 +92,7 @@ export const createRecord = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
@@ -186,6 +187,7 @@ export const updateRecord = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
@@ -239,6 +241,7 @@ export const deleteInstallments = /* GraphQL */ `
       reference
       method
       payDate
+      scale
     }
   }
 `;

@@ -1020,6 +1020,12 @@ export default {
         sortable: true,
         value: "type",
       },
+      {
+        text: "Payment",
+        align: "start",
+        sortable: true,
+        value: "scale",
+      },
       { text: "Actions", value: "actions", sortable: false },
     ],
     headers_v: [
@@ -1833,16 +1839,19 @@ export default {
       this.total_disc = this.total;
       this.quotation_amount = this.total;
       this.payment = this.total;
+      this.number = 1;
       this.calc = true;
 
       this.installments = [];
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
+      const scale = "1/1";
       const pay = {
         startDate,
         amount,
         type,
+        scale
       };
       this.installments = [...this.installments, pay];
       this.value_opt = "";
@@ -1888,16 +1897,20 @@ export default {
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
+      const scale = "1/1";
       const pay = {
         startDate,
         amount,
         type,
+        scale
       };
       this.installments = [...this.installments, pay];
       cant_amounts = (this.total_disc - this.payment) / this.number;
 
       for (let i = 0; i < this.number; i++) {
         const type = "INST";
+        const s = i+2;
+        const scale = "1/"+s;
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
@@ -1908,6 +1921,7 @@ export default {
           startDate,
           amount,
           type,
+          scale
         };
         this.installments = [...this.installments, todo];
       }
@@ -2116,6 +2130,7 @@ export default {
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
           const type = this.installments[i].type;
+          const scale = this.installments[i].scale
           const isPaid = "N";
           const customerName = this.editedItemLeads.name;
 
@@ -2139,6 +2154,7 @@ export default {
             type,
             isPaid,
             customerName,
+            scale
           };
           await API.graphql({
             query: createRecord,
@@ -2402,6 +2418,7 @@ export default {
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
           const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
           const isPaid = "N";
           const customerName = this.editedItemLeads.name;
 
@@ -2425,6 +2442,7 @@ export default {
             isPaid,
             type,
             customerName,
+            scale
           };
           await API.graphql({
             query: createRecord,

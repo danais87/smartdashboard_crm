@@ -308,6 +308,7 @@ export const listQuotes = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
@@ -402,6 +403,7 @@ export const getQuote = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
@@ -500,6 +502,7 @@ export const listQuoteItems = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
@@ -635,6 +638,7 @@ export const listInstallments = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
@@ -664,6 +668,7 @@ export const getInstallment = /* GraphQL */ `
       reference
       method
       payDate
+      scale
     }
   }
 `;
@@ -918,6 +923,7 @@ export const listSmartDash = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      scale
     }
   }
 `;
