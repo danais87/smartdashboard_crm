@@ -655,21 +655,11 @@
                         check-on-click-node
                         :props="defaultProps"
                         :filter-node-method="filterNode"
+                        @node-click="clickService"
                       >
                       </el-tree>
                     </v-col>
-                    <v-col>
-                      <v-btn
-                        class="ma-2"
-                        outlined
-                        x-small
-                        fab
-                        color="indigo"
-                        @click="addService"
-                      >
-                        <v-icon>el-icon-d-arrow-left</v-icon>
-                      </v-btn>
-                    </v-col>
+                     
                   </v-row>
                 </v-col>
               </v-row>
@@ -1402,6 +1392,10 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
+    clickService() {
+      console.log(this.$refs.tree.getCheckedKeys());
+      this.addService();
+    },
 
     async fillData() {
       const loading = this.$loading({
@@ -1851,7 +1845,7 @@ export default {
         startDate,
         amount,
         type,
-        scale
+        scale,
       };
       this.installments = [...this.installments, pay];
       this.value_opt = "";
@@ -1902,15 +1896,15 @@ export default {
         startDate,
         amount,
         type,
-        scale
+        scale,
       };
       this.installments = [...this.installments, pay];
       cant_amounts = (this.total_disc - this.payment) / this.number;
 
       for (let i = 0; i < this.number; i++) {
         const type = "INST";
-        const s = i+2;
-        const scale = "1/"+s;
+        const s = i + 2;
+        const scale = "1/" + s;
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
@@ -1921,7 +1915,7 @@ export default {
           startDate,
           amount,
           type,
-          scale
+          scale,
         };
         this.installments = [...this.installments, todo];
       }
@@ -2130,7 +2124,7 @@ export default {
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
           const type = this.installments[i].type;
-          const scale = this.installments[i].scale
+          const scale = this.installments[i].scale;
           const isPaid = "N";
           const customerName = this.editedItemLeads.name;
 
@@ -2154,7 +2148,7 @@ export default {
             type,
             isPaid,
             customerName,
-            scale
+            scale,
           };
           await API.graphql({
             query: createRecord,
@@ -2442,7 +2436,7 @@ export default {
             isPaid,
             type,
             customerName,
-            scale
+            scale,
           };
           await API.graphql({
             query: createRecord,
