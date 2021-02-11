@@ -288,7 +288,7 @@
           <v-data-table
             :headers="headers"
             :items="invoices"
-            sort-by="name"
+            sort-by="orderNumber"
             class="elevation-1"
             :search="search"
             @click:row="handleClick"

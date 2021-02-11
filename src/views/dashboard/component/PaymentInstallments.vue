@@ -206,7 +206,7 @@ import {
   listQuotes,
 } from "../../../graphql/queries";
 import Vuex from "vuex";
-import { updateSmInstallment } from "../../../graphql/mutations";
+import { updateRecord, updateSmInstallment } from "../../../graphql/mutations";
 
 export default {
   name: "Payment",
@@ -583,6 +583,8 @@ export default {
           LogType: "None",
         };
         var pullResults = null;
+        const instPK = this.organizationID;
+        const instSK = this.inst.instSK;
         await lambda.invoke(pullParams, async function (error, data) {
           if (error) {
             prompt(error);
@@ -590,6 +592,15 @@ export default {
             pullResults = JSON.parse(data.Payload);
             console.log(pullResults);
             if (pullResults.MessageId) {
+              const isPaid = "Y";
+              const payDate = new Date().toISOString().substr(0, 10);
+              const SK = instSK;
+              const PK = instPK;
+              const todo = { isPaid, payDate, SK,PK };
+              await API.graphql({
+                query: updateRecord,
+                variables: { input: todo },
+              });
               this.alert = true;
             }
           }

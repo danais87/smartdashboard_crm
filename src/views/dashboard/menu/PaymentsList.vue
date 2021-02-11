@@ -142,6 +142,16 @@
                     >{{ item.type }}</v-chip
                   >
                 </template>
+                <template v-slot:[`item.scale`]="{ item }">
+                  <v-chip
+                    class="ma-2"
+                    :color="getColorType()"
+                    outlined
+                    light
+                    small
+                    >{{ item.scale }}</v-chip
+                  >
+                </template>
                 <template v-slot:[`item.payment`]="{ item }">
                   <v-chip class="ma-2" color="green" outlined light small>{{
                     formattedCurrencyValue(item.payment)
@@ -317,9 +327,9 @@ export default {
     headers: [
       { text: "Client", sortable: true, value: "full_name", align: "start" },
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
-      { text: "Payment Type", sortable: true, value: "type", align: "start" },
+      { text: "Type", sortable: true, value: "type", align: "start" },
       {
-        text: "Scale",
+        text: "#",
         align: "start",
         sortable: true,
         value: "scale",
@@ -344,7 +354,7 @@ export default {
         align: "right",
       },
       {
-        text: "Scale",
+        text: "#",
         align: "start",
         sortable: true,
         value: "scale",
@@ -965,6 +975,9 @@ export default {
       if (item == "INST") return "blue";
       else if (item == "DPAY") return "green";
       else return "orange";
+    },
+    getColorType() {
+      return "orange";
     },
   },
 };

@@ -1,24 +1,25 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import App from './App.vue'
-import router from './router'
-import store from './store'
-import './plugins/base'
-import './plugins/chartist'
-import './plugins/vee-validate'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import './plugins/base';
+import './plugins/chartist';
+import './plugins/vee-validate';
 import Amplify from 'aws-amplify';
 import '@aws-amplify/ui-vue';
 import aws_exports from './aws-exports';
-import vuetify from './plugins/vuetify'
-import i18n from './i18n'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import vuetify from './plugins/vuetify';
+import i18n from './i18n';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+import locale from 'element-ui/lib/locale/lang/en';
 import VueTelInput from "vue-tel-input";
-import 'vue-tel-input/dist/vue-tel-input.css'
+import 'vue-tel-input/dist/vue-tel-input.css';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 Vue.use(Vuex)
-Vue.use(ElementUI)
+Vue.use(ElementUI, locale)
 Vue.use(VueTelInput)
 
 
