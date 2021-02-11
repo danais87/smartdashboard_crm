@@ -1933,7 +1933,9 @@ export default {
       if (this.lead.id != undefined) {
         this.editedItemLeads = this.lead;
         this.editedItemLeads.name = JSON.parse(this.lead.l_smName)[0].fullName;
-         this.editedItemLeads.last_name =JSON.parse(this.lead.l_smName)[0].lastName;
+        this.editedItemLeads.last_name = JSON.parse(
+          this.lead.l_smName
+        )[0].lastName;
       }
       var downPayment = 0;
       var numInstallments = 0;
@@ -1994,7 +1996,8 @@ export default {
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = "Y";
-      const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name ;
+      const customerName =
+        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
       const todo = {
         PK,
@@ -2071,7 +2074,8 @@ export default {
         const isRecurrent = this.q_services[i].service.isRecurrent;
         const isVariant = this.q_services[i].service.isVariant;
         const internalComments = this.q_services[i].service.internalComments;
-        const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name;
+        const customerName =
+          this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
         const t = {
           PK,
@@ -2125,7 +2129,8 @@ export default {
           const type = this.installments[i].type;
           const scale = this.installments[i].scale;
           const isPaid = "N";
-          const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name;
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
           inst = {
             PK,
@@ -2213,7 +2218,8 @@ export default {
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = item.live;
-      const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name;
+      const customerName =
+        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       todo = {
         PK,
         SK,
@@ -2321,7 +2327,8 @@ export default {
         const isRecurrent = this.q_services[i].service.isRecurrent;
         const isVariant = this.q_services[i].service.isVariant;
         const internalComments = this.q_services[i].service.internalComments;
-        const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name;
+        const customerName =
+          this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
         const t = {
           PK,
@@ -2413,7 +2420,8 @@ export default {
           const type = this.installments[i].type;
           const scale = this.installments[i].scale;
           const isPaid = "N";
-          const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name;
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
           inst = {
             PK,
@@ -2480,7 +2488,8 @@ export default {
         const isVariant = item.isVariant;
         const internalComments = item.internalComments;
         const l_variant = l_team.slice(0, -1);
-        const customerName = this.editedItemLeads.name + ' ' + this.editedItemLeads.last_name;
+        const customerName =
+          this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
         if (!smName || !description || !price) {
           this.alert = false;
           this.openMS();
@@ -2559,6 +2568,22 @@ export default {
         }
         console.log(this.q_services);
         this.total = this.total_s;
+        this.payment = this.total;
+        this.number = 1;
+        this.calc = true;
+
+        this.installments = [];
+        const startDate = new Date().toISOString().substr(0, 10);
+        const amount = this.payment;
+        const type = "DPAY";
+        const scale = "1/1";
+        const pay = {
+          startDate,
+          amount,
+          type,
+          scale,
+        };
+        this.installments = [...this.installments, pay];
         this.aply();
       }
     },
@@ -2964,6 +2989,22 @@ export default {
       this.total = this.total_s + this.total_v;
       this.total_disc = this.total;
       this.quotation_amount = this.total;
+      this.payment = this.total;
+      this.number = 1;
+      this.calc = true;
+
+      this.installments = [];
+      const startDate = new Date().toISOString().substr(0, 10);
+      const amount = this.payment;
+      const type = "DPAY";
+      const scale = "1/1";
+      const pay = {
+        startDate,
+        amount,
+        type,
+        scale,
+      };
+      this.installments = [...this.installments, pay];
       console.log(this.q_services);
       this.closedelete();
       loading.close();

@@ -330,7 +330,6 @@ export default {
         value: "payment",
         align: "right",
       },
-
     ],
     headers_e: [
       { text: "Email", sortable: true, value: "email", align: "start" },
@@ -698,6 +697,7 @@ export default {
             quoteID: this.item_inst[i].GSP2PK1,
             payment: this.item_inst[i].amount,
             scale: this.item_inst[i].scale,
+            instSK: this.item_inst[i].SK,
           });
           this.total_pp = this.total_pp + this.item_inst[i].amount;
         }
@@ -711,6 +711,7 @@ export default {
             quoteID: this.item_inst[i].GSP2PK1,
             payment: this.item_inst[i].amount,
             scale: this.item_inst[i].scale,
+            instSK: this.item_inst[i].SK,
           });
           this.total_pr = this.total_pr + this.item_inst[i].amount;
         }
@@ -859,7 +860,7 @@ export default {
       const com = todos.data.getOrganization[0];
       const quotePK = this.organizationID;
       const quoteSK = this.editedItem_c.quoteID;
-      const smName = '';
+      const smName = "";
       var REGION = com.funcRegion;
       var identityPoolId = com.funcIdentityPoolId;
 
