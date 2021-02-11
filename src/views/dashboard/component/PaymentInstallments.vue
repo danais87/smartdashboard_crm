@@ -200,13 +200,12 @@
 
 <script>
 import { API } from "aws-amplify";
-import {
-  getCompany,
+import { 
   getOrganization,
   listQuotes,
 } from "../../../graphql/queries";
 import Vuex from "vuex";
-import { updateRecord, updateSmInstallment } from "../../../graphql/mutations";
+import { updateRecord } from "../../../graphql/mutations";
 
 export default {
   name: "Payment",
