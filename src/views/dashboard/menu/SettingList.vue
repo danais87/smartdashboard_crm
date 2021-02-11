@@ -263,7 +263,7 @@
                       ></v-text-field>
                     </v-col>
                     <br />
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemTeam.status"
                         :items="options_status"
@@ -472,7 +472,7 @@
                         label="Abbreviation"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemStype.status"
                         :items="options_status"
@@ -684,7 +684,7 @@
                         solo
                       ></v-select>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemDiscount.status"
                         :items="options_status"
@@ -789,7 +789,7 @@
                         label="Abbreviation"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemPayment.status"
                         :items="options_status"
@@ -894,7 +894,7 @@
                         label="Abbreviation"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemAcquisition.status"
                         :items="options_status"
@@ -999,7 +999,7 @@
                         label="Abbreviation"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemTask.status"
                         :items="options_status"
@@ -1102,7 +1102,7 @@
                         label="Abbreviation"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemLeads.status"
                         :items="options_status"
@@ -1207,7 +1207,7 @@
                         label="Title"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemLibrary.status"
                         :items="options_status"
@@ -1320,7 +1320,7 @@
                         label="Descripcion"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemQuote.status"
                         :items="options_status"
@@ -1381,7 +1381,7 @@
       </template>
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>Business Type</v-toolbar-title>
+          <v-toolbar-title>Industry Type</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="search_bt"
@@ -1408,7 +1408,7 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="headline">Business Type</span>
+                <span class="headline">Industry Type</span>
               </v-card-title>
               <v-card-text>
                 <v-container>
@@ -1425,7 +1425,7 @@
                         label="Descripcion"
                       ></v-text-field>
                     </v-col>
-                    <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-col class="d-flex" cols="12" sm="3" md="3">
                       <v-select
                         v-model="editedItemBT.status"
                         :items="options_status"
@@ -2506,7 +2506,7 @@ export default {
     async deleteItemBusinessType() {
       const loading = this.$loading({
         lock: true,
-        text: "Delete Business Type",
+        text: "Delete Industry Type",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });

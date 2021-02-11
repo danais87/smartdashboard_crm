@@ -202,6 +202,16 @@
                     formattedCurrencyValue(item.payment)
                   }}</v-chip>
                 </template>
+                <template v-slot:[`item.scale`]="{ item }">
+                  <v-chip
+                    class="ma-2"
+                    :color="getColorType()"
+                    outlined
+                    light
+                    small
+                    >{{ item.scale }}</v-chip
+                  >
+                </template>
                 <template v-slot:top>
                   <v-toolbar flat color="white">
                     <v-text-field

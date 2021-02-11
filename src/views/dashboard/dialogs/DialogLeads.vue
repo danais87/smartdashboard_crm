@@ -123,7 +123,7 @@
                 <v-select
                   v-model="item.businessType"
                   :items="businessType"
-                  label="Business Type"
+                  label="Industry Type"
                   item-text="description"
                   item-value="description"
                   outlined

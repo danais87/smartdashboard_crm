@@ -606,6 +606,9 @@ export default {
           }
         });
       }
+      this.$router.push({
+        path: "./menu/payments",
+      });
     },
   },
 };
