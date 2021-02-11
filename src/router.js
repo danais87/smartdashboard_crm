@@ -115,6 +115,12 @@ export default new Router({
           component: () => import('@/views/dashboard/component/Payment')
         },
         {
+          name: "Payment Installments",
+          path: '/paymentinstallments',
+          component: () => import('@/views/dashboard/component/PaymentInstallments')
+        },
+
+        {
           path: "/dashlist",
           name: "Dash Quote",
           component: () => import('@/views/dashboard/menu/DashList.vue')

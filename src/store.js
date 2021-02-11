@@ -593,10 +593,10 @@ export default new Vuex.Store({
         variables: {
           filter: {
             PK: {
-              eq: p_item.quote.PK,
+              eq: this.state.organizationID,
             },
             SK: {
-              eq: p_item.quote.SK,
+              eq: p_item.quoteID,
             },
             indexs: {
               eq: "2",
@@ -711,7 +711,7 @@ export default new Vuex.Store({
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width='100%' style='width:100.0%;mso-cellspacing:1.5pt;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in;line-height:inherit'>" +
         "<tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>" +
         "<td valign=top style='padding:.75pt .75pt .75pt .75pt'>" +
-        "<p class=MsoNormal style='line-height:15.0pt'>" + p_item.quote.customerName + "</p>" +
+        "<p class=MsoNormal style='line-height:15.0pt'>" + p_item.full_name + "</p>" +
         tabla_detalle +
         "</td>" +
         "<td valign=top style='padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
@@ -725,7 +725,7 @@ export default new Vuex.Store({
         "<td valign=top style='padding:.75pt .75pt .75pt .75pt'> " +
         "<p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify; line-height:15.0pt'><strong><span style='font-family:'Calibri',sans-serif'>Subject:</span></strong>" +
         "Dear customer we are pleased to inform you that according to the payment schedule established in your quote, the next pending payment is" + "<br> <br>" +
-        parseFloat(p_item.payment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "</p>" +
+        "Amount:" + parseFloat(p_item.payment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + ", Date:" + p_item.date + "<br>" + "</p>" +
         "</td></tr></table>" +
 
         detalle_installments +
@@ -741,7 +741,7 @@ export default new Vuex.Store({
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 style='mso-cellspacing:1.5pt;margin-left:22.5pt;mso-yfti-tbllook:1184; mso-padding-alt:0in 0in 0in 0in'>" +
         "<tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>" +
         "<td style='background:#4DB24C;padding:7.5pt 11.25pt 7.5pt 11.25pt;border-radius: 5px'>" +
-        "<p class=MsoNormal align=center style='margin-bottom:7.5pt;text-align:center'><a href='https://master.ddqrxn9rg7lbw.amplifyapp.com/paymentInst?id=" + p_item.quote.id + '&orgid=' + p_item.quote.PK + "'><span style='font-size:13.5pt;font-family:'Arial',sans-serif;color:white;letter-spacing:.75pt;text-decoration:none;text-underline:none'>Confirm Order </span></a></p>" +
+        "<p class=MsoNormal align=center style='margin-bottom:7.5pt;text-align:center'><a href='https://master.ddqrxn9rg7lbw.amplifyapp.com/paymentInst?id=" + item.id + '&orgid=' + item.PK + "'><span style='font-size:13.5pt;font-family:'Arial',sans-serif;color:white;letter-spacing:.75pt;text-decoration:none;text-underline:none'>Confirm Order </span></a></p>" +
         "</td></tr>" +
         "</table>" +
         "</body></canvas></html>";
@@ -1045,9 +1045,7 @@ export default new Vuex.Store({
       var business_Type = [];
       if (items.l_businessType[0]) {
         for (
-          let i = 0;
-          i < JSON.parse(items.l_businessType).length;
-          i++
+          let i = 0; i < JSON.parse(items.l_businessType).length; i++
         ) {
           if (
             JSON.parse(items.l_businessType)[i].description != ""

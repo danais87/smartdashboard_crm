@@ -127,7 +127,7 @@
               <v-data-table
                 :headers="headers"
                 :items="received_payment"
-                sort-by="name"
+                sort-by="full_name"
                 class="elevation-1"
                 :search="search_l"
                 :items-per-page="-1"
@@ -319,11 +319,18 @@ export default {
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
       { text: "Payment Type", sortable: true, value: "type", align: "start" },
       {
+        text: "Scale",
+        align: "start",
+        sortable: true,
+        value: "scale",
+      },
+      {
         text: "Payment",
         sortable: true,
         value: "payment",
         align: "right",
       },
+
     ],
     headers_e: [
       { text: "Email", sortable: true, value: "email", align: "start" },
@@ -336,6 +343,12 @@ export default {
         sortable: true,
         value: "payment",
         align: "right",
+      },
+      {
+        text: "Scale",
+        align: "start",
+        sortable: true,
+        value: "scale",
       },
       {
         text: "Actions",
@@ -581,11 +594,9 @@ export default {
       .substr(0, 10);
     console.log(this.body);
     this.getInvoice();
-
   },
 
   methods: {
-    
     ...Vuex.mapMutations([
       "SetPhone",
       "SetEmails",
@@ -622,7 +633,7 @@ export default {
     OpenPayment(item) {
       console.log(item);
       this.$router.push({
-        path: "/paymentinst",
+        path: "/paymentinstallments",
         query: {
           inst: item,
         },
@@ -636,7 +647,6 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-
 
       this.quotes = [];
       this.received_payment = [];
@@ -680,23 +690,29 @@ export default {
       for (let i = 0; i < this.item_inst.length; i++) {
         if (this.item_inst[i].isPaid != "Y") {
           this.pend_payment.push({
-            type:  this.item_inst[i].type,
+            type: this.item_inst[i].type,
             name: "",
             date: this.item_inst[i].startDate,
             full_name: this.item_inst[i].customerName,
+            customerID: this.item_inst[i].GSP1PK1,
+            quoteID: this.item_inst[i].GSP2PK1,
             payment: this.item_inst[i].amount,
+            scale: this.item_inst[i].scale,
           });
-          this.total_pp = this.total_pp + this.item_inst[i].amount
+          this.total_pp = this.total_pp + this.item_inst[i].amount;
         }
         if (this.item_inst[i].isPaid == "Y") {
           this.received_payment.push({
-            type:  this.item_inst[i].type,
+            type: this.item_inst[i].type,
             name: "",
             date: this.item_inst[i].startDate,
             full_name: this.item_inst[i].customerName,
+            customerID: this.item_inst[i].GSP1PK1,
+            quoteID: this.item_inst[i].GSP2PK1,
             payment: this.item_inst[i].amount,
+            scale: this.item_inst[i].scale,
           });
-          this.total_pr= this.total_pr + this.item_inst[i].amount
+          this.total_pr = this.total_pr + this.item_inst[i].amount;
         }
       }
       console.log(this.pend_payment);
@@ -774,6 +790,7 @@ export default {
     },
 
     async OpenSentEmail(item) {
+      console.log(item);
       this.editedItem_c = item;
       const todos = await API.graphql({
         query: listCustomers,
@@ -783,7 +800,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: item.quote.customerID,
+              eq: item.customerID,
             },
             indexs: {
               eq: "table",
@@ -840,9 +857,9 @@ export default {
       });
 
       const com = todos.data.getOrganization[0];
-      const quotePK = this.editedItem_c.quote.PK;
-      const quoteSK = this.editedItem_c.quote.SK;
-      const smName = this.editedItem_c.quote.smName;
+      const quotePK = this.organizationID;
+      const quoteSK = this.editedItem_c.quoteID;
+      const smName = '';
       var REGION = com.funcRegion;
       var identityPoolId = com.funcIdentityPoolId;
 

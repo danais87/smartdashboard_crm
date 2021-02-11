@@ -1,5 +1,8 @@
 <template>
   <v-container id="dashboard" fluid grid-list-lg class="mx-0 pa-0">
+    <v-alert v-if="show == false" type="error"
+      >error no existe el quote</v-alert
+    >
     <v-card v-if="show == true" class="mx-auto" max-width="1000" outlined>
       <v-list-item three-line>
         <v-list-item-content>
@@ -33,29 +36,23 @@
           <v-row>
             <v-col cols="12" sm="12" md="12"
               ><div class="grid-content bg-purple-dark">
-                <h5>
-                  <span>
-                    <i class="fa fa-user text-primary" aria-hidden="true"></i
-                    >Order Summary
-                  </span>
-                </h5>
-                <v-divider></v-divider>
-                <div v-for="el in q_services" :key="el.id">
-                  <v-row class="pa-md-4 mx-lg-auto">
-                    <v-col cols="12" sm="6" md="6">
-                      <h4>{{ el.smName }}</h4>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <p align="right" color="primary">
-                        {{ formattedCurrencyValue(el.price) }}
-                      </p>
-                    </v-col>
-                  </v-row>
-                  <v-divider></v-divider>
-                </div>
                 <v-row class="pa-md-4 mx-lg-auto">
                   <v-col cols="12" sm="6" md="6">
-                    <h3>TOTAL</h3>
+                    <h4>
+                      <span>
+                        <i
+                          class="fa fa-user text-primary"
+                          aria-hidden="true"
+                        ></i
+                        >BizPlanEasy Services-Quote #: {{ item.smName }}
+                      </span>
+                    </h4>
+                  </v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row class="pa-md-4 mx-lg-auto">
+                  <v-col cols="12" sm="6" md="6">
+                    <h3>Invoice Total Amount</h3>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
                     <p align="right">
@@ -63,16 +60,40 @@
                     </p>
                   </v-col>
                 </v-row>
+                <v-divider></v-divider>
+                <v-row class="pa-md-4 mx-lg-auto">
+                  <v-col cols="12" sm="8" md="8">
+                    <h3>Amount you have paid so far( Thank you)</h3>
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <p align="right">
+                      {{ formattedCurrencyValue(total) }}
+                    </p>
+                  </v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-divider></v-divider>
+                <v-row class="pa-md-4 mx-lg-auto">
+                  <v-col cols="12" sm="6" md="6">
+                    <h3>Balance</h3>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="6">
+                    <p align="right">
+                      {{ formattedCurrencyValue(balance) }}
+                    </p>
+                  </v-col>
+                </v-row>
+                <v-divider></v-divider>
                 <v-row class="pa-md-4 mx-lg-auto">
                   <v-col cols="12" sm="8" md="8"
                     ><strong class="primary--text text--lighten-1"
-                      >Amount to be paid now (Downpayment):</strong
+                      >Amount to pay today:</strong
                     >
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
                     <strong
                       ><h4 align="right">
-                        {{ formattedCurrencyValue(item.downPayment) }}
+                        {{ formattedCurrencyValue(inst.payment) }}
                       </h4></strong
                     ></v-col
                   >
@@ -131,20 +152,32 @@
                   </h5>
                   <v-divider></v-divider>
                   <v-row class="pa-md-4 mx-lg-auto">
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="3" md="3">
                       <h4>Installment Date</h4>
                     </v-col>
-                    <v-col cols="12" sm="6" md="6">
+                    <v-col cols="12" sm="3" md="3">
+                      <h4>Is Pay</h4>
+                    </v-col>
+                    <v-col cols="12" sm="3" md="3">
+                      <h4>Pay Date</h4>
+                    </v-col>
+                    <v-col cols="12" sm="3" md="3">
                       <p align="right" color="primary">Amount</p>
                     </v-col>
                   </v-row>
                   <v-divider></v-divider>
                   <div v-for="inst in installments" :key="inst.id">
                     <v-row class="pa-md-4 mx-lg-auto">
-                      <v-col cols="12" sm="6" md="6">
+                      <v-col cols="12" sm="3" md="3">
                         <h4>{{ inst.startDate }}</h4>
                       </v-col>
-                      <v-col cols="12" sm="6" md="6">
+                      <v-col cols="12" sm="3" md="3">
+                        <h4>{{ inst.isPaid }}</h4>
+                      </v-col>
+                      <v-col cols="12" sm="3" md="3">
+                        <h4>{{ inst.payDate }}</h4>
+                      </v-col>
+                      <v-col cols="12" sm="3" md="3">
                         <p align="right" color="primary">
                           {{ formattedCurrencyValue(inst.amount) }}
                         </p>
@@ -168,28 +201,25 @@
 <script>
 import { API } from "aws-amplify";
 import {
-  getOrganization,
+  getCompany,
   listQuotes,
-
 } from "../../../graphql/queries";
 import Vuex from "vuex";
-import {
-  updateRecord,
-} from "../../../graphql/mutations";
+import { updateSmInstallment } from "../../../graphql/mutations";
 
 export default {
   name: "Payment",
   components: {},
+
   data() {
     return {
       checkbox: true,
       paidFor: false,
       error: "",
-      id: this.$route.query.id,
-      organizationID: this.$route.query.orgid,
+      inst: this.$route.query.inst,
       item: {},
-      q_services: [],
       show: false,
+      p_inst: 0,
       card_options: [
         {
           value: "Visa",
@@ -308,17 +338,15 @@ export default {
           label: "2030",
         },
       ],
-      headers_e: [
-        { text: "name", align: "start", sortable: true, value: "name" },
-        { text: "price", align: "start", sortable: true, value: "price" },
-      ],
+      total: "",
+      balance: "",
       card_name: "",
       card_number: "",
       card_cvv: "",
-      editedItemLeads: [],
       order: "",
-      phones: [],
       installments: [],
+      q_services:[],
+      editedItemLeads:[],
       selectedEmails: [],
       product: {
         price: 100,
@@ -334,23 +362,18 @@ export default {
     document.body.appendChild(script);
   },
   created() {
-    console.log(this.id);
-    this.ConfirmQuote(this.id);
+    console.log(this.inst);
+    this.ConfirmQuote(this.inst);
   },
   computed: {
-    ...Vuex.mapState(["response", "usuario", "bodyquote"]),
+    ...Vuex.mapState(["response", "usuario", "bodyquote","organizationID"]),
   },
   methods: {
-    ...Vuex.mapMutations([
-      "SetResponse",
-      "SetBodyQuote",
-      "SetPhone",
-      "SetEmails",
-      "SetAddress",
-    ]),
+    ...Vuex.mapMutations(["SetResponse", "SetBodyQuote"]),
 
-    async ConfirmQuote(id_quote) {
-      const seq = await API.graphql({
+    async ConfirmQuote(quote) {
+      console.log(quote);
+     const seq = await API.graphql({
         query: listQuotes,
         variables: {
           filter: {
@@ -358,7 +381,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: "QUO#" + id_quote,
+              eq: quote.quoteID,
             },
             indexs: {
               eq: "2",
@@ -375,11 +398,12 @@ export default {
       if (datas.length > 0) {
         this.show = true;
       }
-      var quotes = [];
+
+       var quotes = [];
       var leads = [];
       var installments = [];
       var services = [];
-     
+
       this.editedItemLeads = [];
       this.phones = [];
 
@@ -417,8 +441,16 @@ export default {
         this.editedItemLeads.l_smName
       )[0].fullName;
 
-      this.total = quotes[0].quotationAmount;
+      for (let i = 0; i < this.installments.length; i++) {
+        if (this.installments[i].is_paid) {
+          this.p_inst = this.p_inst + this.installments[i].amount;
+        }
+      }
+
+
       this.total_disc = quotes[0].finalAmount;
+      this.total = quotes[0].downPayment + this.p_inst;
+      this.balance = quotes[0].finalAmount - this.p_inst - quotes[0].downPayment;
 
       this.SetBodyQuote(datas);
     },
@@ -446,11 +478,11 @@ export default {
           },
           createOrder: (data, actions) => {
             const final_amount = this.formattedCurrencyValue(
-              this.item.finalAmount
+              this.item.final_amount
             );
-            const payment = this.formattedCurrencyValue(this.item.downPayment);
+            const payment = this.formattedCurrencyValue(this.inst.amount);
             const balance = this.formattedCurrencyValue(
-              this.item.finalAmount - this.item.downPayment
+              this.item.final_amount - this.item.payment - this.p_inst
             );
 
             return actions.order.create({
@@ -458,7 +490,7 @@ export default {
                 {
                   description:
                     "BizPlanEasy Services-Quote #: " +
-                    this.item.smName +
+                    this.item.name +
                     ";(Total Amount: " +
                     final_amount +
                     "); (This Payment: " +
@@ -468,7 +500,7 @@ export default {
                     ")",
                   amount: {
                     currency_code: "USD",
-                    value: this.item.downPayment,
+                    value: this.inst.amount,
                   },
                 },
               ],
@@ -479,8 +511,7 @@ export default {
             this.paidFor = true;
             console.log(this.order);
 
-            this.invokeLambda(this.item.id);
-            this.createInvoice();
+            this.invokeLambda(this.inst.id);
           },
           onError: (err) => {
             this.error = err;
@@ -490,187 +521,25 @@ export default {
         .render(this.$refs.paypal);
     },
 
-    async createInvoice() {
+    async invokeLambda(item) {
       const loading = this.$loading({
         lock: true,
-        text: "Create Invoice",
+        text: "Payment",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-
-      const seq = await API.graphql({
-        query: listQuotes,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "QUO#",
-            },
-            indexs: {
-              eq: "table_order",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      console.log(seq.data.listQuotes);
-      var sequence = seq.data.listQuotes.length;
-      const c = sequence ++;
-      const PK = this.item.PK;
-      const SK = this.item.SK;
-      const paymentStatus = "GS";
-      const orderNumber = "INV#" + c;
-      const processStatus = "Invoice";
-
-      const todo = {
-        PK,
-        SK,
-        paymentStatus,
-        orderNumber,
-        processStatus,
-      };
-
-      const invo = await API.graphql({
-        query: updateRecord,
-        variables: { input: todo },
-      });
-
-      console.log(this.item);
-      const quote = await API.graphql({
-        query: listQuotes,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: this.item.SK,
-            },
-            indexs: {
-              eq: "2",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      console.log(quote);
-      var datas = quote.data.listQuotes;
-      var installments = [];
-      var services = [];
-      for (let i = 0; i < datas.length; i++) {
-        if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
-        }
-        if (datas[i].entityType == "QUOTEITEM") {
-          services.push(datas[i]);
-        }
-      }
-      //update QUOTEITEM
-      console.log(services);
-      for (let i = 0; i < services.length; i++) {
-        const PK = services[i].PK;
-        const SK = services[i].SK;
-        const GSP3PK1 = this.organizationID + "#TASK";
-        const GSP3SK1 = "STATUS#" + "IP";
-        const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = new Date().toISOString().substr(0, 10);
-        const taskStatus = "In Progress";
-        const taskStart = new Date().toISOString().substr(0, 10);
-        const todo = {
-          PK,
-          SK,
-          GSP3PK1,
-          GSP3SK1,
-          GSP4PK1,
-          GSP4SK1,
-          taskStatus,
-          taskStart,
-          paymentStatus,
-          orderNumber,
-          processStatus,
-        };
-        await API.graphql({
-          query: updateRecord,
-          variables: { input: todo },
-        });
-      }
-
-      //update INSTALLMENT
-      for (let i = 0; i < installments.length; i++) {
-        var inst = "";
-
-        if (installments[i].type == "DPAY") {
-          const PK = installments[i].PK;
-          const SK = installments[i].SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = installments[i].startDate;
-          const isPaid = "Y";
-          inst = {
-            PK,
-            SK,
-            GSP3PK1,
-            GSP3SK1,
-            GSP4PK1,
-            GSP4SK1,
-            isPaid,
-          };
-        } else {
-          const PK = installments[i].PK;
-          const SK = installments[i].SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = installments[i].startDate;
-          inst = {
-            PK,
-            SK,
-            GSP3PK1,
-            GSP3SK1,
-            GSP4PK1,
-            GSP4SK1,
-          };
-        }
-        await API.graphql({
-          query: updateRecord,
-          variables: { input: inst },
-        });
-      }
-
-      console.log(invo);
-      loading.close();
-      this.$router.push({
-        path: "./menu/invoice",
-      });
-    },
-
-    async invokeLambda(item) {
+      console.log(item);
       var AWS = require("aws-sdk");
 
-      const todos = await API.graphql({
-        query: getOrganization,
-        variables: {
-          filter: {
-            active: { eq: "1" },
-            SK: {
-              eq: "#META#",
-            },
-            PK: { eq: this.organizationID },
-          },
-        },
+      const company = await API.graphql({
+        query: getCompany,
+        variables: { id: this.item.companyID },
       });
 
-      const com = todos.data.getOrganization[0];
+      const com = company.data.getCompany;
 
-      var REGION = com.funcRegion;
-      var identityPoolId = com.funcIdentityPoolId;
+      var REGION = com.region;
+      var identityPoolId = com.IdentityPoolId;
 
       AWS.config.update({
         region: REGION,
@@ -696,16 +565,16 @@ export default {
 
       for (let i = 0; i < this.selectedEmails.length; i++) {
         var pullParams = {
-          FunctionName: com.funcName,
+          FunctionName: com.FunctionName,
           InvocationType: "RequestResponse",
           Payload:
             '{ "toAddresses": "' +
             this.selectedEmails[i] +
             '","source":"' +
-            com.funcSource +
+            com.source +
             '","subject":"' +
             "Thank you for your payment [BizPlanEasy Order #: " +
-            this.item.smName +
+            this.item.name +
             "]" +
             '","body":"' +
             this.bodyquote +
@@ -720,11 +589,23 @@ export default {
             pullResults = JSON.parse(data.Payload);
             console.log(pullResults);
             if (pullResults.MessageId) {
+              const is_paid = "Y";
+              const pay_date = new Date().toISOString().substr(0, 10);
+              const id = item;
+              const todo = { is_paid, pay_date, id };
+              await API.graphql({
+                query: updateSmInstallment,
+                variables: { input: todo },
+              });
               this.alert = true;
             }
           }
         });
       }
+      this.$router.push({
+        path: "/payments",
+      });
+      loading.close();
     },
   },
 };
