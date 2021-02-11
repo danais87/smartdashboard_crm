@@ -202,6 +202,7 @@
 import { API } from "aws-amplify";
 import {
   getCompany,
+  getOrganization,
   listQuotes,
 } from "../../../graphql/queries";
 import Vuex from "vuex";
@@ -477,20 +478,19 @@ export default {
             allowed: [window.paypal.FUNDING.CARD],
           },
           createOrder: (data, actions) => {
+            console.log(this.inst);
             const final_amount = this.formattedCurrencyValue(
-              this.item.final_amount
+              this.item.finalAmount
             );
-            const payment = this.formattedCurrencyValue(this.inst.amount);
-            const balance = this.formattedCurrencyValue(
-              this.item.final_amount - this.item.payment - this.p_inst
-            );
+            const payment = this.formattedCurrencyValue(this.inst.payment);
+            const balance = this.formattedCurrencyValue(this.balance);
 
             return actions.order.create({
               purchase_units: [
                 {
                   description:
                     "BizPlanEasy Services-Quote #: " +
-                    this.item.name +
+                    this.item.smName +
                     ";(Total Amount: " +
                     final_amount +
                     "); (This Payment: " +
@@ -500,7 +500,7 @@ export default {
                     ")",
                   amount: {
                     currency_code: "USD",
-                    value: this.inst.amount,
+                    value: this.inst.payment,
                   },
                 },
               ],
@@ -511,7 +511,7 @@ export default {
             this.paidFor = true;
             console.log(this.order);
 
-            this.invokeLambda(this.inst.id);
+            this.invokeLambda(this.item);
           },
           onError: (err) => {
             this.error = err;
@@ -522,24 +522,25 @@ export default {
     },
 
     async invokeLambda(item) {
-      const loading = this.$loading({
-        lock: true,
-        text: "Payment",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      console.log(item);
       var AWS = require("aws-sdk");
 
-      const company = await API.graphql({
-        query: getCompany,
-        variables: { id: this.item.companyID },
+      const todos = await API.graphql({
+        query: getOrganization,
+        variables: {
+          filter: {
+            active: { eq: "1" },
+            SK: {
+              eq: "#META#",
+            },
+            PK: { eq: this.organizationID },
+          },
+        },
       });
 
-      const com = company.data.getCompany;
+      const com = todos.data.getOrganization[0];
 
-      var REGION = com.region;
-      var identityPoolId = com.IdentityPoolId;
+      var REGION = com.funcRegion;
+      var identityPoolId = com.funcIdentityPoolId;
 
       AWS.config.update({
         region: REGION,
@@ -565,16 +566,16 @@ export default {
 
       for (let i = 0; i < this.selectedEmails.length; i++) {
         var pullParams = {
-          FunctionName: com.FunctionName,
+          FunctionName: com.funcName,
           InvocationType: "RequestResponse",
           Payload:
             '{ "toAddresses": "' +
             this.selectedEmails[i] +
             '","source":"' +
-            com.source +
+            com.funcSource +
             '","subject":"' +
             "Thank you for your payment [BizPlanEasy Order #: " +
-            this.item.name +
+            this.item.smName +
             "]" +
             '","body":"' +
             this.bodyquote +
@@ -589,23 +590,11 @@ export default {
             pullResults = JSON.parse(data.Payload);
             console.log(pullResults);
             if (pullResults.MessageId) {
-              const is_paid = "Y";
-              const pay_date = new Date().toISOString().substr(0, 10);
-              const id = item;
-              const todo = { is_paid, pay_date, id };
-              await API.graphql({
-                query: updateSmInstallment,
-                variables: { input: todo },
-              });
               this.alert = true;
             }
           }
         });
       }
-      this.$router.push({
-        path: "/payments",
-      });
-      loading.close();
     },
   },
 };
