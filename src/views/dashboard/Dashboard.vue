@@ -190,7 +190,7 @@ export default {
   components: { Card, ChartCard, StatsCard, DoughnutChart },
   data() {
     return {
-      total_pp: "0",
+      total_pp: 0,
       startDate: new Date(),
       menu: false,
       modal: false,
@@ -414,7 +414,9 @@ export default {
         1: false,
         2: false,
       },
-      percent: "0",
+      percent: 0,
+      total_i:0,
+      total_q:0,
       dchartdata: null,
       doptions: null,
       ichartdata: null,
@@ -457,9 +459,8 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
 
-      var total_q = 0;
-      var total_i = 0;
-      var total_c = 0;
+      this.total_q = 0;
+      this.total_i = 0;
       var total_s = 0;
       var total_t = 0;
       this.total_pp = 0;
@@ -496,13 +497,13 @@ export default {
       console.log(this.quotes_datac);
 
       for (let i = 0; i < this.quotes_datac.length; i++) {
-        if (this.quotes_datac[i].orderNumber != null) {
-          total_q = total_q + this.quotes_datac[i].finalAmount;
+        if (this.quotes_datac[i].orderNumber == null) {
+          this.total_q = this.total_q + this.quotes_datac[i].finalAmount;
         } else {
-          total_i = total_i + this.quotes_datac[i].finalAmount;
+          this.total_i = this.total_i + this.quotes_datac[i].finalAmount;
         }
       }
-      this.percent = (total_i * 100) / (total_i + total_q);
+      this.percent = (this.total_i * 100) / (this.total_i + this.total_q);
       this.percent = this.formattedCurrencyValue(this.percent);
 
       const inst = await API.graphql({
@@ -599,19 +600,19 @@ export default {
 
       this.ichartdata = {
         labels: [
-          "Invoices: " + "(" + total_i + ")",
-          "Quote: " + "(" + total_q + ")",
+          "Invoices: " + "(" + this.formattedValue(this.total_i) + ")",
+          "Quote: " + "(" + this.formattedValue(this.total_q) + ")",
         ],
         datasets: [
           {
-            label: [total_i, total_q],
+            label: [this.total_i, this.total_q],
             borderWidth: 1,
             borderColor: ["rgba(153, 102, 255, 1)", "rgba(54, 162, 235, 1)"],
             backgroundColor: [
               "rgba(153, 102, 255, 0.2)",
               "rgba(54, 162, 235, 0.2)",
             ],
-            data: [total_i, total_q],
+            data: [this.total_i, this.total_q],
           },
         ],
       };
@@ -744,6 +745,14 @@ export default {
         parseFloat(value)
           .toFixed(2)
           .replace(/\d(?=(\d{3})+\.)/g, "$&,") + " %"
+      );
+    },
+
+    formattedValue(value) {
+      return '$' + (
+        parseFloat(value)
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,")
       );
     },
   },

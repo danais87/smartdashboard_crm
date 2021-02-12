@@ -1889,7 +1889,7 @@ export default {
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
-      const scale = "1/1";
+      const scale = "1/" + (this.number+1);
       const pay = {
         startDate,
         amount,
@@ -1902,7 +1902,7 @@ export default {
       for (let i = 0; i < this.number; i++) {
         const type = "INST";
         const s = i + 2;
-        const scale = "1/" + s;
+        const scale = s + "/" + (this.number+1);
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
