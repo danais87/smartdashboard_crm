@@ -11,7 +11,6 @@
           class="body-3 grey--text font-weight-light"
           v-text="title"
         />
-
         <h3 class="display-2 font-weight-light text--primary">
           {{ value }} <small>{{ smallValue }}</small>
         </h3>
@@ -24,15 +23,6 @@
     >
       <v-divider />
     </v-col>
-
-    <v-icon
-      :color="subIconColor"
-      size="16"
-      class="ml-2 mr-1"
-    >
-      {{ subIcon }}
-    </v-icon>
-
     <span
       :class="subTextColor"
       class="caption grey--text font-weight-light"
@@ -77,7 +67,7 @@
       },
       value: {
         type: String,
-        default: undefined,
+        default: "0",
       },
       smallValue: {
         type: String,
@@ -89,7 +79,7 @@
 
 <style lang="sass">
 .v-card--material-stats
-  display: flex
+   
   flex-wrap: wrap
   position: relative
 
@@ -110,4 +100,10 @@
 
   .v-card__actions
     flex: 1 0 100%
+
+  .v-card--material__heading
+      max-height: 50px !important
+      width: 50px !important
+      padding: 2px !important
+
 </style>

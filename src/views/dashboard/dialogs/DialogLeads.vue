@@ -214,7 +214,7 @@ export default {
       "accounts",
       "acquisitions",
       "leadStatus",
-      "businessType"
+      "businessType",
     ]),
 
     show: {
@@ -261,6 +261,8 @@ export default {
       const GSP1SK1 = "#META#" + id;
       const GSP2PK1 = SK;
       const GSP2SK1 = SK;
+      const GSP4PK1 = this.organizationID;
+      const GSP4SK1 = new Date().toISOString().substr(0, 10);
       const entityType = "CUSTOMER";
       const createdAt = new Date().toISOString().substr(0, 10);
       const updateAt = new Date().toISOString().substr(0, 10);
@@ -289,6 +291,8 @@ export default {
         GSP1SK1,
         GSP2PK1,
         GSP2SK1,
+        GSP4PK1,
+        GSP4SK1,
         entityType,
         createdAt,
         updateAt,
@@ -387,6 +391,8 @@ export default {
       }
       const PK = item.PK;
       const SK = item.SK;
+      const GSP4PK1 = this.organizationID;
+      const GSP4SK1 = new Date().toISOString().substr(0, 10);
       const updateAt = new Date().toISOString().substr(0, 10);
       const account = item.account;
       const l_smName = JSON.stringify(names[0]);
@@ -406,6 +412,8 @@ export default {
       const todo = {
         PK,
         SK,
+        GSP4PK1,
+        GSP4SK1,
         updateAt,
         l_smName,
         account,

@@ -337,7 +337,6 @@ export default {
     headers: [
       { text: "Client", sortable: true, value: "full_name", align: "start" },
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
-      { text: "Type", sortable: true, value: "type", align: "start" },
       {
         text: "#",
         align: "start",
@@ -637,7 +636,12 @@ export default {
     },
 
     formattedCurrencyValue(value) {
-      return "$ " + parseFloat(value).toFixed(2);
+     return (
+        "$ " +
+        parseFloat(value)
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+      );
     },
 
     handleCurrentChange(val) {

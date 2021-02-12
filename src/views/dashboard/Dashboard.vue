@@ -66,53 +66,107 @@
       <v-spacer></v-spacer>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="3" lg="3"
-        ><br /><br />
+      <v-col cols="2" sm="2" lg="2"
+        >
         <base-material-stats-card
           color="info"
-          icon="mdi-twitter"
-          title="Followers"
-          value="+245"
+          icon="mdi-poll"
+          title="Quote - Invoice"
+          :value="percent"
           sub-icon="mdi-clock"
-          sub-text="Just Updated"
+          sub-text="Invoice represent"
         />
-      </v-col>
 
-      <v-col cols="12" sm="3" lg="3">
         <br /><br />
         <base-material-stats-card
           color="primary"
           icon="mdi-poll"
-          title="Website Visits"
-          value="75.521"
+          title="Outstanding Invoices"
+          :value="total_pp"
           sub-icon="mdi-tag"
-          sub-text="Tracked from Google Analytics"
+          sub-text="Pending Payments"
         />
       </v-col>
 
-      <v-col cols="12" sm="3" lg="3">
+      <v-col cols="12" sm="4" lg="4">
+        <v-card max-width="400" max-height="400">
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">New Leads</div>
+              <DoughnutChart
+                :chart-data="dchartdata"
+                :options="doptions"
+                :height="200"
+                :width="200"
+              ></DoughnutChart>
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
         <br /><br />
-        <base-material-stats-card
-          color="success"
-          icon="mdi-store"
-          title="Revenue"
-          value="$ 34,245"
-          sub-icon="mdi-calendar"
-          sub-text="Last 24 Hours"
-        />
+      </v-col>
+      <v-col cols="12" sm="4" lg="4">
+        <v-card max-width="400" max-height="400">
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">Revenue</div>
+              <DoughnutChart
+                :height="200"
+                :width="200"
+                :chart-data="ichartdata"
+                :options="ioptions"
+              ></DoughnutChart>
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
+        <br /><br />
       </v-col>
 
-      <v-col cols="12" sm="3" lg="3">
+      <v-col cols="12" sm="4" lg="4">
+        <v-card max-width="400" max-height="400">
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">New Proyects</div>
+              <DoughnutChart
+                :height="200"
+                :width="200"
+                :chart-data="tchartdata"
+                :options="toptions"
+              ></DoughnutChart>
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
         <br /><br />
-        <base-material-stats-card
-          color="orange"
-          icon="mdi-sofa"
-          title="Bookings"
-          value="184"
-          sub-icon="mdi-alert"
-          sub-icon-color="red"
-          sub-text="Get More Space..."
-        />
+      </v-col>
+      <v-col cols="12" sm="4" lg="4">
+        <v-card max-width="400" max-height="400">
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">Sales by Category</div>
+              <DoughnutChart
+                :height="200"
+                :width="200"
+                :chart-data="schartdata"
+                :options="soptions"
+              ></DoughnutChart>
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
+        <br /><br />
+      </v-col>
+      <v-col cols="4" lg="4">
+        <base-material-chart-card
+          :data="emailsSubscriptionChart.data"
+          :options="emailsSubscriptionChart.options"
+          :responsive-options="emailsSubscriptionChart.responsiveOptions"
+          color="#E91E63"
+          hover-reveal
+          type="Bar"
+        >
+          <h4 class="card-title font-weight-light mt-2 ml-2">Website Views</h4>
+          <p class="d-inline-flex font-weight-light ml-2 mt-1">
+            Last Campaign Performance
+          </p>
+        </base-material-chart-card>
       </v-col>
     </v-row>
   </v-container>
@@ -120,13 +174,23 @@
 
 <script>
 import { API } from "aws-amplify";
-import { listQuotes } from "../../graphql/queries";
+import {
+  listCustomers,
+  listInstallments,
+  listQuoteItems,
+  listQuotes,
+} from "../../graphql/queries";
+import Card from "../../components/base/CardS.vue";
+import ChartCard from "../../components/base/ChartCard.vue";
+import StatsCard from "../../components/base/StatsCard.vue";
+import DoughnutChart from "../../views/dashboard/component/dashboard/DoughnutChart";
 import Vuex from "vuex";
 export default {
   name: "DashboardDashboard",
-
+  components: { Card, ChartCard, StatsCard, DoughnutChart },
   data() {
     return {
+      total_pp: "0",
       startDate: new Date(),
       menu: false,
       modal: false,
@@ -217,6 +281,13 @@ export default {
             },
           ],
         ],
+      },
+      preferencesChart: {
+        data: {
+          labels: ["62%", "32%", "6%"],
+          series: [62, 32, 6],
+        },
+        options: {},
       },
       headers: [
         {
@@ -343,6 +414,15 @@ export default {
         1: false,
         2: false,
       },
+      percent: "0",
+      dchartdata: null,
+      doptions: null,
+      ichartdata: null,
+      ioptions: null,
+      tchartdata: null,
+      toptions: null,
+      schartdata: null,
+      soptions: null,
     };
   },
   created() {
@@ -355,7 +435,13 @@ export default {
     this.fillData();
   },
   computed: {
-    ...Vuex.mapState(["response", "usuario", "bodyquote", "organizationID"]),
+    ...Vuex.mapState([
+      "response",
+      "usuario",
+      "bodyquote",
+      "organizationID",
+      "serviceTypes",
+    ]),
   },
 
   methods: {
@@ -371,15 +457,15 @@ export default {
         background: "rgba(0, 0, 0, 0.7)",
       });
 
+      var total_q = 0;
+      var total_i = 0;
       var total_c = 0;
       var total_s = 0;
-      var total_v = 0;
-      this.quotes_datac = [];
-      this.quotes_created = [];
-      this.quotes_s = [];
-      this.quotes_va = [];
-      console.log(this.startDate);
-      console.log(this.end_date);
+      var total_t = 0;
+      this.total_pp = 0;
+      this.percent = 0;
+      var total_l = 0;
+
       const todos = await API.graphql({
         query: listQuotes,
         variables: {
@@ -410,65 +496,100 @@ export default {
       console.log(this.quotes_datac);
 
       for (let i = 0; i < this.quotes_datac.length; i++) {
-        console.log(this.quotes_created);
-        if (this.quotes_datac[i].processStatus == "Created") {
-          this.quotes_created.push(this.quotes_datac[i]);
-          total_c = total_c + this.quotes_datac[i].finalAmount;
+        if (this.quotes_datac[i].orderNumber != null) {
+          total_q = total_q + this.quotes_datac[i].finalAmount;
+        } else {
+          total_i = total_i + this.quotes_datac[i].finalAmount;
         }
+      }
+      this.percent = (total_i * 100) / (total_i + total_q);
+      this.percent = this.formattedCurrencyValue(this.percent);
 
-        if (this.quotes_datac[i].processStatus == "Negotiations") {
-          this.quotes_s.push(this.quotes_datac[i]);
-          total_s = total_s + this.quotes_datac[i].finalAmount;
-        }
+      const inst = await API.graphql({
+        query: listInstallments,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID + "#PAY",
+            },
+            SK: {
+              eq: "STATUS#",
+            },
+            indexs: {
+              eq: "3",
+            },
+            active: {
+              eq: "1",
+            },
+            startDate: {
+              eq: this.startDate,
+            },
+            endDate: {
+              eq: this.end_date,
+            },
+          },
+        },
+      });
+      var datas = inst.data.listInstallments;
 
-        if (this.quotes_datac[i].processStatus == "Verbal Agreement") {
-          this.quotes_va.push(this.quotes_datac[i]);
-          total_v = total_v + this.quotes_datac[i].finalAmount;
+      for (let i = 0; i < datas.length; i++) {
+        if (datas[i].isPaid != "Y") {
+          this.total_pp = this.total_pp + datas[i].amount;
         }
       }
 
-      this.chartdata = {
-        labels: ["MES"],
+      this.total_pp =
+        "$ " +
+        parseFloat(this.total_pp)
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,");
+
+      const leads = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "CUS#",
+            },
+            indexs: {
+              eq: "4_cus",
+            },
+            active: {
+              eq: "1",
+            },
+            startDate: {
+              eq: this.startDate,
+            },
+            endDate: {
+              eq: this.end_date,
+            },
+          },
+        },
+      });
+      total_l = leads.data.listCustomers.length;
+
+      this.dchartdata = {
+        labels: [
+          "Leads: " + "(" + total_l + ")",
+          "Quote: " + "(" + this.quotes_datac.length + ")",
+        ],
         datasets: [
           {
-            label: "Analyzed",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            data: [total_c],
-          },
-          {
-            label: "Negotiation",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
-            data: [total_s],
-          },
-          {
-            label: "Verbal Agreement",
-            backgroundColor: "rgba(255, 206, 86, 0.2)",
-            data: [total_v],
+            borderWidth: 1,
+            borderColor: ["rgba(255,99,132,1)", "rgba(54, 162, 235, 1)"],
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+            ],
+            data: [total_l, this.quotes_datac.length],
           },
         ],
       };
 
-      this.boptions = {
-        lineTension: 1,
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-              gridLines: {
-                display: true,
-              },
-            },
-          ],
-          xAxes: [
-            {
-              gridLines: {
-                display: false,
-              },
-            },
-          ],
-        },
+      this.doptions = {
         legend: {
           display: true,
         },
@@ -476,16 +597,123 @@ export default {
         maintainAspectRatio: false,
       };
 
-      this.dchartdata = {
-        labels: ["Analyzed", "Negotiation", "Verbal Agreement"],
+      this.ichartdata = {
+        labels: [
+          "Invoices: " + "(" + total_i + ")",
+          "Quote: " + "(" + total_q + ")",
+        ],
+        datasets: [
+          {
+            label: [total_i, total_q],
+            borderWidth: 1,
+            borderColor: ["rgba(153, 102, 255, 1)", "rgba(54, 162, 235, 1)"],
+            backgroundColor: [
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+            ],
+            data: [total_i, total_q],
+          },
+        ],
+      };
+
+      this.ioptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+
+      this.tchartdata = {
+        labels: [
+          "Services: " + "(" + total_s + ")",
+          "Task: " + "(" + total_t + ")",
+        ],
+        datasets: [
+          {
+            borderWidth: 1,
+            borderColor: ["rgba(255, 206, 86, 1)", "rgba(75, 192, 192, 1)"],
+            backgroundColor: [
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+            ],
+            data: [total_s, total_t],
+          },
+        ],
+      };
+
+      this.toptions = {
+        legend: {
+          display: true,
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+
+      const quoteItem = await API.graphql({
+        query: listQuoteItems,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "QIT#",
+            },
+            indexs: {
+              eq: "4_cus",
+            },
+            active: {
+              eq: "1",
+            },
+            startDate: {
+              eq: this.startDate,
+            },
+            endDate: {
+              eq: this.end_date,
+            },
+          },
+        },
+      });
+      var serv = quoteItem.data.listQuoteItems;
+      console.log(serv);
+      console.log(this.serviceTypes);
+      var ser_pay = [];
+      for (let i = 0; i < this.serviceTypes.length; i++) {
+        var c = 0;
+        var name = "";
+        for (let j = 0; j < serv.length; j++) {
+          if (this.serviceTypes[i].name == serv[j].typeName) {
+            c++;
+            name = serv[j].typeName;
+          }
+        }
+        if (c != 0) {
+          ser_pay.push({
+            type: name,
+            total: c,
+          });
+        }
+      }
+      console.log(ser_pay);
+      var labels = [];
+      var data = [];
+      for (let i = 0; i < ser_pay.length; i++) {
+        labels.push(ser_pay[i].type + ": (" + ser_pay[i].total + ")");
+        data.push(ser_pay[i].total);
+      }
+      console.log(labels);
+      console.log(data);
+
+      this.schartdata = {
+        labels: labels,
         datasets: [
           {
             borderWidth: 1,
             borderColor: [
-              "rgba(255,99,132,1)",
+              "rgba(255, 99, 132, 1)",
               "rgba(54, 162, 235, 1)",
               "rgba(255, 206, 86, 1)",
               "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
+              "rgba(255, 159, 64, 1)",
             ],
             backgroundColor: [
               "rgba(255, 99, 132, 0.2)",
@@ -493,32 +721,29 @@ export default {
               "rgba(255, 206, 86, 0.2)",
               "rgba(75, 192, 192, 0.2)",
               "rgba(153, 102, 255, 0.2)",
+              "rgba(255, 159, 64, 0.2)",
             ],
-            data: [total_c, total_s, total_v],
+            data: data,
           },
         ],
       };
 
-      this.doptions = {
+      this.soptions = {
+        legend: {
+          display: true,
+        },
         responsive: true,
         maintainAspectRatio: false,
-        pieceLabel: {
-          mode: "percentage",
-          precision: 1,
-        },
       };
 
-      this.total_qc = this.formattedCurrencyValue(total_c);
-      this.total_qs = this.formattedCurrencyValue(total_s);
-      this.total_va = this.formattedCurrencyValue(total_v);
       loading.close();
     },
+
     formattedCurrencyValue(value) {
       return (
-        "$ " +
         parseFloat(value)
           .toFixed(2)
-          .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,") + " %"
       );
     },
   },
