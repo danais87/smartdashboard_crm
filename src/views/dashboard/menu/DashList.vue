@@ -197,10 +197,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "QUO#"+this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "QUO#"+this.end_date,
             },
           },
         },

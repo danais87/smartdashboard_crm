@@ -66,8 +66,7 @@
       <v-spacer></v-spacer>
     </v-row>
     <v-row>
-      <v-col cols="2" sm="2" lg="2"
-        >
+      <v-col cols="2" sm="2" lg="2">
         <base-material-stats-card
           color="info"
           icon="mdi-poll"
@@ -415,8 +414,8 @@ export default {
         2: false,
       },
       percent: 0,
-      total_i:0,
-      total_q:0,
+      total_i: 0,
+      total_q: 0,
       dchartdata: null,
       doptions: null,
       ichartdata: null,
@@ -484,10 +483,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "QUO#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "QUO#" + this.end_date,
             },
           },
         },
@@ -503,8 +502,13 @@ export default {
           this.total_i = this.total_i + this.quotes_datac[i].finalAmount;
         }
       }
-      this.percent = (this.total_i * 100) / (this.total_i + this.total_q);
-      this.percent = this.formattedCurrencyValue(this.percent);
+      if (this.total_i != 0) {
+        this.percent = (this.total_i * 100) / (this.total_i + this.total_q);
+        this.percent = this.formattedCurrencyValue(this.percent);
+      } else {
+        this.percent = 0;
+        this.percent = this.formattedCurrencyValue(this.percent);
+      }
 
       const inst = await API.graphql({
         query: listInstallments,
@@ -517,7 +521,7 @@ export default {
               eq: "STATUS#",
             },
             indexs: {
-              eq: "3",
+              eq: "3_date",
             },
             active: {
               eq: "1",
@@ -562,10 +566,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "CUS#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "CUS#" + this.end_date,
             },
           },
         },
@@ -665,10 +669,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "TASK#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "TASK#" + this.end_date,
             },
           },
         },
@@ -749,7 +753,8 @@ export default {
     },
 
     formattedValue(value) {
-      return '$' + (
+      return (
+        "$" +
         parseFloat(value)
           .toFixed(2)
           .replace(/\d(?=(\d{3})+\.)/g, "$&,")

@@ -1429,10 +1429,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "QUO#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "QUO#" + this.end_date,
             },
           },
         },
@@ -1889,7 +1889,7 @@ export default {
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
-      const scale = "1/" + (this.number+1);
+      const scale = "1/" + (this.number + 1);
       const pay = {
         startDate,
         amount,
@@ -1902,7 +1902,7 @@ export default {
       for (let i = 0; i < this.number; i++) {
         const type = "INST";
         const s = i + 2;
-        const scale = s + "/" + (this.number+1);
+        const scale = s + "/" + (this.number + 1);
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
@@ -1968,7 +1968,7 @@ export default {
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
       const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = item.revisitDate;
+      const GSP4SK1 = "QUO#" + item.revisitDate;
       const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
       const createdAt = new Date().toISOString().substr(0, 10);
@@ -2060,7 +2060,7 @@ export default {
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
         const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = new Date().toISOString().substr(0, 10);
+        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2118,7 +2118,7 @@ export default {
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = this.installments[i].startDate;
+          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2193,7 +2193,7 @@ export default {
       var PK = item.PK;
       var SK = item.SK;
       const GSP1PK1 = this.editedItemLeads.SK;
-      const GSP4SK1 = item.revisitDate;
+      const GSP4SK1 = "QUO#" + item.revisitDate;
       var updateAt = new Date().toISOString().substr(0, 10);
       const subject = item.subject;
       const introduction = item.introduction;
@@ -2313,7 +2313,7 @@ export default {
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
         const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = "QIT#";
+        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2409,7 +2409,7 @@ export default {
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = this.installments[i].startDate;
+          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);

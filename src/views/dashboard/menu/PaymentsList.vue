@@ -636,7 +636,7 @@ export default {
     },
 
     formattedCurrencyValue(value) {
-     return (
+      return (
         "$ " +
         parseFloat(value)
           .toFixed(2)
@@ -672,12 +672,15 @@ export default {
       });
 
       this.quotes = [];
+      var datas = [];
+      this.item_inst =[];
       this.received_payment = [];
       this.pend_payment = [];
       this.item = [];
       this.total_pr = 0;
       this.total_pp = 0;
-
+      console.log(this.startDate);
+      console.log(this.end_date);
       const todos = await API.graphql({
         query: listInstallments,
         variables: {
@@ -689,7 +692,7 @@ export default {
               eq: "STATUS#",
             },
             indexs: {
-              eq: "3",
+              eq: "3_date",
             },
             active: {
               eq: "1",
@@ -703,7 +706,7 @@ export default {
           },
         },
       });
-      var datas = todos.data.listInstallments;
+      datas = todos.data.listInstallments;
       console.log(datas);
 
       for (let i = 0; i < datas.length; i++) {
@@ -729,7 +732,7 @@ export default {
           this.received_payment.push({
             type: this.item_inst[i].type,
             name: "",
-            date: this.item_inst[i].startDate,
+            date: this.item_inst[i].payDate,
             full_name: this.item_inst[i].customerName,
             customerID: this.item_inst[i].GSP1PK1,
             quoteID: this.item_inst[i].GSP2PK1,

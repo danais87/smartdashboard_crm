@@ -379,7 +379,7 @@ export default {
       var leads = [];
       var installments = [];
       var services = [];
-     
+
       this.editedItemLeads = [];
       this.phones = [];
 
@@ -579,7 +579,7 @@ export default {
         const GSP3PK1 = this.organizationID + "#TASK";
         const GSP3SK1 = "STATUS#" + "IP";
         const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = new Date().toISOString().substr(0, 10);
+        const GSP4SK1 = "TASK#" +new Date().toISOString().substr(0, 10);
         const taskStatus = "In Progress";
         const taskStart = new Date().toISOString().substr(0, 10);
         const todo = {
@@ -611,7 +611,7 @@ export default {
           const GSP3PK1 = this.organizationID + "#PAY";
           const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = installments[i].startDate;
+          const GSP4SK1 = "PAY#"+  installments[i].startDate;
           const isPaid = "Y";
           inst = {
             PK,
@@ -628,7 +628,7 @@ export default {
           const GSP3PK1 = this.organizationID + "#PAY";
           const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = installments[i].startDate;
+          const GSP4SK1 = "PAY#" + installments[i].startDate;
           inst = {
             PK,
             SK,

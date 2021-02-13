@@ -92,7 +92,6 @@
                     size="mini"
                   ></el-button>
                   <el-button
-                    id="c"
                     type="success"
                     icon="el-icon-download"
                     circle
@@ -100,7 +99,6 @@
                     size="mini"
                   ></el-button>
                   <el-button
-                    id="c"
                     type="info"
                     icon="el-icon-message"
                     circle
@@ -108,7 +106,6 @@
                     size="mini"
                   ></el-button>
                   <el-button
-                    id="c"
                     type="warning"
                     icon="el-icon-chat-line-square"
                     circle
@@ -116,7 +113,6 @@
                     size="mini"
                   ></el-button>
                   <el-button
-                    id="c"
                     type="danger"
                     icon="el-icon-delete"
                     circle
@@ -159,6 +155,7 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Name: {{ editedItemLeads.name }}
+                                  {{ editedItemLeads.last_name }}
                                 </v-list-item-subtitle>
                               </v-list-item-content>
                             </v-list-item>
@@ -236,7 +233,16 @@
                   <v-dialog v-model="dialog_service" max-width="800px">
                     <v-card>
                       <v-card-title>
-                        <span class="headline">Service</span>
+                        <span class="headline"
+                          >Service:{{ editedServiceItem.smName }}
+                        </span>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" text @click="closeservice"
+                          >Cancel</v-btn
+                        >
+                        <v-btn color="blue darken-1" text @click="saveservice"
+                          >Save</v-btn
+                        >
                       </v-card-title>
                       <v-card-text>
                         <v-container>
@@ -288,15 +294,7 @@
                           </v-row>
                         </v-container>
                       </v-card-text>
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="closeservice"
-                          >Cancel</v-btn
-                        >
-                        <v-btn color="blue darken-1" text @click="saveservice"
-                          >Save</v-btn
-                        >
-                      </v-card-actions>
+                      <v-card-actions> </v-card-actions>
                     </v-card>
                   </v-dialog>
                   <v-col v-for="item in q_services" :key="item.variant.id">
@@ -355,7 +353,7 @@
                     <v-col sm="4" md="6">
                       <v-select
                         v-model="discount_id"
-                        :items="discount"
+                        :items="discounts"
                         label="Discount"
                         item-text="discount_name"
                         item-value="discount_code"
@@ -376,15 +374,9 @@
                   <v-col>
                     <el-card class="box-card">
                       <div slot="header" class="clearfix">
-                        <span>Installment:</span>
+                        <span>Payments and Installments:</span>
                       </div>
-                      <div class="text item">
-                        <el-checkbox
-                          v-model="is_installment"
-                          label="Is Installment?"
-                          border
-                        ></el-checkbox>
-                      </div>
+
                       <br />
                       <div v-if="is_installment == true" class="text item">
                         <el-form
@@ -464,6 +456,16 @@
                                 class="elevation-1"
                                 :items-per-page="-1"
                               >
+                                <template v-slot:[`item.type`]="{ item }">
+                                  <v-chip
+                                    class="ma-2"
+                                    :color="getColor(item.type)"
+                                    outlined
+                                    light
+                                    small
+                                    >{{ item.type }}</v-chip
+                                  >
+                                </template>
                                 <template v-slot:top>
                                   <v-toolbar flat color="white">
                                     <v-toolbar-title
@@ -556,97 +558,104 @@
                       label="Internal Comments:"
                     ></v-textarea>
                   </v-col>
-                  <v-col class="d-flex" cols="5" sm="5" md="5">
+                  <v-row>
+                    <v-col class="d-flex" cols="12" sm="5" md="5">
+                      <v-select
+                        v-model="editedItem_c.processStatus"
+                        :items="quoteStatus"
+                        label="Status"
+                        item-text="description"
+                        item-value="description"
+                        outlined
+                      ></v-select>
+                    </v-col>
+                    <v-col class="d-flex" cols="12" sm="5" md="5">
+                      <v-text-field
+                        v-model="editedItem_c.revisitDate"
+                        label="Revisit Date(YYYY-MM-DD)"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                  <v-col class="d-flex" cols="12" sm="4" md="4">
                     <v-select
-                      v-model="editedItem_c.processStatus"
-                      :items="options"
-                      label="Status"
-                      item-text="description"
-                      item-value="description"
+                      v-model="editedItem_c.live"
+                      :items="options_live"
+                      label="Live"
+                      item-text="label"
+                      item-value="value"
                       outlined
                     ></v-select>
                   </v-col>
                 </v-col>
                 <v-col cols="12" sm="5" md="5">
-                  <el-menu :default-openeds="['1', '3']">
-                    <el-submenu index="1">
-                      <template slot="title"
-                        ><i class="el-icon-message"></i>Contacts</template
+                  <template slot="title"
+                    ><i class="el-icon-message"></i>Contacts</template
+                  >
+                  <v-col cols="12" sm="12">
+                    <v-text-field
+                      v-model="customer"
+                      label="Customer Name"
+                      outlined
+                      @keyup.native.enter="focusFilter"
+                    ></v-text-field>
+                  </v-col>
+                  <v-row>
+                    <v-col cols="12" sm="8">
+                      <v-select
+                        v-model="lead_id"
+                        :items="select_leads"
+                        label="Select a Customer"
+                        item-text="name"
+                        item-value="id"
+                        outlined
+                        filterable
+                        clearable
+                      ></v-select>
+                    </v-col>
+                    <br />
+                    <v-col cols="12" sm="2">
+                      <v-btn
+                        class="ma-2"
+                        outlined
+                        x-small
+                        fab
+                        color="indigo"
+                        @click="addLead"
                       >
-                      <el-menu-item-group>
-                        <el-menu-item index="1-1">
-                          <el-select
-                            v-model="lead_id"
-                            filterable
-                            clearable
-                            placeholder="Select a Customer"
-                          >
-                            <el-option
-                              v-for="item in leads"
-                              :key="item.id"
-                              :label="JSON.parse(item.l_smName)[0].fullName"
-                              :value="item.id"
-                            >
-                            </el-option>
-                          </el-select>
-                        </el-menu-item>
-                        <el-menu-item index="1-2">
-                          <v-btn
-                            class="ma-2"
-                            outlined
-                            x-small
-                            fab
-                            color="indigo"
-                            @click="addLead"
-                          >
-                            <v-icon>el-icon-d-arrow-left</v-icon>
-                          </v-btn>
-                        </el-menu-item>
-                      </el-menu-item-group>
-                    </el-submenu>
-
-                    <el-submenu index="3" max-height="700">
-                      <template slot="title"
-                        ><i class="el-icon-setting"></i>Services</template
+                        <v-icon>el-icon-d-arrow-left</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <br />
+                  <template slot="title"
+                    ><i class="el-icon-setting"></i>Services</template
+                  >
+                  <br />
+                  <v-row>
+                    <v-col cols="12" sm="8">
+                      <el-input
+                        placeholder="Filter keyword"
+                        v-model="filterText"
                       >
-                      <el-menu-item-group>
-                        <el-menu-item index="3-1">
-                          <v-btn
-                            class="ma-2"
-                            outlined
-                            x-small
-                            fab
-                            color="indigo"
-                            @click="addService"
-                          >
-                            <v-icon>el-icon-d-arrow-left</v-icon>
-                          </v-btn></el-menu-item
-                        >
-                        <el-menu-item index="3-2">
-                          <el-input
-                            placeholder="Filter keyword"
-                            v-model="filterText"
-                          >
-                          </el-input>
-                          <el-tree
-                            class="filter-tree"
-                            :data="data"
-                            show-checkbox
-                            check-strictly
-                            filterable
-                            default-expand-all
-                            node-key="value"
-                            highlight-current
-                            ref="tree"
-                            check-on-click-node
-                            :props="defaultProps"
-                            :filter-node-method="filterNode"
-                          >
-                          </el-tree>
-                        </el-menu-item>
-                      </el-menu-item-group>
-                    </el-submenu>
-                  </el-menu>
+                      </el-input>
+                      <el-tree
+                        class="filter-tree"
+                        :data="data"
+                        check-strictly
+                        filterable
+                        default-expand-all
+                        node-key="value"
+                        highlight-current
+                        ref="tree"
+                        check-on-click-node
+                        :props="defaultProps"
+                        :filter-node-method="filterNode"
+                        @node-click="clickService"
+                      >
+                      </el-tree>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </el-main>
@@ -716,7 +725,7 @@
         </v-col>
         <v-col sm="2" md="2">
           <br />
-          <v-btn color="blue darken-1" text @click="getQuotes">Apply</v-btn>
+          <v-btn color="blue darken-1" text @click="fillData">Apply</v-btn>
         </v-col>
         <v-col cols="12" sm="6" md="6">
           <v-btn class="ma-2" outlined small fab color="indigo" to="/quotes">
@@ -745,7 +754,7 @@
           </template>
           <template v-slot:top>
             <v-toolbar flat color="white">
-              <v-toolbar-title>Sales</v-toolbar-title>
+              <v-toolbar-title>List of Quotes</v-toolbar-title>
               <v-spacer></v-spacer>
               <el-alert
                 v-if="alert != false"
@@ -911,6 +920,18 @@ export default {
         value: "startDate",
       },
       { text: "Amount", align: "start", sortable: true, value: "amount" },
+      {
+        text: "Type of Payment",
+        align: "start",
+        sortable: true,
+        value: "type",
+      },
+      {
+        text: "Payment",
+        align: "start",
+        sortable: true,
+        value: "scale",
+      },
       { text: "Actions", value: "actions", sortable: false },
     ],
     headers_v: [
@@ -943,7 +964,7 @@ export default {
         value: "final_amount",
         align: "right",
       },
-        {
+      {
         text: "Created Date",
         sortable: true,
         value: "createdAt",
@@ -994,57 +1015,61 @@ export default {
       amount: "",
     },
 
-    editedItem_c: {
+     editedItem_c: {
       id: "",
-      name: "",
-      lead_id: "",
-      lead_name: "",
-      email_sent: "",
-      sent_date: "",
-      is_discount: "N",
+      smName: "",
+      emailSent: "",
+      sentDate: "",
+      isDiscount: "",
       discount_id: "",
       discount_code: "",
       discount_type: "",
       discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
-      services: "",
-      leads: "",
-      is_installment: "",
-      payment: "",
-      number: "",
+      discountAmount: "",
+      quotationAmount: "",
+      finalAmount: "",
+      isInstallment: "",
+      downPayment: "",
+      numInstallments: "",
       createdAt: "",
+      updateAt: "",
+      createdBy: "",
       conclusion: "",
+      introduction: "",
       internalComments: "",
       subject: "",
+      customerName: "",
       processStatus: "Created",
+      live: "Y",
+      revisitDate: new Date().toISOString().substr(0, 10),
     },
     defaultItem_c: {
       id: "",
-      name: "",
-      lead_id: "",
-      lead_name: "",
-      email_sent: "",
-      sent_date: "",
-      is_discount: "N",
+      smName: "",
+      emailSent: "",
+      sentDate: "",
+      isDiscount: "",
       discount_id: "",
       discount_code: "",
       discount_type: "",
       discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
-      services: "",
-      leads: "",
-      is_installment: "",
-      payment: "",
-      number: "",
+      discountAmount: "",
+      quotationAmount: "",
+      finalAmount: "",
+      isInstallment: "",
+      downPayment: "",
+      numInstallments: "",
       createdAt: "",
+      updateAt: "",
+      createdBy: "",
       conclusion: "",
+      introduction: "",
       internalComments: "",
       subject: "",
+      customerName: "",
       processStatus: "Created",
+      live: "Y",
+      revisitDate: new Date().toISOString().substr(0, 10),
     },
     payment: 1,
     number: 1,
@@ -1157,20 +1182,39 @@ export default {
     process_status: "Created",
     filterText: "",
     service_type: [],
-    discounts: [],
+    
     librarys: [],
     quote_status: [],
     l_discount: [],
+    options_live: [
+      {
+        value: "Y",
+        label: "Active",
+      },
+      {
+        value: "N",
+        label: "Inactive",
+      },
+    ],
+    customer: "",
+    select_leads: [],
   }),
-
+ mounted() {
+    this.fillData();
+  },
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Quote" : "Edit Quote";
     },
     ...Vuex.mapState([
       "organizationID",
+      "usuario",
       "leads",
       "lead",
+      "leads_seek",
+      "discounts",
+      "list_services",
+      "quoteStatus",
       "listphone",
       "listemails",
       "listaddress",
@@ -1200,20 +1244,18 @@ export default {
   },
 
   created() {
+    this.GetListServices();
+    this.getServices();
     const d = new Date();
     this.startDate = new Date(d.setMonth(d.getMonth() - 1))
       .toISOString()
       .substr(0, 10);
-    console.log(this.body);
-    this.getServices();
-    this.getQuotes();
-    this.GetLeads();
-    this.getAccounts();
-    this.getCatalogs();
+    const l = [];
+    this.SetLeads_Seek(l);
   },
 
   methods: {
-    ...Vuex.mapActions(["GetLeads", "GetLeads_Seek"]),
+    ...Vuex.mapActions(["GetLeads_Seek", "GetListServices"]),
     ...Vuex.mapMutations([
       "SetPhone",
       "SetEmails",
@@ -1221,14 +1263,39 @@ export default {
       "SetLead",
       "SetBody",
       "SetConclusion",
+      "SetLeads_Seek",
     ]),
+handleClick(value) {
+      this.editItem(value);
+      console.log(value);
+    },
+    async focusFilter(e) {
+      await this.GetLeads_Seek(this.customer);
+      this.GetSelectLeads();
+    },
+
+    GetSelectLeads() {
+      console.log(this.leads_seek);
+      this.select_leads = [];
+      for (let i = 0; i < this.leads_seek.length; i++) {
+        this.select_leads.push({
+          name: JSON.parse(this.leads_seek[i].l_smName)[0].fullName,
+          id: this.leads_seek[i].id,
+        });
+      }
+      console.log(this.select_leads);
+    },
 
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
+    clickService() {
+      console.log(this.$refs.tree.getCheckedKeys());
+      this.addService();
+    },
 
-    async getQuotes() {
+    async fillData() {
       const loading = this.$loading({
         lock: true,
         text: "Loading Quotes...",
@@ -1262,10 +1329,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "QUO#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "QUO#" + this.end_date,
             },
           },
         },
@@ -1379,153 +1446,6 @@ export default {
       loading.close();
     },
 
-    handleClick(value) {
-      this.editItem(value);
-    },
-
-    async getCatalogs() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Get Catalogs",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-
-      console.log(this.organizationID);
-      this.types = [];
-      this.discount = [];
-      this.librarys = [];
-      this.options = [];
-
-      const todos = await API.graphql({
-        query: getOrganization,
-        variables: {
-          filter: {
-            active: { eq: "1" },
-            SK: {
-              eq: "#META#",
-            },
-            PK: { eq: this.organizationID },
-          },
-        },
-      });
-
-      this.organization = todos.data.getOrganization[0];
-      console.log(this.organization);
-
-      //ServiceTypes
-      if (this.organization.l_productType[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_productType).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_productType)[i].name != "") {
-            let name = JSON.parse(this.organization.l_productType)[i].name;
-            let description = JSON.parse(this.organization.l_productType)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_productType)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_productType)[i].status;
-            const todo = {
-              name,
-              description,
-              abbreviation,
-              status,
-            };
-            this.types = [...this.types, todo];
-          }
-        }
-      }
-      //Discount
-      if (this.organization.l_discount[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_discount).length;
-          i++
-        ) {
-          if (JSON.parse(this.organization.l_discount)[i].discount_code != "") {
-            let discount_code = JSON.parse(this.organization.l_discount)[i]
-              .discount_code;
-            let discount_name = JSON.parse(this.organization.l_discount)[i]
-              .discount_name;
-            let discount_desc = JSON.parse(this.organization.l_discount)[i]
-              .discount_desc;
-            let discount_type = JSON.parse(this.organization.l_discount)[i]
-              .discount_type;
-            let discount_value = JSON.parse(this.organization.l_discount)[i]
-              .discount_value;
-            let valid_from = JSON.parse(this.organization.l_discount)[i]
-              .valid_from;
-            let valid_to = JSON.parse(this.organization.l_discount)[i].valid_to;
-            let status = JSON.parse(this.organization.l_discount)[i].status;
-            const todo = {
-              discount_code,
-              discount_name,
-              discount_desc,
-              discount_type,
-              discount_value,
-              valid_from,
-              valid_to,
-              status,
-            };
-            this.discount = [...this.discount, todo];
-          }
-        }
-      }
-      console.log(this.discount);
-      //Library
-      if (this.organization.l_quoteLibrary[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_quoteLibrary).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_quoteLibrary)[i].description != ""
-          ) {
-            let title = JSON.parse(this.organization.l_quoteLibrary)[i].title;
-            let description = JSON.parse(this.organization.l_quoteLibrary)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_quoteLibrary)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_quoteLibrary)[i].status;
-            const todo = {
-              title,
-              description,
-              abbreviation,
-              status,
-            };
-            this.librarys = [...this.librarys, todo];
-          }
-        }
-      }
-      //Quote Status
-      if (this.organization.l_quoteStatus[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.organization.l_quoteStatus).length;
-          i++
-        ) {
-          if (
-            JSON.parse(this.organization.l_quoteStatus)[i].description != ""
-          ) {
-            let description = JSON.parse(this.organization.l_quoteStatus)[i]
-              .description;
-            let abbreviation = JSON.parse(this.organization.l_quoteStatus)[i]
-              .abbreviation;
-            let status = JSON.parse(this.organization.l_quoteStatus)[i].status;
-            const todo = {
-              description,
-              abbreviation,
-              status,
-            };
-            this.options = [...this.options, todo];
-          }
-        }
-      }
-      loading.close();
-    },
 
     formattedCurrencyValue(value) {
       return (
@@ -1552,79 +1472,35 @@ export default {
       });
     },
 
-    async getAccounts() {
-      const todos = await API.graphql({
-        query: listAccounts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "ACC#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      this.accounts = todos.data.listAccounts;
-    },
-
     async getServices() {
-      const todos = await API.graphql({
-        query: listProducts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "PRO#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      this.services = todos.data.listProducts;
-      console.log(this.services);
       let chil = [];
-
-      for (let i = 0; i < this.services.length; i++) {
+      for (let i = 0; i < this.list_services.length; i++) {
         chil = [];
-
         for (
           let j = 0;
-          j < JSON.parse(this.services[i].l_variant).length;
+          j < JSON.parse(this.list_services[i].l_variant).length;
           j++
         ) {
-          if (JSON.parse(this.services[i].l_variant)[j].name != "")
+          if (JSON.parse(this.list_services[i].l_variant)[j].name != "")
             chil.push({
               value:
-                JSON.parse(this.services[i].l_variant)[j].name +
+                JSON.parse(this.list_services[i].l_variant)[j].name +
                 "/" +
                 JSON.stringify(
-                  JSON.parse(this.services[i].l_variant)[j].product
+                  JSON.parse(this.list_services[i].l_variant)[j].product
                 ),
               label:
-                JSON.parse(this.services[i].l_variant)[j].name +
+                JSON.parse(this.list_services[i].l_variant)[j].name +
                 "/ Price:$ " +
-                JSON.parse(this.services[i].l_variant)[j].price,
+                JSON.parse(this.list_services[i].l_variant)[j].price,
             });
         }
         this.data.push({
           label:
-            this.services[i].smName + "/ Price:$ " + this.services[i].price,
-          value: this.services[i].id,
+            this.list_services[i].smName +
+            "/ Price:$ " +
+            this.list_services[i].price,
+          value: this.list_services[i].id,
           children: chil,
         });
       }
@@ -1735,6 +1611,7 @@ export default {
       this.SetAddress(this.list_address);
 
       this.lead_id = "";
+      this.customer = "";
     },
 
     NewLead() {
@@ -1770,7 +1647,7 @@ export default {
       this.total_s = 0;
       var lista = [];
       var servi = [];
-      var id = "";
+
       for (let i = 0; i < this.values_services.length; i++) {
         servi = [];
         const id_s = this.values_services[i];
@@ -1842,7 +1719,22 @@ export default {
       this.total = this.total_s + this.total_v;
       this.total_disc = this.total;
       this.quotation_amount = this.total;
+      this.payment = this.total;
+      this.number = 1;
+      this.calc = true;
 
+      this.installments = [];
+      const startDate = new Date().toISOString().substr(0, 10);
+      const amount = this.payment;
+      const type = "DPAY";
+      const scale = "1/1";
+      const pay = {
+        startDate,
+        amount,
+        type,
+        scale,
+      };
+      this.installments = [...this.installments, pay];
       this.value_opt = "";
       this.aply();
       loading.close();
@@ -1855,13 +1747,13 @@ export default {
       this.discount_value = 0;
       this.discount_amount = 0;
       if (this.discount_id != "") {
-        for (let i = 0; i < this.discount.length; i++) {
-          if (this.discount_id == this.discount[i].discount_code) {
-            this.discount_code = this.discount[i].discount_code;
-            this.discount_type = this.discount[i].discount_type;
-            this.discount_value = this.discount[i].discount_value;
+        for (let i = 0; i < this.discounts.length; i++) {
+          if (this.discount_id == this.discounts[i].discount_code) {
+            this.discount_code = this.discounts[i].discount_code;
+            this.discount_type = this.discounts[i].discount_type;
+            this.discount_value = this.discounts[i].discount_value;
             this.is_discount = "Y";
-            this.l_discount.push(this.discount[i]);
+            this.l_discount.push(this.discounts[i]);
           }
         }
       }
@@ -1883,9 +1775,23 @@ export default {
       this.calc = true;
       let cant_amounts = 0;
       this.installments = [];
+      const startDate = new Date().toISOString().substr(0, 10);
+      const amount = this.payment;
+      const type = "DPAY";
+      const scale = "1/" + (this.number + 1);
+      const pay = {
+        startDate,
+        amount,
+        type,
+        scale,
+      };
+      this.installments = [...this.installments, pay];
       cant_amounts = (this.total_disc - this.payment) / this.number;
 
       for (let i = 0; i < this.number; i++) {
+        const type = "INST";
+        const s = i + 2;
+        const scale = s + "/" + (this.number + 1);
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
@@ -1895,6 +1801,8 @@ export default {
         const todo = {
           startDate,
           amount,
+          type,
+          scale,
         };
         this.installments = [...this.installments, todo];
       }
@@ -1909,8 +1817,14 @@ export default {
       });
       console.log(item);
       console.log(this.l_discount);
+      console.log(this.lead);
+      console.log(this.editedItemLeads);
       if (this.lead.id != undefined) {
         this.editedItemLeads = this.lead;
+        this.editedItemLeads.name = JSON.parse(this.lead.l_smName)[0].fullName;
+        this.editedItemLeads.last_name = JSON.parse(
+          this.lead.l_smName
+        )[0].lastName;
       }
       var downPayment = 0;
       var numInstallments = 0;
@@ -1943,7 +1857,8 @@ export default {
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
       const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = new Date().toISOString().substr(0, 10);
+      const GSP4SK1 = "QUO#" + item.revisitDate;
+      const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
       const createdAt = new Date().toISOString().substr(0, 10);
       var updateAt = new Date().toISOString().substr(0, 10);
@@ -1970,8 +1885,8 @@ export default {
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = "Y";
-      const customerID = this.editedItemLeads.SK;
-      const customerName = this.editedItemLeads.name;
+      const customerName =
+        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
       const todo = {
         PK,
@@ -1986,10 +1901,10 @@ export default {
         entityType,
         createdAt,
         updateAt,
+        revisitDate,
         createdBy,
         active,
         smName,
-        customerID,
         customerName,
         conclusion,
         internalComments,
@@ -2033,6 +1948,8 @@ export default {
         const GSP1SK1 = SK;
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
+        const GSP4PK1 = this.organizationID;
+        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2046,6 +1963,8 @@ export default {
         const isRecurrent = this.q_services[i].service.isRecurrent;
         const isVariant = this.q_services[i].service.isVariant;
         const internalComments = this.q_services[i].service.internalComments;
+        const customerName =
+          this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
         const t = {
           PK,
@@ -2055,6 +1974,8 @@ export default {
           GSP1SK1,
           GSP2PK1,
           GSP2SK1,
+          GSP4PK1,
+          GSP4SK1,
           entityType,
           createdAt,
           updateAt,
@@ -2068,6 +1989,7 @@ export default {
           isRecurrent,
           isVariant,
           internalComments,
+          customerName,
         };
         await API.graphql({
           query: createRecord,
@@ -2085,7 +2007,7 @@ export default {
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = new Date().toISOString().substr(0, 10);
+          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
           const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -2093,7 +2015,11 @@ export default {
           const active = "1";
           const startDate = this.installments[i].startDate;
           const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
           const isPaid = "N";
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
           inst = {
             PK,
@@ -2112,7 +2038,10 @@ export default {
             active,
             startDate,
             amount,
+            type,
             isPaid,
+            customerName,
+            scale,
           };
           await API.graphql({
             query: createRecord,
@@ -2127,14 +2056,12 @@ export default {
       this.quotes_created = [];
       this.quotes_s = [];
       this.quotes_va = [];
-      this.is_installment = false;
+      this.is_installment = true;
       this.calc = false;
       this.number = 1;
       this.payment = 1;
       this.conclusion = "";
       loading.close();
-      this.GetLeads();
-      this.GetLeads_Seek();
     },
 
     async updateQuote(item) {
@@ -2149,13 +2076,13 @@ export default {
       if (this.lead.id != undefined) {
         this.editedItemLeads = this.lead;
       }
-
       var downPayment = 0;
       var numInstallments = 0;
-
       var todo = [];
       var PK = item.PK;
       var SK = item.SK;
+      const GSP1PK1 = this.editedItemLeads.SK;
+      const GSP4SK1 = "QUO#" + item.revisitDate;
       var updateAt = new Date().toISOString().substr(0, 10);
       const subject = item.subject;
       const introduction = item.introduction;
@@ -2179,14 +2106,15 @@ export default {
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
-      const live = "Y";
-      const customerID = this.editedItemLeads.SK;
-      const customerName = this.editedItemLeads.name;
+      const live = item.live;
+      const customerName =
+        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       todo = {
         PK,
         SK,
+        GSP1PK1,
+        GSP4SK1,
         updateAt,
-        customerID,
         customerName,
         conclusion,
         internalComments,
@@ -2226,87 +2154,165 @@ export default {
       });
       console.log(this.q_services);
       //update quoteitems
+      const list_q = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: id_quote,
+            },
+            indexs: {
+              eq: "2",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      var list_quote = list_q.data.listQuotes;
+      var qitem = [];
+      for (let i = 0; i < list_quote.length; i++) {
+        if (list_quote[i].entityType == "QUOTEITEM") {
+          qitem.push(list_quote[i]);
+        }
+      }
+      for (let i = 0; i < qitem.length; i++) {
+        const PK = qitem[i].PK;
+        const SK = qitem[i].SK;
+        const todo = {
+          PK,
+          SK,
+        };
+        await API.graphql({
+          query: deleteInstallments,
+          variables: { input: todo },
+        });
+      }
       let price = 0;
       for (let i = 0; i < this.q_services.length; i++) {
-        const todos = await API.graphql({
-          query: listQuoteItems,
+        const id = uuid.v1();
+        const PK = this.organizationID;
+        const SK = "QIT#" + id;
+        const GSP1PK1 = this.editedItemLeads.SK;
+        const GSP1SK1 = SK;
+        const GSP2PK1 = id_quote;
+        const GSP2SK1 = SK;
+        const GSP4PK1 = this.organizationID;
+        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
+        const entityType = "QUOTEITEM";
+        const createdAt = new Date().toISOString().substr(0, 10);
+        const updateAt = new Date().toISOString().substr(0, 10);
+        const createdBy = this.usuario;
+        const active = "1";
+        const smName = this.q_services[i].service.smName;
+        const description = this.q_services[i].service.description;
+        price = parseFloat(this.q_services[i].service.price);
+        const typeName = this.q_services[i].service.typeName;
+        const otherType = this.q_services[i].service.otherType;
+        const isRecurrent = this.q_services[i].service.isRecurrent;
+        const isVariant = this.q_services[i].service.isVariant;
+        const internalComments = this.q_services[i].service.internalComments;
+        const customerName =
+          this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+
+        const t = {
+          PK,
+          SK,
+          id,
+          GSP1PK1,
+          GSP1SK1,
+          GSP2PK1,
+          GSP2SK1,
+          GSP4PK1,
+          GSP4SK1,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          smName,
+          description,
+          price,
+          typeName,
+          otherType,
+          isRecurrent,
+          isVariant,
+          internalComments,
+          customerName,
+        };
+        await API.graphql({
+          query: createRecord,
+          variables: { input: t },
+        });
+      }
+      //update installments
+      if (this.installments != null) {
+        const seq = await API.graphql({
+          query: listQuotes,
           variables: {
             filter: {
-              active: { eq: "1" },
+              PK: {
+                eq: this.organizationID,
+              },
               SK: {
-                eq: "QIT#",
+                eq: id_quote,
               },
-              PK: { eq: this.organizationID },
               indexs: {
-                eq: "table_items",
+                eq: "2",
               },
-              GSP1SK1: {
-                eq: this.q_services[i].service.SK,
+              active: {
+                eq: "1",
               },
             },
           },
         });
-        console.log(todos.data.listQuoteItems[0]);
-        if (todos.data.listQuoteItems[0]) {
-          const SK = this.q_services[i].service.SK;
-          const PK = this.q_services[i].service.PK;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = this.q_services[i].service.SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = this.q_services[i].service.SK;
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const smName = this.q_services[i].service.name;
-          const description = this.q_services[i].service.description;
-          price = parseFloat(this.q_services[i].service.price);
-          const typeName = this.q_services[i].service.type_name;
-          const otherType = this.q_services[i].service.other_type;
-          const isRecurrent = this.q_services[i].service.is_recurrent;
-          const isVariant = this.q_services[i].service.is_variant;
-          const internalComments = this.q_services[i].service.comments;
-
-          const t = {
+        var datas = seq.data.listQuotes;
+        var ins = [];
+        for (let i = 0; i < datas.length; i++) {
+          if (datas[i].entityType == "INSTALLMENT") {
+            ins.push(datas[i]);
+          }
+        }
+        for (let i = 0; i < ins.length; i++) {
+          const PK = ins[i].PK;
+          const SK = ins[i].SK;
+          const todo = {
             PK,
             SK,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            updateAt,
-            smName,
-            description,
-            price,
-            typeName,
-            otherType,
-            isRecurrent,
-            isVariant,
-            internalComments,
           };
-          const sq = await API.graphql({
-            query: updateRecord,
-            variables: { input: t },
+          await API.graphql({
+            query: deleteInstallments,
+            variables: { input: todo },
           });
-        } else {
+        }
+        let inst = "";
+        for (let i = 0; i < this.installments.length; i++) {
           const id = uuid.v1();
-          const SK = "QIT#" + id;
+          const SK = "INS#" + id;
           const GSP1PK1 = this.editedItemLeads.SK;
           const GSP1SK1 = SK;
           const GSP2PK1 = id_quote;
           const GSP2SK1 = SK;
-          const entityType = "QUOTEITEM";
+          const GSP4PK1 = this.organizationID;
+          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
+          const entityType = "INSTALLMENT";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
           const createdBy = this.usuario;
           const active = "1";
-          const smName = this.q_services[i].service.smName;
-          const description = this.q_services[i].service.description;
-          price = parseFloat(this.q_services[i].service.price);
-          const typeName = this.q_services[i].service.typeName;
-          const otherType = this.q_services[i].service.otherType;
-          const isRecurrent = this.q_services[i].service.isRecurrent;
-          const isVariant = this.q_services[i].service.isVariant;
-          const internalComments = this.q_services[i].service.internalComments;
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
+          const isPaid = "N";
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
-          const t = {
+          inst = {
             PK,
             SK,
             id,
@@ -2314,104 +2320,24 @@ export default {
             GSP1SK1,
             GSP2PK1,
             GSP2SK1,
+            GSP4PK1,
+            GSP4SK1,
             entityType,
             createdAt,
             updateAt,
             createdBy,
             active,
-            smName,
-            description,
-            price,
-            typeName,
-            otherType,
-            isRecurrent,
-            isVariant,
-            internalComments,
+            startDate,
+            amount,
+            isPaid,
+            type,
+            customerName,
+            scale,
           };
           await API.graphql({
             query: createRecord,
-            variables: { input: t },
+            variables: { input: inst },
           });
-        }
-      }
-      //update installments
-      if (this.installments != null) {
-        let inst = "";
-        for (let i = 0; i < this.installments.length; i++) {
-          if (this.installments[i].SK) {
-            const SK = this.installments[i].SK;
-            const PK = this.installments[i].PK;
-            const GSP1PK1 = this.editedItemLeads.SK;
-            const GSP1SK1 = SK;
-            const GSP2PK1 = id_quote;
-            const GSP2SK1 = SK;
-            const GSP4PK1 = this.organizationID;
-            const GSP4SK1 = new Date().toISOString().substr(0, 10);
-            const updateAt = new Date().toISOString().substr(0, 10);
-            const startDate = this.installments[i].startDate;
-            const amount = this.installments[i].amount;
-            const isPaid = "N";
-
-            inst = {
-              PK,
-              SK,
-              GSP1PK1,
-              GSP1SK1,
-              GSP2PK1,
-              GSP2SK1,
-              GSP4PK1,
-              GSP4SK1,
-              updateAt,
-              startDate,
-              amount,
-              isPaid,
-            };
-            await API.graphql({
-              query: updateRecord,
-              variables: { input: inst },
-            });
-          } else {
-            const id = uuid.v1();
-            const SK = "INS#" + id;
-            const GSP1PK1 = this.editedItemLeads.SK;
-            const GSP1SK1 = SK;
-            const GSP2PK1 = id_quote;
-            const GSP2SK1 = SK;
-            const GSP4PK1 = this.organizationID;
-            const GSP4SK1 = new Date().toISOString().substr(0, 10);
-            const entityType = "INSTALLMENT";
-            const createdAt = new Date().toISOString().substr(0, 10);
-            const updateAt = new Date().toISOString().substr(0, 10);
-            const createdBy = this.usuario;
-            const active = "1";
-            const startDate = this.installments[i].startDate;
-            const amount = this.installments[i].amount;
-            const isPaid = "N";
-
-            inst = {
-              PK,
-              SK,
-              id,
-              GSP1PK1,
-              GSP1SK1,
-              GSP2PK1,
-              GSP2SK1,
-              GSP4PK1,
-              GSP4SK1,
-              entityType,
-              createdAt,
-              updateAt,
-              createdBy,
-              active,
-              startDate,
-              amount,
-              isPaid,
-            };
-            await API.graphql({
-              query: createRecord,
-              variables: { input: inst },
-            });
-          }
         }
       }
 
@@ -2421,14 +2347,12 @@ export default {
       this.quotes_created = [];
       this.quotes_s = [];
       this.quotes_va = [];
-      this.is_installment = false;
+      this.is_installment = true;
       this.calc = false;
       this.number = 1;
       this.payment = 1;
       this.conclusion = "";
       loading.close();
-      this.GetLeads();
-      this.GetLeads_Seek();
     },
 
     async updateServices(item) {
@@ -2453,6 +2377,8 @@ export default {
         const isVariant = item.isVariant;
         const internalComments = item.internalComments;
         const l_variant = l_team.slice(0, -1);
+        const customerName =
+          this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
         if (!smName || !description || !price) {
           this.alert = false;
           this.openMS();
@@ -2470,6 +2396,7 @@ export default {
             isVariant,
             internalComments,
             l_variant,
+            customerName,
           };
           const prod = await API.graphql({
             query: updateRecord,
@@ -2530,6 +2457,22 @@ export default {
         }
         console.log(this.q_services);
         this.total = this.total_s;
+        this.payment = this.total;
+        this.number = 1;
+        this.calc = true;
+
+        this.installments = [];
+        const startDate = new Date().toISOString().substr(0, 10);
+        const amount = this.payment;
+        const type = "DPAY";
+        const scale = "1/1";
+        const pay = {
+          startDate,
+          amount,
+          type,
+          scale,
+        };
+        this.installments = [...this.installments, pay];
         this.aply();
       }
     },
@@ -2538,15 +2481,11 @@ export default {
       this.dialog_email = true;
       this.list_email = [];
       this.send_email = [];
-
-      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.editedItemLeads.l_email).length;
-          i++
-        ) {
-          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
-          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+      console.log(this.listemails);
+      if (this.listemails.length > 0) {
+        for (let i = 0; i < this.listemails.length; i++) {
+          let e_type = this.listemails[i].e_type;
+          let email = this.listemails[i].email;
           const todo = {
             email,
             e_type,
@@ -2557,12 +2496,12 @@ export default {
       this.send_email.push({
         name: item.customerName,
         emails: this.list_email,
-        quoteID: item.SK,
+        quoteSK: item.SK,
       });
       this.SetBody(item);
     },
 
-    async invokeLambda(item) {
+    async invokeLambda(quoteSK) {
       var AWS = require("aws-sdk");
 
       const todos = await API.graphql({
@@ -2579,7 +2518,8 @@ export default {
       });
 
       const com = todos.data.getOrganization[0];
-
+      const quotePK = this.organizationID;
+      const user = this.usuario;
       var REGION = com.funcRegion;
       var identityPoolId = com.funcIdentityPoolId;
 
@@ -2610,7 +2550,10 @@ export default {
             '","source":"' +
             com.funcSource +
             '","subject":"' +
-            "Your Quote from BizPlanEasy" +
+            "Your Quote: (" +
+            this.editedItem_c.smName +
+            ") from BizPlanEasy: " +
+            this.editedItem_c.subject +
             '","body":"' +
             this.body +
             '"}',
@@ -2623,12 +2566,13 @@ export default {
           } else {
             pullResults = JSON.parse(data.Payload);
             console.log(pullResults);
+
             if (pullResults.MessageId) {
               const emailSent = "Y";
-              const sentDate = new Date().toLocaleString();
-              const sentBy = this.usuario;
-              const PK = this.editedItem_c_c.PK;
-              const SK = this.editedItem_c_c.SK;
+              const sentDate = new Date().toISOString().substr(0, 10);
+              const sentBy = user;
+              const PK = quotePK;
+              const SK = quoteSK;
               const todo = { emailSent, sentDate, sentBy, PK, SK };
               await API.graphql({
                 query: updateRecord,
@@ -2659,11 +2603,11 @@ export default {
         this.editedIndex = this.quotes_va.indexOf(item);
       }
 
-      this.editedItem_c_c = Object.assign({}, item);
+      this.editedItem_c = Object.assign({}, item);
       this.conclusion = item.conclusion;
       this.number = item.numInstallments;
       this.payment = item.downPayment;
-      console.log(this.editedItem_c_c);
+      console.log(this.editedItem_c);
 
       const seq = await API.graphql({
         query: listQuotes,
@@ -2731,7 +2675,12 @@ export default {
 
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
-      )[0].fullName;
+      )[0].firstName;
+
+      this.editedItemLeads.last_name = JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].lastName;
+
       if (JSON.parse(this.editedItemLeads.l_email)[0]) {
         for (
           let i = 0;
@@ -2796,11 +2745,9 @@ export default {
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
-      console.log(JSON.parse(item.l_discount));
-      console.log(JSON.parse(item.l_discount[0]).discount_code);
 
-      if (JSON.parse(item.l_discount[0])) {
-        this.discount_id = JSON.parse(item.l_discount[0]).discount_code;
+      if (JSON.parse(item.l_discount)[0]) {
+        this.discount_id = JSON.parse(item.l_discount)[0].discount_code;
       }
 
       this.total = item.quotationAmount;
@@ -2836,12 +2783,12 @@ export default {
       this.total = "";
       this.total_disc = "";
       this.installments = [];
-      this.is_installment = false;
+      this.is_installment = true;
       this.calc = false;
       this.number = 1;
       this.payment = 1;
       this.$nextTick(() => {
-        this.editedItem_c_c = Object.assign({}, this.defaultItem_c);
+        this.editedItem_c = Object.assign({}, this.defaultItem_c);
         this.editedIndex = -1;
       });
       this.$refs.tree.setCheckedKeys([]);
@@ -2854,18 +2801,16 @@ export default {
     async save() {
       if (this.editedIndex > -1) {
         console.log("edit");
-        await this.updateQuote(this.editedItem_c_c);
+        await this.updateQuote(this.editedItem_c);
       } else {
         console.log("crear");
-        await this.createQuotes(this.editedItem_c_c);
+        await this.createQuotes(this.editedItem_c);
       }
       this.close();
       this.fillData();
-      this.GetLeads();
-      this.GetLeads_Seek();
     },
 
-     editServiceItem(item) {
+    editServiceItem(item) {
       console.log(item);
       this.editedIndexServi = this.q_services.indexOf(item);
       this.editedServiceItem = Object.assign({}, item.service);
@@ -2933,6 +2878,22 @@ export default {
       this.total = this.total_s + this.total_v;
       this.total_disc = this.total;
       this.quotation_amount = this.total;
+      this.payment = this.total;
+      this.number = 1;
+      this.calc = true;
+
+      this.installments = [];
+      const startDate = new Date().toISOString().substr(0, 10);
+      const amount = this.payment;
+      const type = "DPAY";
+      const scale = "1/1";
+      const pay = {
+        startDate,
+        amount,
+        type,
+        scale,
+      };
+      this.installments = [...this.installments, pay];
       console.log(this.q_services);
       this.closedelete();
       loading.close();
@@ -3002,7 +2963,11 @@ export default {
       this.SetAddress(this.list_address);
 
       if (JSON.parse(this.editedItemLeads.l_email)[0]) {
-        for (let i = 0; i < JSON.parse(this.editedItemLeads.l_email).length; i++) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
           let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
           let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
           const todo = {
@@ -3032,12 +2997,18 @@ export default {
       }
 
       if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
-        for (let i = 0; i < JSON.parse(this.editedItemLeads.l_smAddress).length; i++) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_smAddress).length;
+          i++
+        ) {
           let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
           let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
           let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
-          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i].street_address;
-          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i].zip_code;
+          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .street_address;
+          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .zip_code;
           let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
           const todo = {
             country,
@@ -3132,6 +3103,24 @@ export default {
       this.md_negotiation = "4";
       this.sm_verbal = "4";
       this.md_verbal = "4";
+    },
+    getColor(item) {
+      if (item == "INST") return "blue";
+      else if (item == "DPAY") return "green";
+      else return "orange";
+    },
+    remoteMethod(query) {
+      if (query !== "") {
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.options = this.list.filter((item) => {
+            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
+          });
+        }, 200);
+      } else {
+        this.options = [];
+      }
     },
   },
 };

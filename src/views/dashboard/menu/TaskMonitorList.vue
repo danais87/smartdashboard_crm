@@ -434,7 +434,7 @@ export default {
               eq: "STATUS#",
             },
             indexs: {
-              eq: "3",
+              eq: "3_date",
             },
             active: {
               eq: "1",
@@ -443,7 +443,7 @@ export default {
               eq: this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: this.endDate,
             },
           },
         },
