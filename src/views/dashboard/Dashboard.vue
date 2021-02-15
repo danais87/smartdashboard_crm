@@ -716,7 +716,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: "INV#",
+              eq: "CPG#",
             },
             indexs: {
               eq: "table",

@@ -2040,7 +2040,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: "INV#",
+              eq: "CPG#",
             },
             indexs: {
               eq: "table",
@@ -2064,10 +2064,12 @@ export default {
       });
       const PK = this.organizationID;
       const id = uuid.v1();
-      const SK = "INV#" + id;
+      const SK = "CPG#" + id;
       const GSP1PK1 = SK;
       const GSP1SK1 = "#META#" + id;
-      const entityType = "INVESTMENT";
+      const GSP4PK1 = this.organizationID;
+      const GSP4SK1 = "CPG#" + item.startDate;
+      const entityType = "CAMPAIGNS";
       const createdAt = new Date().toISOString().substr(0, 10);
       const updateAt = new Date().toISOString().substr(0, 10);
       const createdBy = this.usuario;
@@ -2084,6 +2086,8 @@ export default {
         id,
         GSP1PK1,
         GSP1SK1,
+        GSP4PK1,
+        GSP4SK1,
         entityType,
         createdAt,
         updateAt,
@@ -2113,6 +2117,8 @@ export default {
       const SK = item.SK;
       const updateAt = new Date().toISOString().substr(0, 10);
       const value = item.value;
+      const GSP4PK1 = this.organizationID;
+      const GSP4SK1 = "CPG#" + item.startDate;
       const startDate = item.startDate;
       const description = item.description;
 
@@ -2121,6 +2127,8 @@ export default {
       const todo = {
         PK,
         SK,
+        GSP4PK1,
+        GSP4SK1,
         updateAt,
         value,
         startDate,

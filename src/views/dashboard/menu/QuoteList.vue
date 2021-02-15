@@ -1966,8 +1966,7 @@ export default {
       const GSP1SK1 = SK;
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
-      const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = "QUO#" + item.revisitDate;
+      c
       const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
       const createdAt = new Date().toISOString().substr(0, 10);
