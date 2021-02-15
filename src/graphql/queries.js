@@ -977,3 +977,102 @@ export const getAccounts = /* GraphQL */ `
     }
   }
 `;
+export const listInvestment = /* GraphQL */ `
+  query ListInvestment(
+    $filter: TableFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listInvestment(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      GSP1PK1
+      GSP1SK1
+      GSP2PK1
+      GSP2SK1
+      GSP3PK1
+      GSP3SK1
+      GSP4PK1
+      GSP4SK1
+      PK
+      SK
+      id
+      entityType
+      createdAt
+      updateAt
+      active
+      createdBy
+      l_smName
+      l_email
+      l_smAddress
+      leadStatus
+      seekingService
+      adquisition
+      account
+      notes
+      smName
+      smAddress
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_discount
+      l_team
+      l_leadsStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_variant
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
+      subject
+      introduction
+      conclusion
+      internalComments
+      emailSent
+      sentDate
+      sentBy
+      isDiscount
+      isInstallment
+      downPayment
+      numInstallments
+      disccountAmount
+      l_disccount
+      quotationAmount
+      finalAmount
+      paymentStatus
+      orderNumber
+      processStatus
+      description
+      price
+      typeName
+      otherType
+      isRecurrent
+      isVariant
+      variants
+      variantName
+      variantPrice
+      taskStatus
+      taskStart
+      taskEnd
+      taskNameResponsible
+      startDate
+      amount
+      isPaid
+      reference
+      method
+      payDate
+      value
+      type
+      live
+      revisitDate
+      customerID
+      customerName
+      businessType
+      l_businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      scale
+    }
+  }
+`;

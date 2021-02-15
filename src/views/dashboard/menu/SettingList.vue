@@ -184,6 +184,26 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialog_deleteMarketing" max-width="400">
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this item?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="dialog_deleteMarketing = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn color="green darken-1" text @click="deleteItemMarketing()">
+            Yes
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog v-model="dialog_conf_delete" persistent max-width="400">
       <v-card>
         <v-card-title class="headline">
@@ -201,7 +221,101 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+    <v-data-table
+      :headers="headers_invest"
+      :items="investment"
+      sort-by="description"
+      class="elevation-1"
+      :search="search_invest"
+      :items-per-page="5"
+    >
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>Marketing Investment</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="search_invest"
+            append-icon="mdi-magnify"
+            label="Search"
+            single-line
+            hide-details
+          ></v-text-field>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog_invest" max-width="800px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                class="ma-2"
+                outlined
+                x-small
+                fab
+                color="indigo"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>
+                <span class="headline">Marketing Investment</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <v-col cols="12" sm="5" md="5">
+                      <v-text-field
+                        v-model="editedItemInvest.description"
+                        label="Description"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="3" md="3">
+                      <v-text-field
+                        v-model="editedItemInvest.value"
+                        label="Value"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="4" md="4">
+                      <v-text-field
+                        v-model="editedItemInvest.startDate"
+                        label="Date(YYYY-MM-DD)"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" text @click="closeInvest"
+                  >Cancel</v-btn
+                >
+                <v-btn color="blue darken-1" text @click="saveInvest"
+                  >Save</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <el-button
+          type="primary"
+          icon="el-icon-edit"
+          circle
+          size="mini"
+          @click="editItemInvestment(item)"
+        ></el-button>
+        <el-button
+          type="danger"
+          icon="el-icon-delete"
+          circle
+          size="mini"
+          @click="deleteItemInvest(item)"
+        ></el-button>
+      </template>
+    </v-data-table>
+    <br />
     <v-data-table
       :headers="headers_team"
       :items="teams"
@@ -1479,8 +1593,8 @@
 import { API } from "aws-amplify";
 import { createRecord, updateRecord } from "../../../graphql/mutations";
 import {
-  getOrganization,
   listAccounts,
+  listInvestment,
   listSmartDash,
 } from "../../../graphql/queries";
 import Vuex from "vuex";
@@ -1502,6 +1616,7 @@ export default {
     dialog_deleteLib: false,
     dialog_deleteQuo: false,
     dialog_deleteBT: false,
+    dialog_deleteMarketing: false,
     date: new Date().toISOString().substr(0, 10),
     menu: false,
     modal: false,
@@ -1520,8 +1635,10 @@ export default {
     search_library: "",
     search_quote: "",
     search_bt: "",
+    search_invest: "",
     show: false,
     accounts: [],
+    investment: [],
     dialog_team: false,
     dialog_account: false,
     dialog_stype: false,
@@ -1533,6 +1650,7 @@ export default {
     dialog_library: false,
     dialog_quote: false,
     dialog_bt: false,
+    dialog_invest: false,
     apiRequest: false,
     options_status: [
       {
@@ -1553,6 +1671,17 @@ export default {
         value: "F",
         label: "Amount",
       },
+    ],
+    headers_invest: [
+      {
+        text: "Descripcion",
+        align: "start",
+        sortable: true,
+        value: "description",
+      },
+      { text: "Value", align: "start", sortable: true, value: "value" },
+      { text: "Date", align: "start", sortable: true, value: "startDate" },
+      { text: "Actions", value: "actions", sortable: false },
     ],
     headers_team: [
       { text: "Name", align: "start", sortable: true, value: "teamName" },
@@ -1717,6 +1846,7 @@ export default {
     editedIndexLibrary: -1,
     editedIndexQuote: -1,
     editedIndexBusinessType: -1,
+    editedIndexInvest: -1,
     editedItemPayment: { status: "A" },
     defaultItemPayment: { status: "A" },
     editedItemAcquisition: { status: "A" },
@@ -1736,6 +1866,18 @@ export default {
       name: "",
       email: "",
       status: "A",
+    },
+    editedItemInvest: {
+      id: "",
+      value: "",
+      startDate: "",
+      description: "",
+    },
+    defaultItemInvest: {
+      id: "",
+      value: "",
+      startDate: "",
+      description: "",
     },
     editedItemAccount: {
       id: "",
@@ -1874,15 +2016,188 @@ export default {
     dialog_quote(val) {
       val || this.closeQuote();
     },
+    dialog_invest(val) {
+      val || this.closeInvest();
+    },
   },
 
   created() {
     this.GetCatalogs();
     this.getAccounts();
+    this.getInvestment();
   },
 
   methods: {
     ...Vuex.mapActions(["GetCatalogs"]),
+
+    //MARKETING INVEST
+    async getInvestment() {
+      const todos = await API.graphql({
+        query: listInvestment,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "INV#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      console.log(todos);
+      this.investment = todos.data.listInvestment;
+    },
+
+    async createInvestment(item) {
+      const loading = this.$loading({
+        lock: true,
+        text: "Create Investment",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      const PK = this.organizationID;
+      const id = uuid.v1();
+      const SK = "INV#" + id;
+      const GSP1PK1 = SK;
+      const GSP1SK1 = "#META#" + id;
+      const entityType = "INVESTMENT";
+      const createdAt = new Date().toISOString().substr(0, 10);
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const createdBy = this.usuario;
+      const active = "1";
+      const value = item.value;
+      const startDate = item.startDate;
+      const description = item.description;
+
+      if (!value || !startDate || !description) return alert("error en datos");
+
+      const todo = {
+        PK,
+        SK,
+        id,
+        GSP1PK1,
+        GSP1SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        value,
+        startDate,
+        description,
+      };
+      await API.graphql({
+        query: createRecord,
+        variables: { input: todo },
+      });
+      this.getInvestment();
+      loading.close();
+    },
+
+    async updateInvestment(item) {
+      const loading = this.$loading({
+        lock: true,
+        text: "Update Investment",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      console.log(item);
+      const PK = item.PK;
+      const SK = item.SK;
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const value = item.value;
+      const startDate = item.startDate;
+      const description = item.description;
+
+      if (!value || !startDate || !description) return alert("error en datos");
+
+      const todo = {
+        PK,
+        SK,
+        updateAt,
+        value,
+        startDate,
+        description,
+      };
+
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: todo },
+      });
+      loading.close();
+      this.getInvestment();
+    },
+
+    editItemInvestment(item) {
+      console.log(item);
+      this.editedIndexInvest = this.investment.indexOf(item);
+      this.editedItemInvest = Object.assign({}, item);
+      this.dialog_invest = true;
+    },
+
+    deleteItemMarketing(item) {
+      this.editedItemInvest = Object.assign({}, item);
+      this.dialog_deleteMarketing = true;
+    },
+
+    async deleteItemInvest() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Delete Investment",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      const index = this.investment.indexOf(this.editedItemInvest);
+      this.investment.splice(index, 1);
+      console.log(this.investment);
+
+      const SK = this.editedItemInvest.SK;
+      const PK = this.editedItemInvest.PK;
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const active = "0";
+      const todo = {
+        SK,
+        PK,
+        active,
+        updateAt,
+      };
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: todo },
+      });
+      this.dialog_deleteMarketing = false;
+      console.log(this.investment);
+      loading.close();
+      this.getInvestment();
+    },
+
+    closeInvest() {
+      this.$nextTick(() => {
+        this.editedItemInvest = Object.assign({}, this.defaultItemInvest);
+        this.editedIndexInvest = -1;
+      });
+      this.dialog_invest = false;
+    },
+
+    async saveInvest() {
+      if (this.editedIndexInvest > -1) {
+        console.log("edit");
+        await this.updateInvestment(this.editedItemInvest);
+        console.log(this.editedItemInvest);
+        this.closeInvest();
+      } else {
+        console.log("crear");
+        this.createInvestment(this.editedItemInvest);
+        this.closeInvest();
+      }
+    },
 
     //TEAM
     async createTeam(item) {
@@ -2458,14 +2773,13 @@ export default {
     },
 
     async updateBusinessType(item) {
-
       const description = item.description;
       const abbreviation = item.abbreviation;
       const status = item.status;
 
-      if (  !description) return alert("error service type");
+      if (!description) return alert("error service type");
 
-      const type = {   description, abbreviation, status };
+      const type = { description, abbreviation, status };
       Object.assign(this.businessType[this.editedIndexBusinessType], type);
       console.log(this.businessType);
       var l_type = "";
