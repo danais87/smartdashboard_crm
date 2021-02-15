@@ -176,6 +176,7 @@ import { API } from "aws-amplify";
 import {
   listCustomers,
   listInstallments,
+  listInvestment,
   listQuoteItems,
   listQuotes,
 } from "../../graphql/queries";
@@ -706,6 +707,49 @@ export default {
       }
       console.log(labels);
       console.log(data);
+
+      const invest = await API.graphql({
+        query: listInvestment,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "INV#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      console.log(invest);
+      var mes = 0;
+      var value = 0;
+      var array = [];
+      var d = "";
+      var numbers = "";
+      array.push({
+        mes: mes,
+        value: value,
+      });
+
+      var investment = invest.data.listInvestment;
+      for (let i = 0; i < investment.length; i++) {
+        numbers = investment[i].startDate.split("-");
+        if (array[j].mes == numbers[2]) {
+          value = value += investment[i].value;
+          array.push({
+            mes: numbers[2],
+            value: value,
+          });
+        }
+      }
+      console.log(array);
 
       this.schartdata = {
         labels: labels,
