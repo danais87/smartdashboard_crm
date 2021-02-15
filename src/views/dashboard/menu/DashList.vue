@@ -80,12 +80,12 @@
           <v-list-item three-line>
             <v-list-item-content>
               <div class="overline mb-4">Quotes</div>
-              <line-chart
+              <LineChart
                 :chart-data="chartdata"
                 :options="boptions"
                 :height="200"
                 :width="200"
-              ></line-chart>
+              ></LineChart>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -197,10 +197,10 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: "QUO#"+this.startDate,
+              eq: "QUO#" + this.startDate,
             },
             endDate: {
-              eq: "QUO#"+this.end_date,
+              eq: "QUO#" + this.end_date,
             },
           },
         },

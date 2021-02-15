@@ -665,7 +665,6 @@
           </el-container>
         </v-card>
       </v-dialog>
-
       <v-row cols="12" sm="12" md="12">
         <v-col cols="12" sm="2" md="2" align="center">
           <v-menu
