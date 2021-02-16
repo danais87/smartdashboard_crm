@@ -4,12 +4,12 @@
     fluid
     tag="section"
   >
-  <br />
     <v-row justify="center">
       <v-col
         cols="12"
         md="8"
       >
+      <br /><br />
         <base-material-card>
           <template v-slot:heading>
             <div class="display-2 font-weight-light">
@@ -141,6 +141,7 @@
         cols="12"
         md="4"
       >
+      <br /><br />
         <base-material-card
           class="v-card-profile"
           avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"

@@ -35,113 +35,131 @@
         </v-card>
       </v-dialog>
       <v-card>
-        <v-card-title>
-          <v-row>
-            <span class="headline">Leads:</span>
-            <v-spacer></v-spacer>
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              @click="deleteItem()"
-            ></el-button>
-            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-          </v-row>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12" sm="2" md="2">
-                <v-text-field v-model="item.name" label="Name"></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="2" md="2">
-                <v-text-field
-                  v-model="item.last_name"
-                  label="Lastname"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="2" md="2">
-                <v-text-field
-                  v-model="item.jobTitle"
-                  label="Job Title"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="2" md="2">
-                <v-text-field
-                  v-model="item.levelAuthority"
-                  label="Level Authority"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="2" md="2">
-                <v-text-field
-                  v-model="item.numberEmployee"
-                  label="Number Employee"
-                ></v-text-field>
-              </v-col>
+        <v-col>
+          <br />
+          <base-material-card>
+            <template v-slot:heading>
+              <v-row>
+                <div class="display-2 font-weight-light">Customer Profile</div>
+                <v-spacer></v-spacer>
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  @click="deleteItem()"
+                ></el-button>
+                <v-btn color="blanck darken-1" text @click="close"
+                  >Cancel</v-btn
+                >
+                <v-btn color="blanck darken-1" text @click="save">Save</v-btn>
+              </v-row>
+            </template>
+            <v-form>
+              <v-container class="py-0">
+                <v-row>
+                  <v-col cols="12" md="2">
+                    <v-text-field
+                      v-model="item.name"
+                      label="First Name"
+                      class="purple-input"
+                    />
+                  </v-col>
 
-              <v-col sm="6" md="6">
-                <DialogPhone v-model="showPhone"></DialogPhone>
-              </v-col>
-              <v-col sm="6" md="6">
-                <DialogEmail v-model="showEmail"></DialogEmail>
-              </v-col>
-              <v-col sm="12" md="12">
-                <DialogAddress v-model="showAddress"></DialogAddress>
-              </v-col>
-              <v-col class="d-flex" cols="12" sm="3" md="3">
-                <v-select
-                  v-model="item.account"
-                  :items="accounts"
-                  label="Select Account"
-                  item-text="smName"
-                  item-value="smName"
-                  outlined
-                ></v-select>
-              </v-col>
-              <v-col class="d-flex" cols="12" sm="3" md="3">
-                <v-select
-                  v-model="item.leadStatus"
-                  :items="leadStatus"
-                  label="Contact Status"
-                  item-text="description"
-                  item-value="description"
-                  outlined
-                ></v-select>
-              </v-col>
-              <v-col class="d-flex" cols="12" sm="3" md="3">
-                <v-select
-                  v-model="item.seekingService"
-                  :items="options_service"
-                  label="Seeking Service"
-                  item-text="label"
-                  item-value="value"
-                  outlined
-                ></v-select>
-              </v-col>
-              <v-col cols="12" sm="2" md="2">
-                <v-select
-                  v-model="item.businessType"
-                  :items="businessType"
-                  label="Industry Type"
-                  item-text="description"
-                  item-value="description"
-                  outlined
-                ></v-select>
-              </v-col>
-              <v-col class="d-flex" cols="12" sm="3" md="3">
-                <v-select
-                  v-model="item.adquisition"
-                  :items="acquisitions"
-                  label="Acquisition"
-                  item-text="description"
-                  item-value="description"
-                  outlined
-                ></v-select>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
+                  <v-col cols="12" md="2">
+                    <v-text-field
+                      v-model="item.last_name"
+                      label="Last Name"
+                      class="purple-input"
+                    />
+                  </v-col>
+
+                  <v-col cols="12" md="2">
+                    <v-text-field
+                      v-model="item.jobTitle"
+                      label="Job Title"
+                      class="purple-input"
+                    />
+                  </v-col>
+
+                  <v-col cols="12" md="2">
+                    <v-text-field
+                      v-model="item.levelAuthority"
+                      label="Level Authority"
+                      class="purple-input"
+                    />
+                  </v-col>
+
+                  <v-col cols="12" md="2">
+                    <v-text-field
+                      v-model="item.numberEmployee"
+                      label="Company Number Employee"
+                      class="purple-input"
+                    />
+                  </v-col>
+                  <v-col sm="6" md="6">
+                    <DialogPhone v-model="showPhone"></DialogPhone>
+                  </v-col>
+                  <v-col sm="6" md="6">
+                    <DialogEmail v-model="showEmail"></DialogEmail>
+                  </v-col>
+                  <v-col sm="12" md="12">
+                    <DialogAddress v-model="showAddress"></DialogAddress>
+                  </v-col>
+                  <v-col class="d-flex" cols="12" sm="3" md="3">
+                    <v-select
+                      v-model="item.account"
+                      :items="accounts"
+                      label="Select Account"
+                      item-text="smName"
+                      item-value="smName"
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-select
+                      v-model="item.leadStatus"
+                      :items="leadStatus"
+                      label="Contact Status"
+                      item-text="description"
+                      item-value="description"
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-col class="d-flex" cols="12" sm="2" md="2">
+                    <v-select
+                      v-model="item.seekingService"
+                      :items="options_service"
+                      label="Seeking Service"
+                      item-text="label"
+                      item-value="value"
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="2" md="2">
+                    <v-select
+                      v-model="item.businessType"
+                      :items="businessType"
+                      label="Industry Type"
+                      item-text="description"
+                      item-value="description"
+                      outlined
+                    ></v-select>
+                  </v-col>
+                  <v-col class="d-flex" cols="12" sm="3" md="3">
+                    <v-select
+                      v-model="item.adquisition"
+                      :items="acquisitions"
+                      label="Acquisition"
+                      item-text="description"
+                      item-value="description"
+                      outlined
+                    ></v-select>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </base-material-card>
+        </v-col>
       </v-card>
     </v-dialog>
   </div>
