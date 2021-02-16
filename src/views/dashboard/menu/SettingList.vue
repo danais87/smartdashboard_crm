@@ -271,8 +271,8 @@
                     </v-col>
                     <v-col cols="12" sm="3" md="3">
                       <v-text-field
-                        v-model="editedItemInvest.value"
-                        label="Value"
+                        v-model="editedItemInvest.price"
+                        label="price"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="4" md="4">
@@ -1679,7 +1679,7 @@ export default {
         sortable: true,
         value: "description",
       },
-      { text: "Value", align: "start", sortable: true, value: "value" },
+      { text: "Value", align: "start", sortable: true, value: "price" },
       { text: "Date", align: "start", sortable: true, value: "startDate" },
       { text: "Actions", value: "actions", sortable: false },
     ],
@@ -1869,13 +1869,13 @@ export default {
     },
     editedItemInvest: {
       id: "",
-      value: "",
+      price: 0,
       startDate: "",
       description: "",
     },
     defaultItemInvest: {
       id: "",
-      value: "",
+      price: 0,
       startDate: "",
       description: "",
     },
@@ -2074,11 +2074,11 @@ export default {
       const updateAt = new Date().toISOString().substr(0, 10);
       const createdBy = this.usuario;
       const active = "1";
-      const value = item.value;
+      const price = item.price;
       const startDate = item.startDate;
       const description = item.description;
 
-      if (!value || !startDate || !description) return alert("error en datos");
+      if (!price || !startDate || !description) return alert("error en datos");
 
       const todo = {
         PK,
@@ -2093,7 +2093,7 @@ export default {
         updateAt,
         createdBy,
         active,
-        value,
+        price,
         startDate,
         description,
       };
@@ -2116,13 +2116,13 @@ export default {
       const PK = item.PK;
       const SK = item.SK;
       const updateAt = new Date().toISOString().substr(0, 10);
-      const value = item.value;
+      const price = item.price;
       const GSP4PK1 = this.organizationID;
       const GSP4SK1 = "CPG#" + item.startDate;
       const startDate = item.startDate;
       const description = item.description;
 
-      if (!value || !startDate || !description) return alert("error en datos");
+      if (!price || !startDate || !description) return alert("error en datos");
 
       const todo = {
         PK,
@@ -2130,7 +2130,7 @@ export default {
         GSP4PK1,
         GSP4SK1,
         updateAt,
-        value,
+        price,
         startDate,
         description,
       };

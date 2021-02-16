@@ -124,12 +124,28 @@
         <v-card max-width="400" max-height="400">
           <v-list-item three-line>
             <v-list-item-content>
-              <div class="overline mb-4">New Proyects</div>
+              <div class="overline mb-4">Marketing Investment</div>
+              <LineChart
+                :height="200"
+                :width="200"
+                :chart-data="invochartdata"
+                :options="invooptions"
+              ></LineChart>
+            </v-list-item-content>
+          </v-list-item>
+        </v-card>
+        <br /><br />
+      </v-col>
+      <v-col cols="12" sm="4" lg="4">
+        <v-card max-width="400" max-height="400">
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline mb-4">Sales - CAMPAIGNS</div>
               <DoughnutChart
                 :height="200"
                 :width="200"
-                :chart-data="tchartdata"
-                :options="toptions"
+                :chart-data="campchartdata"
+                :options="campoptions"
               ></DoughnutChart>
             </v-list-item-content>
           </v-list-item>
@@ -152,21 +168,7 @@
         </v-card>
         <br /><br />
       </v-col>
-      <v-col cols="4" lg="4">
-        <base-material-chart-card
-          :data="emailsSubscriptionChart.data"
-          :options="emailsSubscriptionChart.options"
-          :responsive-options="emailsSubscriptionChart.responsiveOptions"
-          color="#E91E63"
-          hover-reveal
-          type="Bar"
-        >
-          <h4 class="card-title font-weight-light mt-2 ml-2">Website Views</h4>
-          <p class="d-inline-flex font-weight-light ml-2 mt-1">
-            Last Campaign Performance
-          </p>
-        </base-material-chart-card>
-      </v-col>
+
     </v-row>
   </v-container>
 </template>
@@ -184,10 +186,12 @@ import Card from "../../components/base/CardS.vue";
 import ChartCard from "../../components/base/ChartCard.vue";
 import StatsCard from "../../components/base/StatsCard.vue";
 import DoughnutChart from "../../views/dashboard/component/dashboard/DoughnutChart";
+import LineChart from "../../views/dashboard/component/dashboard/LineChart";
 import Vuex from "vuex";
+
 export default {
   name: "DashboardDashboard",
-  components: { Card, ChartCard, StatsCard, DoughnutChart },
+  components: { Card, ChartCard, StatsCard, DoughnutChart, LineChart },
   data() {
     return {
       total_pp: 0,
@@ -235,53 +239,7 @@ export default {
           },
         },
       },
-      emailsSubscriptionChart: {
-        data: {
-          labels: [
-            "Ja",
-            "Fe",
-            "Ma",
-            "Ap",
-            "Mai",
-            "Ju",
-            "Jul",
-            "Au",
-            "Se",
-            "Oc",
-            "No",
-            "De",
-          ],
-          series: [
-            [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895],
-          ],
-        },
-        options: {
-          axisX: {
-            showGrid: false,
-          },
-          low: 0,
-          high: 1000,
-          chartPadding: {
-            top: 0,
-            right: 5,
-            bottom: 0,
-            left: 0,
-          },
-        },
-        responsiveOptions: [
-          [
-            "screen and (max-width: 640px)",
-            {
-              seriesBarDistance: 5,
-              axisX: {
-                labelInterpolationFnc: function (value) {
-                  return value[0];
-                },
-              },
-            },
-          ],
-        ],
-      },
+      emailsSubscriptionChart: {},
       preferencesChart: {
         data: {
           labels: ["62%", "32%", "6%"],
@@ -425,6 +383,10 @@ export default {
       toptions: null,
       schartdata: null,
       soptions: null,
+      invochartdata: null,
+      invooptions: null,
+      campchartdata: null,
+      campoptions: null,
     };
   },
   created() {
@@ -495,12 +457,13 @@ export default {
 
       this.quotes_datac = todos.data.listQuotes;
       console.log(this.quotes_datac);
-
+      var ventas = [];
       for (let i = 0; i < this.quotes_datac.length; i++) {
         if (this.quotes_datac[i].orderNumber == null) {
           this.total_q = this.total_q + this.quotes_datac[i].finalAmount;
         } else {
           this.total_i = this.total_i + this.quotes_datac[i].finalAmount;
+          ventas.push(this.quotes_datac[i]);
         }
       }
       if (this.total_i != 0) {
@@ -708,36 +671,6 @@ export default {
       console.log(labels);
       console.log(data);
 
-      const invest = await API.graphql({
-        query: listInvestment,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "CPG#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      console.log(invest);
-      var mes = 0;
-      var value = 0;
-      var array = [];
-
-      var numbers = "";
-      array.push({
-        mes: mes,
-        value: value,
-      });
-
       this.schartdata = {
         labels: labels,
         datasets: [
@@ -772,6 +705,159 @@ export default {
         maintainAspectRatio: false,
       };
 
+      const invest = await API.graphql({
+        query: listInvestment,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "CPG#",
+            },
+            indexs: {
+              eq: "4_cus",
+            },
+            active: {
+              eq: "1",
+            },
+            startDate: {
+              eq: "CPG#" + this.startDate,
+            },
+            endDate: {
+              eq: "CPG#" + this.end_date,
+            },
+          },
+        },
+      });
+      console.log(invest);
+
+      var inv = invest.data.listInvestment;
+      var total_camaping = 0;
+      for (let i = 0; i < inv.length; i++) {
+        total_camaping += inv[i].price;
+      }
+
+      var groupByInver = function (miarray) {
+        return miarray.reduce(function (groups, item) {
+          let a = item.startDate.split("-");
+          var val = a[0] + "-" + a[1];
+          groups[val] = groups[val] || { date: val, pv: 0 };
+          groups[val].pv += item.price;
+          return groups;
+        }, {});
+      };
+
+      var array = Object.values(groupByInver(inv));
+
+      var groupByInvo = function (miarray) {
+        return miarray.reduce(function (groups, item) {
+          let a = item.createdAt.split("-");
+          var val = a[0] + "-" + a[1];
+          groups[val] = groups[val] || { date: val, pv: 0 };
+          groups[val].pv += item.finalAmount;
+          return groups;
+        }, {});
+      };
+      var array_invo = Object.values(groupByInvo(ventas));
+      var labels_inv = [];
+      var data_inv = [];
+      var data_invo = [];
+      for (let i = 0; i < array.length; i++) {
+        for (let j = 0; j < array_invo.length; j++) {
+          if (array[i].date == array_invo[j].date) {
+            labels_inv.push(array[i].date);
+            data_inv.push(array[i].pv);
+            data_invo.push(array_invo[j].pv);
+          } else {
+            labels_inv.push(array[i].date);
+            data_inv.push(array[i].pv);
+            data_invo.push(0);
+          }
+        }
+      }
+      console.log(data_inv);
+      console.log(data_invo);
+      this.invochartdata = {
+        labels: labels_inv,
+        datasets: [
+          {
+            label: "Sales" ,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            data: data_invo,
+          },
+          {
+            label: "CAMPAIGNS",
+            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            data: data_inv,
+          },
+        ],
+      };
+
+      this.invooptions = {
+        lineTension: 1,
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+              gridLines: {
+                display: true,
+              },
+            },
+          ],
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
+              },
+              categoryPercentage: 0.6
+            },
+
+          ],
+        },
+        legend: {
+          display: true,
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+      this.campchartdata = {
+        labels: [ 'Sales('+this.formattedValue(this.total_i)+')','CAMPAIGNS('+this.formattedValue(total_camaping)+')'],
+        datasets: [
+          {
+            borderWidth: 1,
+            borderColor: [
+              "rgba(255, 99, 132, 1)",
+              "rgba(54, 162, 235, 1)",
+              "rgba(255, 206, 86, 1)",
+              "rgba(75, 192, 192, 1)",
+              "rgba(153, 102, 255, 1)",
+              "rgba(255, 159, 64, 1)",
+            ],
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(255, 159, 64, 0.2)",
+            ],
+            data: [this.total_i,total_camaping],
+          },
+        ],
+      };
+
+      this.campoptions = {
+        legend: {
+          display: true,
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+
+
       loading.close();
     },
 
@@ -785,7 +871,7 @@ export default {
 
     formattedValue(value) {
       return (
-        "$" +
+        "$ " +
         parseFloat(value)
           .toFixed(2)
           .replace(/\d(?=(\d{3})+\.)/g, "$&,")

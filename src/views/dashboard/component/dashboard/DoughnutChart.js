@@ -1,5 +1,5 @@
 import {
-    Pie,
+    Doughnut,
     mixins
 } from 'vue-chartjs'
 const {
@@ -7,7 +7,7 @@ const {
 } = mixins
 
 export default {
-    extends: Pie,
+    extends: Doughnut,
     mixins: [reactiveProp],
      props: {
          chartData: {
