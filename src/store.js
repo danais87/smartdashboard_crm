@@ -227,14 +227,16 @@ export default new Vuex.Store({
 
       if (item.isInstallment == "true") {
         for (let i = 0; i < installments.length; i++) {
-          tabla_installments = tabla_installments + "<tr style='mso-yfti-irow:1'>" +
-            "<td width='65%' valign=top style='width:65.0%;border:none;border-bottom:solid #EEEEEE 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
-            "<p class=MsoNormal style='line-height:11.25pt'>" + installments[i].startDate + "<br>" +
-            "</td>" +
-            "<td valign=top style='border:none;border-bottom:solid #EEEEEE 1.0pt; padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
-            "<p class=MsoNormal align=right style='text-align:right;line-height:11.25pt'>$&nbsp;" + parseFloat(installments[i].amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "</p>" +
-            "</td > "
-          "</tr>";
+          if (installments[i].type != "DPAY") {
+            tabla_installments = tabla_installments + "<tr style='mso-yfti-irow:1'>" +
+              "<td width='65%' valign=top style='width:65.0%;border:none;border-bottom:solid #EEEEEE 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
+              "<p class=MsoNormal style='line-height:11.25pt'>" + installments[i].startDate + "<br>" +
+              "</td>" +
+              "<td valign=top style='border:none;border-bottom:solid #EEEEEE 1.0pt; padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
+              "<p class=MsoNormal align=right style='text-align:right;line-height:11.25pt'>$&nbsp;" + parseFloat(installments[i].amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "</p>" +
+              "</td > "
+            "</tr>";
+          }
         }
 
         detalle_installments = "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width='100%' style='width:100.0%;mso-cellspacing:1.8pt;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in;line-height:inherit'>" +
@@ -298,7 +300,7 @@ export default new Vuex.Store({
         }
         discount = discount + "<tr style='mso-yfti-irow:3'>" +
           "<td colspan=2 valign=top style='border:none;border-top:solid #EEEEEE 1.5pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
-          "<p class=MsoNormal align=right style='text-align:right'><b>Total Discount: " + type + "&nbsp;" + parseFloat(item.discount_value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "<o:p></o:p></b></p>" +
+          "<p class=MsoNormal align=right style='text-align:right'><b>Total Discount: " + type + "&nbsp;" + parseFloat(JSON.parse(item.l_discount)[0].discount_value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "<o:p></o:p></b></p>" +
           "</td></tr>"
       }
 

@@ -785,7 +785,7 @@
       </v-row>
       <v-row>
         <v-col sm="4" md="4">
-          <v-card >
+          <v-card>
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="6" md="6">Analyzed</v-col>
               <v-col sm="6" md="6" align="right">{{ total_qc }} </v-col>
@@ -815,7 +815,7 @@
           </v-card>
         </v-col>
         <v-col sm="4" md="4">
-          <v-card >
+          <v-card>
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="6" md="6">Negotiation</v-col>
               <v-col sm="6" md="6" align="right">{{ total_qs }} </v-col>
@@ -844,7 +844,7 @@
           </v-card>
         </v-col>
         <v-col sm="4" md="4">
-          <v-card >
+          <v-card>
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="8" md="8">Verbal Agreement</v-col>
               <v-col sm="4" md="4" align="right">{{ total_va }} </v-col>
@@ -1136,8 +1136,8 @@ export default {
       services: "",
       leads: "",
       is_installment: "",
-      payment: "",
-      number: "",
+      payment: 1,
+      number: 1,
       createdAt: "",
       conclusion: "",
       comments: "",
@@ -1161,8 +1161,8 @@ export default {
       final_amount: "",
       services: "",
       is_installment: "",
-      payment: "",
-      number: "",
+      payment: 1,
+      number: 1,
       createdAt: "",
       conclusion: "",
       comments: "",
@@ -1837,7 +1837,7 @@ export default {
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
-      const scale = "1/1";
+      const scale = "1/" + this.number;
       const pay = {
         startDate,
         amount,
@@ -1880,6 +1880,7 @@ export default {
     },
 
     async aply_calc() {
+      var num = 0;
       if (!this.payment || !this.number || !this.total_disc)
         return alert("error en datos");
       this.calc = true;
@@ -1888,7 +1889,9 @@ export default {
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
-      const scale = "1/" + (this.number + 1);
+      num = parseInt(this.number,10) + 1;
+      console.log(num);
+      const scale = "1/" + num;
       const pay = {
         startDate,
         amount,
@@ -1901,7 +1904,7 @@ export default {
       for (let i = 0; i < this.number; i++) {
         const type = "INST";
         const s = i + 2;
-        const scale = s + "/" + (this.number + 1);
+        const scale = s + "/" + num;
         const d = new Date();
         const startDate = new Date(d.setMonth(d.getMonth() + i + 1))
           .toISOString()
