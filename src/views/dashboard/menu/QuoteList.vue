@@ -785,7 +785,7 @@
       </v-row>
       <v-row>
         <v-col sm="4" md="4">
-          <v-card max-width="400">
+          <v-card >
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="6" md="6">Analyzed</v-col>
               <v-col sm="6" md="6" align="right">{{ total_qc }} </v-col>
@@ -815,7 +815,7 @@
           </v-card>
         </v-col>
         <v-col sm="4" md="4">
-          <v-card max-width="400">
+          <v-card >
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="6" md="6">Negotiation</v-col>
               <v-col sm="6" md="6" align="right">{{ total_qs }} </v-col>
@@ -844,7 +844,7 @@
           </v-card>
         </v-col>
         <v-col sm="4" md="4">
-          <v-card max-width="400">
+          <v-card >
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="8" md="8">Verbal Agreement</v-col>
               <v-col sm="4" md="4" align="right">{{ total_va }} </v-col>
@@ -1966,9 +1966,10 @@ export default {
       const GSP1SK1 = SK;
       var GSP2PK1 = SK;
       var GSP2SK1 = "#META#";
-      c
       const revisitDate = new Date().toISOString().substr(0, 10);
       const entityType = "QUOTE";
+      const GSP4PK1 = this.organizationID;
+      const GSP4SK1 = "QUO#" + revisitDate;
       const createdAt = new Date().toISOString().substr(0, 10);
       var updateAt = new Date().toISOString().substr(0, 10);
       const createdBy = this.usuario;
