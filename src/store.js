@@ -232,6 +232,9 @@ export default new Vuex.Store({
               "<td width='65%' valign=top style='width:65.0%;border:none;border-bottom:solid #EEEEEE 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
               "<p class=MsoNormal style='line-height:11.25pt'>" + installments[i].startDate + "<br>" +
               "</td>" +
+              "<td width='65%' valign=top style='width:65.0%;border:none;border-bottom:solid #EEEEEE 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
+              "<p class=MsoNormal style='line-height:11.25pt'>" + installments[i].scale + "<br>" +
+              "</td>" +
               "<td valign=top style='border:none;border-bottom:solid #EEEEEE 1.0pt; padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
               "<p class=MsoNormal align=right style='text-align:right;line-height:11.25pt'>$&nbsp;" + parseFloat(installments[i].amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "</p>" +
               "</td > "
@@ -249,11 +252,17 @@ export default new Vuex.Store({
           "<td width='65%' valign=top style='width:65.0%;border:none;border-bottom:solid #DDDDDD 1.0pt;background:#EEEEEE;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
           "<p class=MsoNormal><b>Installment Date <o:p></o:p></b></p>" +
           "</td>" +
+          "<td width='65%' valign=top style='width:65.0%;border:none;border-bottom:solid #DDDDDD 1.0pt;background:#EEEEEE;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
+          "<p class=MsoNormal><b>#<o:p></o:p></b></p>" +
+          "</td>" +
           "<td width='35%' valign=top style='width:35.0%;border:none;border-bottom:solid #DDDDDD 1.0pt;background:#EEEEEE;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
           "<p class=MsoNormal align=right style='text-align:right'><b><span style='color:black'>Amount to be Paid</span><o:p></o:p></b></p>" +
           "</td>" +
           "</tr>" +
           "<tr style='mso-yfti-irow:2'>" +
+          "<td valign=top style='border:none;border-top:solid #EEEEEE 1.5pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
+          "<p class=MsoNormal><b>Down Payment<o:p></o:p></b></p>" +
+          "</td>" +
           "<td valign=top style='border:none;border-top:solid #EEEEEE 1.5pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
           "<p class=MsoNormal><b>Down Payment<o:p></o:p></b></p>" +
           "</td>" +
@@ -293,6 +302,7 @@ export default new Vuex.Store({
       var discount = '';
       var type = '';
       if (item.isDiscount == 'Y') {
+        console.log(JSON.parse(item.l_discount)[0]);
         if (JSON.parse(item.l_discount)[0].discount_type == 'P') {
           type = '%';
         } else {
