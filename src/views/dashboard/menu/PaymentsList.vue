@@ -49,6 +49,62 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="dialog" max-width="800px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            class="ma-2"
+            outlined
+            x-small
+            fab
+            color="indigo"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="headline">Installment</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12" sm="4" md="4">
+                  <v-text-field
+                    v-model="editedItem.full_name"
+                    label="Customer"
+                    disabled
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+                  <v-text-field
+                    v-model="editedItem.date"
+                    label="Pay Date"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+                  <v-text-field
+                    v-model="editedItem.payment"
+                    label="Payment"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2" md="2">
+                  <v-text-field
+                    v-model="editedItem.scale"
+                    label="Scale"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-row cols="12" sm="12" md="12">
         <v-spacer></v-spacer>
         <v-col cols="12" sm="2" md="2" align="center">
@@ -117,8 +173,8 @@
         <v-spacer></v-spacer>
       </v-row>
       <v-row>
-        <v-col sm="6" md="6">
-          <v-card max-width="600">
+        <v-col cols="12" sm="6" md="6">
+          <v-card>
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="7" md="7">Payments Received</v-col>
               <v-col sm="5" md="5" align="right">{{ total_pr }} </v-col>
@@ -181,8 +237,8 @@
             </v-card-text>
           </v-card>
         </v-col>
-        <v-col sm="6" md="6">
-          <v-card max-width="600">
+        <v-col cols="12" sm="6" md="6">
+          <v-card>
             <v-toolbar flat color="blue lighten-3" dark>
               <v-col sm="7" md="7">Pending Payments</v-col>
               <v-col sm="5" md="5" align="right">{{ total_pp }} </v-col>
@@ -228,6 +284,13 @@
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                   <el-button
+                    type="primary"
+                    icon="el-icon-edit"
+                    circle
+                    size="mini"
+                    @click="editItem(item)"
+                  ></el-button>
+                  <el-button
                     type="info"
                     icon="el-icon-message"
                     circle
@@ -270,7 +333,6 @@ export default {
   components: {},
   data: () => ({
     props: { multiple: true, expandTrigger: "hover", checkStrictly: true },
-    singleSelect: false,
     alert: false,
     startDate: new Date(),
     menu: false,
@@ -278,62 +340,26 @@ export default {
     end_date: new Date().toISOString().substr(0, 10),
     menu1: false,
     modal1: false,
-    labelPosition: "top",
-    total_disc: 0,
     total: 0,
-    total_v: 0,
-    total_s: 0,
-    total_rc: 0,
     total_pp: 0,
     total_pr: 0,
-    expanded: [],
-    is_installment: false,
-    singleExpand: false,
-    dialog_v: false,
     search_c: "",
     search_s: "",
     search_l: "",
-    discount_id: "",
-    lead_id: "",
     show: false,
     name: "",
-    is_discount: "",
-    q_leads: [],
-    q_discount: [],
-    q_services: [],
     send_email: {
       emails: [],
       name: "",
       quoteID: "",
     },
     selectedEmails: [],
-    currentRow: null,
-    services: [],
     received_payment: [],
-    pend_pay: [],
-    recurrent: [],
-    lista: [],
-    types: [],
-    discount: [],
     pend_payment: [],
-    install: [],
     data: [],
     list_email: [],
-    list_phone: [],
-    list_address: [],
-    select_service: "",
-    select_type: "",
     dialog: false,
-    dialogs: false,
-    dialog_service: false,
-    value_opt: [],
-    dialog_detalle: false,
-    dialog_lead: false,
-    showlibrary: false,
     dialog_email: false,
-    accounts: [],
-    apiRequest: false,
-    valid: true,
     headers: [
       { text: "Client", sortable: true, value: "full_name", align: "start" },
       { text: "Pay Date", sortable: true, value: "date", align: "start" },
@@ -375,208 +401,21 @@ export default {
         align: "right",
       },
     ],
-    headers_i: [
-      {
-        text: "Start Date",
-        align: "start",
-        sortable: true,
-        value: "startDate",
-      },
-      { text: "Amount", align: "start", sortable: true, value: "amount" },
-    ],
-    item_editquote: [],
     editedIndex: -1,
-    editedIndexLead: -1,
-    editedIndex_v: -1,
-    editedIndexServi: -1,
+    payment: 1,
+    values_services: [],
     editedItem: {
       id: "",
-      name: "",
-      lead_id: "",
-      lead_name: "",
-      email_sent: "",
-      sent_date: "",
-      is_discount: "",
-      discount_id: "",
-      discount_code: "",
-      discount_type: "",
-      discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
-      services: "",
-      leads: "",
-      is_installment: "",
+      date: "",
       payment: "",
-      number: "",
-      createdAt: "",
-      conclusion: "",
-      comments: "",
-      subject: "",
-      process_status: "",
+      scale:"",
     },
     defaultItem: {
       id: "",
-      name: "",
-      lead_id: "",
-      lead_name: "",
-      email_sent: "",
-      sent_date: "",
-      is_discount: "",
-      discount_id: "",
-      discount_code: "",
-      discount_type: "",
-      discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
-      services: "",
-      is_installment: "",
+      date: "",
       payment: "",
-      number: "",
-      createdAt: "",
-      conclusion: "",
-      comments: "",
-      subject: "",
-      process_status: "",
+      scale:"",
     },
-    editedItem_s: {
-      id: "",
-      name: "",
-      lead_id: "",
-      lead_name: "",
-      email_sent: "",
-      sent_date: "",
-      is_discount: "",
-      discount_id: "",
-      discount_code: "",
-      discount_type: "",
-      discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
-      services: "",
-      leads: "",
-      is_installment: "",
-      payment: "",
-      number: "",
-      createdAt: "",
-      conclusion: "",
-      comments: "",
-      subject: "",
-      process_status: "",
-    },
-    defaultItem_s: {
-      id: "",
-      name: "",
-      lead_id: "",
-      lead_name: "",
-      email_sent: "",
-      sent_date: "",
-      is_discount: "",
-      discount_id: "",
-      discount_code: "",
-      discount_type: "",
-      discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
-      services: "",
-      is_installment: "",
-      payment: "",
-      number: "",
-      createdAt: "",
-      conclusion: "",
-      comments: "",
-      subject: "",
-      process_status: "",
-    },
-    payment: 1,
-    number: 1,
-    editedServiceItem: {
-      id: "",
-      name: "",
-      description: "",
-      price: 0,
-      select_type: "",
-      type_name: "",
-      type_id: "",
-      status: "A",
-      is_recurrent: "",
-      is_variant: "",
-      other_type: "",
-      variants: [],
-      comments: "",
-    },
-    values_services: [],
-    defaulServicetItem: {
-      id: "",
-      name: "",
-      description: "",
-      price: 0,
-      select_type: "",
-      type_name: "",
-      type_id: "",
-      status: "A",
-      is_recurrent: "",
-      is_variant: "",
-      other_type: "",
-      variants: [],
-      comments: "",
-    },
-    editedItem_v: {
-      id: "",
-      startDate: "",
-      amount: "",
-    },
-    defaultItem_v: {
-      id: "",
-      startDate: "",
-      amount: "",
-    },
-
-    editedItemLeads: {
-      id: "",
-      name: "",
-      lastname: "",
-      street_address: "",
-      country: "",
-      city: "",
-      state: "",
-      zip_code: "",
-      a_type: "",
-      phone: "",
-      p_type: "",
-      e_type: "",
-      status: "A",
-      account_id: "",
-      account_name: "",
-      lead_status: "NS",
-      smLeadsdetails: [],
-    },
-    defaultItemLeads: {
-      id: "",
-      name: "",
-      lastname: "",
-      street_address: "",
-      country: "",
-      city: "",
-      state: "",
-      zip_code: "",
-      a_type: "",
-      phone: "",
-      p_type: "",
-      e_type: "",
-      status: "A",
-      account_id: "",
-      account_name: "",
-      lead_status: "NS",
-      smLeadsdetails: [],
-    },
-    vari: "new",
-    calc: false,
-    conclusion: "",
-    process_status: "C",
     item_inst: [],
     quotes: [],
     item: [],
@@ -630,11 +469,6 @@ export default {
         .replace(/\d(?=(\d{3})+\.)/g, "$&,");
     },
 
-    handleClick(value) {
-      this.editItem(value);
-      console.log(value);
-    },
-
     formattedCurrencyValue(value) {
       return (
         "$ " +
@@ -642,15 +476,6 @@ export default {
           .toFixed(2)
           .replace(/\d(?=(\d{3})+\.)/g, "$&,")
       );
-    },
-
-    handleCurrentChange(val) {
-      this.currentRow = val;
-    },
-
-    handleChange(value_opt) {
-      this.values_services = value_opt;
-      console.log(this.values_services);
     },
 
     OpenPayment(item) {
@@ -673,7 +498,7 @@ export default {
 
       this.quotes = [];
       var datas = [];
-      this.item_inst =[];
+      this.item_inst = [];
       this.received_payment = [];
       this.pend_payment = [];
       this.item = [];
@@ -750,70 +575,8 @@ export default {
     },
 
     async editItem(item) {
-      this.list_phone = [];
-      this.list_email = [];
-      this.list_address = [];
-
       this.editedItem = Object.assign({}, item);
       console.log(this.editedItem);
-
-      this.editedItemLeads = item.item.quote.items[0].leads.items[0];
-
-      for (
-        let i = 0;
-        i < this.editedItemLeads.smLeadsdetails.items.length;
-        i++
-      ) {
-        if (this.editedItemLeads.smLeadsdetails.items[i].type == "E") {
-          let email = this.editedItemLeads.smLeadsdetails.items[i].value;
-          let e_type = this.editedItemLeads.smLeadsdetails.items[i].value_type;
-          const todo = {
-            email,
-            e_type,
-          };
-          this.list_email = [...this.list_email, todo];
-        }
-
-        if (this.editedItemLeads.smLeadsdetails.items[i].type == "P") {
-          let phone = this.editedItemLeads.smLeadsdetails.items[i].value;
-          let p_type = this.editedItemLeads.smLeadsdetails.items[i].value_type;
-          const todo = {
-            phone,
-            p_type,
-          };
-          this.list_phone = [...this.list_phone, todo];
-        }
-
-        if (this.editedItemLeads.smLeadsdetails.items[i].type == "A") {
-          let country = this.editedItemLeads.smLeadsdetails.items[i].value;
-          let state = this.editedItemLeads.smLeadsdetails.items[i].value1;
-          let city = this.editedItemLeads.smLeadsdetails.items[i].value2;
-          let street_address = this.editedItemLeads.smLeadsdetails.items[i]
-            .value3;
-          let zip_code = this.editedItemLeads.smLeadsdetails.items[i].value4;
-          let a_type = this.editedItemLeads.smLeadsdetails.items[i].value_type;
-          const todo = {
-            country,
-            state,
-            city,
-            street_address,
-            zip_code,
-            a_type,
-          };
-          this.list_address = [...this.list_address, todo];
-        }
-      }
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
-
-      this.is_installment = true;
-      const all = await API.graphql({
-        query: listSmInstallments,
-        variables: { filter: { id: { eq: item.id } } },
-      });
-      this.install = all.data.listSmInstallments.items;
-      console.log(this.install);
       this.dialog = true;
     },
 
@@ -952,26 +715,48 @@ export default {
       await this.close_email();
     },
 
-    deleteItem(item) {
-      const index = this.services.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.services.splice(index, 1);
+    async updateInstallment(item) {
+      const description = item.description;
+      const abbreviation = item.abbreviation;
+      const status = item.status;
+
+      if (!description) return alert("error service type");
+
+      const type = { description, abbreviation, status };
+      Object.assign(this.businessType[this.editedIndexBusinessType], type);
+      console.log(this.businessType);
+      var l_type = "";
+      for (let i = 0; i < this.businessType.length; i++) {
+        l_type += JSON.stringify(this.businessType[i]) + ",";
+      }
+
+      const SK = this.organization.SK;
+      const PK = this.organization.PK;
+      const updateAt = new Date().toISOString().substr(0, 10);
+      const l_businessType = l_type.slice(0, -1);
+
+      const org = {
+        SK,
+        PK,
+        updateAt,
+        l_businessType,
+      };
+
+      await API.graphql({
+        query: updateRecord,
+        variables: { input: org },
+      });
+
+    },
+
+    async save() {
+      console.log("edit");
+      await this.updateInstallment(this.editedItem);
+      this.close();
     },
 
     close() {
-      this.list_phone = [];
-      this.list_email = [];
-      this.list_address = [];
-      this.conclusion = "";
-      const lead = "";
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
-      this.SetLead(lead);
       this.dialog = false;
-      this.editedItemLeads = "";
-      this.install = [];
-      this.is_installment = false;
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
