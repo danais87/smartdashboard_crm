@@ -408,13 +408,13 @@ export default {
       id: "",
       date: "",
       payment: "",
-      scale:"",
+      scale: "",
     },
     defaultItem: {
       id: "",
       date: "",
       payment: "",
-      scale:"",
+      scale: "",
     },
     item_inst: [],
     quotes: [],
@@ -716,30 +716,24 @@ export default {
     },
 
     async updateInstallment(item) {
-      const description = item.description;
-      const abbreviation = item.abbreviation;
-      const status = item.status;
+      const amount = item.payment;
+      const startDate = item.date;
+      const scale = item.scale;
 
-      if (!description) return alert("error service type");
+      if (!amount || !startDate || !scale)
+        return alert("error update installment");
 
-      const type = { description, abbreviation, status };
-      Object.assign(this.businessType[this.editedIndexBusinessType], type);
-      console.log(this.businessType);
-      var l_type = "";
-      for (let i = 0; i < this.businessType.length; i++) {
-        l_type += JSON.stringify(this.businessType[i]) + ",";
-      }
-
-      const SK = this.organization.SK;
-      const PK = this.organization.PK;
+      const SK = item.instSK;
+      const PK = this.organizationID;
       const updateAt = new Date().toISOString().substr(0, 10);
-      const l_businessType = l_type.slice(0, -1);
 
       const org = {
         SK,
         PK,
+        amount,
+        startDate,
+        scale,
         updateAt,
-        l_businessType,
       };
 
       await API.graphql({
@@ -747,6 +741,7 @@ export default {
         variables: { input: org },
       });
 
+      this.getInvoice();
     },
 
     async save() {
