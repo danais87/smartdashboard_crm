@@ -886,7 +886,9 @@ import {
   listCustomers,
   listQuoteItems,
 } from "../../../graphql/queries";
-
+import lang from "element-ui/lib/locale/lang/en";
+import locale from "element-ui/lib/locale";
+locale.use(lang);
 import DialogLeads from "../dialogs/DialogLeads";
 import DialogLibrary from "../dialogs/DialogLibrary";
 import Vuex from "vuex";
