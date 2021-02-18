@@ -167,15 +167,9 @@
 
 <script>
 import { API } from "aws-amplify";
-import {
-  getOrganization,
-  listQuotes,
-
-} from "../../../graphql/queries";
+import { getOrganization, listQuotes } from "../../../graphql/queries";
 import Vuex from "vuex";
-import {
-  updateRecord,
-} from "../../../graphql/mutations";
+import { updateRecord } from "../../../graphql/mutations";
 
 export default {
   name: "Payment",
@@ -519,7 +513,7 @@ export default {
       });
       console.log(seq.data.listQuotes);
       var sequence = seq.data.listQuotes.length;
-      const c = sequence ++;
+      const c = sequence++;
       const PK = this.item.PK;
       const SK = this.item.SK;
       const paymentStatus = "GS";
@@ -579,7 +573,7 @@ export default {
         const GSP3PK1 = this.organizationID + "#TASK";
         const GSP3SK1 = "STATUS#" + "IP";
         const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = "TASK#" +new Date().toISOString().substr(0, 10);
+        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
         const taskStatus = "In Progress";
         const taskStart = new Date().toISOString().substr(0, 10);
         const todo = {
@@ -609,10 +603,11 @@ export default {
           const PK = installments[i].PK;
           const SK = installments[i].SK;
           const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
+          const GSP3SK1 = "STATUS#Y";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#"+  installments[i].startDate;
+          const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
           const isPaid = "Y";
+          const payDate = new Date().toISOString().substr(0, 10);
           inst = {
             PK,
             SK,
@@ -621,21 +616,7 @@ export default {
             GSP4PK1,
             GSP4SK1,
             isPaid,
-          };
-        } else {
-          const PK = installments[i].PK;
-          const SK = installments[i].SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + installments[i].startDate;
-          inst = {
-            PK,
-            SK,
-            GSP3PK1,
-            GSP3SK1,
-            GSP4PK1,
-            GSP4SK1,
+            payDate,
           };
         }
         await API.graphql({

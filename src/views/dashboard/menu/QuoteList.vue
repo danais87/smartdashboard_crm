@@ -595,42 +595,33 @@
                   <template slot="title"
                     ><i class="el-icon-message"></i>Contacts</template
                   >
-                  <v-col cols="12" sm="12">
-                    <v-text-field
-                      v-model="customer"
-                      label="Customer Name"
-                      outlined
-                      @keyup.native.enter="focusFilter"
-                    ></v-text-field>
-                  </v-col>
                   <v-row>
                     <v-col cols="12" sm="8">
-                      <v-select
-                        v-model="lead_id"
-                        :items="select_leads"
-                        label="Select a Customer"
-                        item-text="name"
-                        item-value="id"
+                      <v-text-field
+                        v-model="customer"
+                        label="Customer Name"
                         outlined
-                        filterable
-                        clearable
-                      ></v-select>
+                        @keyup.native.enter="focusFilter"
+                      ></v-text-field>
                     </v-col>
-                    <br />
-                    <v-col cols="12" sm="2">
-                      <v-btn
-                        class="ma-2"
-                        outlined
-                        x-small
-                        fab
-                        color="indigo"
-                        @click="addLead"
+
+                    <v-col cols="12" sm="8">
+                      <el-tree
+                        class="filter-tree"
+                        :data="select_leads"
+                        check-strictly
+                        filterable
+                        default-expand-all
+                        node-key="value"
+                        highlight-current
+                        ref="tree_leads"
+                        check-on-click-node
+                        :props="defaultProps"
+                        @node-click="clickLeads"
                       >
-                        <v-icon>el-icon-d-arrow-left</v-icon>
-                      </v-btn>
+                      </el-tree>
                     </v-col>
                   </v-row>
-                  <br />
                   <template slot="title"
                     ><i class="el-icon-setting"></i>Services</template
                   >
@@ -1375,11 +1366,13 @@ export default {
 
     GetSelectLeads() {
       console.log(this.leads_seek);
+      var chill = [];
       this.select_leads = [];
       for (let i = 0; i < this.leads_seek.length; i++) {
         this.select_leads.push({
-          name: JSON.parse(this.leads_seek[i].l_smName)[0].fullName,
-          id: this.leads_seek[i].id,
+          label: JSON.parse(this.leads_seek[i].l_smName)[0].fullName,
+          value: this.leads_seek[i].id,
+          children: chill,
         });
       }
       console.log(this.select_leads);
@@ -1388,6 +1381,10 @@ export default {
     filterNode(value, data) {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
+    },
+    clickLeads() {
+      console.log(this.$refs.tree_leads.getCheckedKeys());
+      this.addLead();
     },
     clickService() {
       console.log(this.$refs.tree.getCheckedKeys());
@@ -1625,12 +1622,21 @@ export default {
     },
 
     async addLead() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Add Customer",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       this.list_email = [];
       this.list_phone = [];
       this.list_address = [];
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
+
+      this.lead_id = this.$refs.tree_leads.getCheckedKeys();
+
       const l = await API.graphql({
         query: listCustomers,
         variables: {
@@ -1722,6 +1728,9 @@ export default {
 
       this.lead_id = "";
       this.customer = "";
+      this.select_leads = [];
+      this.$refs.tree_leads.setCheckedKeys([]);
+      loading.close();
     },
 
     NewLead() {
@@ -1786,23 +1795,6 @@ export default {
           var v = [];
           servi = lista;
         } else {
-          /*id = id_s.split('/');
-          servi = JSON.parse(id[1]);
-          if (JSON.parse(servi.l_variant)[0]) {
-            for (let i = 0; i < JSON.parse(servi.l_variant).length; i++) {
-              if (JSON.parse(servi.l_variant)[i].name == id[0]) {
-                let name = JSON.parse(servi.l_variant)[i].name;
-                let price = JSON.parse(servi.l_variant)[i].price;
-                let product = JSON.parse(servi.l_variant)[i].product;
-                const todo = {
-                  name,
-                  price,
-                  product,
-                };
-                v = todo;
-              }
-            }
-          }*/
           var v = [];
           servi = servi;
         }
@@ -1889,7 +1881,7 @@ export default {
       const startDate = new Date().toISOString().substr(0, 10);
       const amount = this.payment;
       const type = "DPAY";
-      num = parseInt(this.number,10) + 1;
+      num = parseInt(this.number, 10) + 1;
       console.log(num);
       const scale = "1/" + num;
       const pay = {
@@ -3056,8 +3048,26 @@ export default {
     },
 
     deleteItemLead() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Delete Customer",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       console.log("delete");
-      this.editedItemLeads.name = "";
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+
+      this.lead_id = "";
+      this.customer = "";
+      this.select_leads = [];
+      this.editedItemLeads = this.defaultItemLeads;
+      this.$refs.tree_leads.setCheckedKeys([]);
+      loading.close();
     },
 
     close_email() {
@@ -3273,8 +3283,8 @@ export default {
 .row {
   margin-left: 5px;
 }
-.col {
-  padding: 2px;
+.col-12 {
+  padding: 12px !important;
 }
 .v-card__subtitle,
 .v-card__text,

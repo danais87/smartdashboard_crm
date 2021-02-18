@@ -513,7 +513,7 @@ export default new Vuex.Store({
         }
         discount = discount + "<tr style='mso-yfti-irow:3'>" +
           "<td colspan=2 valign=top style='border:none;border-top:solid #EEEEEE 1.5pt;padding:3.75pt 3.75pt 3.75pt 3.75pt'>" +
-          "<p class=MsoNormal align=right style='text-align:right'><b>Total Discount: " + type + "&nbsp;" + parseFloat(item.discount_value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "<o:p></o:p></b></p>" +
+          "<p class=MsoNormal align=right style='text-align:right'><b>Total Discount: " + type + "&nbsp;" + parseFloat(JSON.parse(item.l_discount)[0].discount_value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,") + "<o:p></o:p></b></p>" +
           "</td></tr>"
       }
 
@@ -553,7 +553,7 @@ export default new Vuex.Store({
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width='100%' style='width:100.0%;mso-cellspacing:1.5pt;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in;line-height:inherit'>" +
         "<tr style = 'mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes' >" +
         "<td valign=top style='padding:.75pt .75pt .75pt .75pt'> " +
-        "<p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify; line-height:15.0pt'><strong><span style='font-family:'Calibri',sans-serif'>We are pleased to inform you that you have made a payment for the following services:</span></strong>" +
+        "<p class=MsoNormal style='margin-bottom:12.0pt;text-align:justify; line-height:15.0pt'><strong><span style='font-family:'Calibri',sans-serif'>We are pleased to inform you that you have made a Down Payment for the following services:</span></strong>" +
 
         "</td></tr></table>" +
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width='100%' style='width:100.0%;mso-cellspacing:1.8pt;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in;line-height:inherit'>" +
@@ -577,7 +577,7 @@ export default new Vuex.Store({
         "</td>" +
         "</tr>" +
         "</table>" +
-        detalle_installments +
+        
         "<p class=MsoNormal><span lang=EN-US style='display:none;mso-hide:all;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p>" +
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width='100%' style='width:100.0%;mso-cellspacing:1.8pt;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in;line-height:inherit'>" +
         "<tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>" +
