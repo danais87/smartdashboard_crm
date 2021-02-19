@@ -341,7 +341,11 @@
 
 <script>
 import { API } from "aws-amplify";
-import { listQuotes, listPhoneNumber } from "../../../graphql/queries";
+import {
+  listQuotes,
+  listPhoneNumber,
+  listCustomers,
+} from "../../../graphql/queries";
 
 import DialogLeads from "../dialogs/DialogLeads";
 import DialogLibrary from "../dialogs/DialogLibrary";
@@ -695,6 +699,12 @@ export default {
     },
 
     async getInvoices() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Update Invoices",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
       const todos = await API.graphql({
         query: listQuotes,
         variables: {
@@ -721,6 +731,7 @@ export default {
         },
       });
       this.invoices = todos.data.listQuotes;
+      loading.close();
     },
 
     async editItem(item) {
@@ -767,7 +778,7 @@ export default {
       console.log(seq.data.listQuotes);
       var datas = seq.data.listQuotes;
       var quotes = [];
-      var leads = [];
+
       var installments = [];
       var services = [];
       let vari = [];
@@ -778,9 +789,7 @@ export default {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-        if (datas[i].entityType == "CUSTOMER") {
-          leads.push(datas[i]);
-        }
+
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
         }
@@ -805,9 +814,29 @@ export default {
         this.installments.push(installments[k]);
       }
 
-      for (let l = 0; l < leads.length; l++) {
-        this.editedItemLeads = leads[l];
-      }
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: item.GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+
+      console.log(l);
+
+      this.editedItemLeads = l.data.listCustomers[0];
 
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
@@ -877,10 +906,8 @@ export default {
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
 
-
-
       if (JSON.parse(item.l_discount)[0]) {
-        this.discount_id =  JSON.parse(item.l_discount)[0].discount_code;
+        this.discount_id = JSON.parse(item.l_discount)[0].discount_code;
       }
 
       this.total = item.quotationAmount;
