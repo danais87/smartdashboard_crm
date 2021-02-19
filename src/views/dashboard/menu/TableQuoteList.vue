@@ -269,7 +269,7 @@
                             </v-col>
                             <v-col cols="12" sm="5" md="5">
                               <v-select
-                                v-model="editedServiceItem.typeName"
+                                v-model="editedServiceItem.productType"
                                 :items="types"
                                 label="Type"
                                 item-text="name"
@@ -1956,7 +1956,7 @@ export default {
         const smName = this.q_services[i].service.smName;
         const description = this.q_services[i].service.description;
         price = parseFloat(this.q_services[i].service.price);
-        const typeName = this.q_services[i].service.typeName;
+        const productType = this.q_services[i].service.productType;
         const otherType = this.q_services[i].service.otherType;
         const isRecurrent = this.q_services[i].service.isRecurrent;
         const isVariant = this.q_services[i].service.isVariant;
@@ -1982,7 +1982,7 @@ export default {
           smName,
           description,
           price,
-          typeName,
+          productType,
           otherType,
           isRecurrent,
           isVariant,
@@ -2208,7 +2208,7 @@ export default {
         const smName = this.q_services[i].service.smName;
         const description = this.q_services[i].service.description;
         price = parseFloat(this.q_services[i].service.price);
-        const typeName = this.q_services[i].service.typeName;
+        const productType = this.q_services[i].service.productType;
         const otherType = this.q_services[i].service.otherType;
         const isRecurrent = this.q_services[i].service.isRecurrent;
         const isVariant = this.q_services[i].service.isVariant;
@@ -2234,7 +2234,7 @@ export default {
           smName,
           description,
           price,
-          typeName,
+          productType,
           otherType,
           isRecurrent,
           isVariant,
@@ -2368,7 +2368,7 @@ export default {
         const smName = item.smName;
         const description = item.description;
         const price = item.price;
-        const typeName = item.typeName;
+        const productType = item.productType;
         const otherType = item.otherType;
         const isRecurrent = item.isRecurrent;
         const isVariant = item.isVariant;
@@ -2387,7 +2387,7 @@ export default {
             smName,
             description,
             price,
-            typeName,
+            productType,
             otherType,
             isRecurrent,
             isVariant,

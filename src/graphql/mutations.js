@@ -64,7 +64,7 @@ export const createRecord = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -159,7 +159,7 @@ export const updateRecord = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant

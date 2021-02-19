@@ -179,7 +179,7 @@ export const listProducts = /* GraphQL */ `
       smName
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -209,7 +209,7 @@ export const getProduct = /* GraphQL */ `
       smName
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -280,7 +280,7 @@ export const listQuotes = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -375,7 +375,7 @@ export const getQuote = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -474,7 +474,7 @@ export const listQuoteItems = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -528,7 +528,7 @@ export const getQuoteItem = /* GraphQL */ `
       smName
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -610,7 +610,7 @@ export const listInstallments = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -895,7 +895,7 @@ export const listSmartDash = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant
@@ -1044,7 +1044,7 @@ export const listInvestment = /* GraphQL */ `
       processStatus
       description
       price
-      typeName
+      productType
       otherType
       isRecurrent
       isVariant

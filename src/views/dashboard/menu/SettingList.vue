@@ -242,7 +242,7 @@
           ></v-text-field>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog_invest" max-width="800px">
+          <v-dialog v-model="dialog_invest" max-width="900px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 class="ma-2"
@@ -263,24 +263,34 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col cols="12" sm="5" md="5">
+                    <v-col cols="12" sm="4" md="4">
                       <v-text-field
                         v-model="editedItemInvest.description"
-                        label="Description"
+                        label="Campaing Name"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="2" md="2">
+                      <v-text-field
+                        v-model="editedItemInvest.price"
+                        label="Amount"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="3" md="3">
-                      <v-text-field
-                        v-model="editedItemInvest.price"
-                        label="price"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="4" md="4">
                       <v-text-field
                         v-model="editedItemInvest.startDate"
                         label="Date(YYYY-MM-DD)"
                         outlined
                       ></v-text-field>
+                    </v-col>
+                    <v-col cols="4" sm="3" md="3">
+                      <v-select
+                        v-model="editedItemInvest.productType"
+                        :items="serviceTypes"
+                        label="Product Type"
+                        item-text="name"
+                        item-value="id"
+                        outlined
+                      ></v-select>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -1674,12 +1684,13 @@ export default {
     ],
     headers_invest: [
       {
-        text: "Descripcion",
+        text: "Campaings Name",
         align: "start",
         sortable: true,
         value: "description",
       },
-      { text: "Value", align: "start", sortable: true, value: "price" },
+      { text: "Amount", align: "start", sortable: true, value: "price" },
+      { text: "Product Type", align: "start", sortable: true, value: "productType" },
       { text: "Date", align: "start", sortable: true, value: "startDate" },
       { text: "Actions", value: "actions", sortable: false },
     ],
@@ -1872,12 +1883,14 @@ export default {
       price: 0,
       startDate: "",
       description: "",
+      productType:"",
     },
     defaultItemInvest: {
       id: "",
       price: 0,
       startDate: "",
       description: "",
+      productType:"",
     },
     editedItemAccount: {
       id: "",
@@ -2077,8 +2090,9 @@ export default {
       const price = item.price;
       const startDate = item.startDate;
       const description = item.description;
+      const productType = item.productType;
 
-      if (!price || !startDate || !description) return alert("error en datos");
+      if (!price || !startDate || !description ) return alert("error en datos");
 
       const todo = {
         PK,
@@ -2096,6 +2110,7 @@ export default {
         price,
         startDate,
         description,
+        productType
       };
       await API.graphql({
         query: createRecord,
@@ -2121,7 +2136,7 @@ export default {
       const GSP4SK1 = "CPG#" + item.startDate;
       const startDate = item.startDate;
       const description = item.description;
-
+      const productType = item.productType;
       if (!price || !startDate || !description) return alert("error en datos");
 
       const todo = {
@@ -2133,6 +2148,7 @@ export default {
         price,
         startDate,
         description,
+        productType
       };
 
       await API.graphql({

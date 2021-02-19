@@ -168,7 +168,6 @@
         </v-card>
         <br /><br />
       </v-col>
-
     </v-row>
   </v-container>
 </template>
@@ -649,9 +648,9 @@ export default {
         var c = 0;
         var name = "";
         for (let j = 0; j < serv.length; j++) {
-          if (this.serviceTypes[i].name == serv[j].typeName) {
+          if (this.serviceTypes[i].name == serv[j].productType) {
             c++;
-            name = serv[j].typeName;
+            name = serv[j].productType;
           }
         }
         if (c != 0) {
@@ -782,7 +781,7 @@ export default {
         labels: labels_inv,
         datasets: [
           {
-            label: "Sales" ,
+            label: "Sales",
             backgroundColor: "rgba(255, 99, 132, 0.2)",
             data: data_invo,
           },
@@ -805,6 +804,7 @@ export default {
               gridLines: {
                 display: true,
               },
+              stacked: true,
             },
           ],
           xAxes: [
@@ -812,9 +812,9 @@ export default {
               gridLines: {
                 display: false,
               },
-              categoryPercentage: 0.6
+              categoryPercentage: 0.6,
+              stacked: true,
             },
-
           ],
         },
         legend: {
@@ -824,7 +824,10 @@ export default {
         maintainAspectRatio: false,
       };
       this.campchartdata = {
-        labels: [ 'Sales('+this.formattedValue(this.total_i)+')','CAMPAIGNS('+this.formattedValue(total_camaping)+')'],
+        labels: [
+          "Sales(" + this.formattedValue(this.total_i) + ")",
+          "CAMPAIGNS(" + this.formattedValue(total_camaping) + ")",
+        ],
         datasets: [
           {
             borderWidth: 1,
@@ -844,7 +847,7 @@ export default {
               "rgba(153, 102, 255, 0.2)",
               "rgba(255, 159, 64, 0.2)",
             ],
-            data: [this.total_i,total_camaping],
+            data: [this.total_i, total_camaping],
           },
         ],
       };
@@ -856,7 +859,6 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
       };
-
 
       loading.close();
     },

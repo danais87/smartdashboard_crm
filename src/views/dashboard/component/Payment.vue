@@ -514,7 +514,6 @@ export default {
             this.order = await actions.order.capture();
             this.paidFor = true;
             console.log(this.order);
-
             this.invokeLambda(this.item.id);
             this.createInvoice();
           },
@@ -639,8 +638,6 @@ export default {
 
       //update INSTALLMENT
       for (let i = 0; i < installments.length; i++) {
-        var inst = "";
-
         if (installments[i].type == "DPAY") {
           const PK = installments[i].PK;
           const SK = installments[i].SK;
