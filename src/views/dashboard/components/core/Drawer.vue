@@ -78,12 +78,7 @@ export default {
         title: "se",
         to: "/menu/setting",
       },
-      {
-        title: "user",
-        icon: "mdi-clipboard-outline",
-        to: "/pages/user",
-      },
-
+ 
       /* {
         title: "rtables",
         icon: "mdi-clipboard-outline",

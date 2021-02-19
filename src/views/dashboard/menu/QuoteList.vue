@@ -1956,6 +1956,7 @@ export default {
           },
         },
       });
+      console.log(this.editedItemLeads);
       const sequence = seq.data.listQuotes;
       const c = sequence.length++;
       var PK = this.organizationID;
