@@ -2695,6 +2695,7 @@ export default {
     },
 
     async editItem(item) {
+      console.log(item)
       this.q_services = [];
       this.installments = [];
       this.list_phone = [];
@@ -2715,7 +2716,6 @@ export default {
       this.conclusion = item.conclusion;
       this.number = item.numInstallments;
       this.payment = item.downPayment;
-      console.log(this.editedItem_c);
 
       const seq = await API.graphql({
         query: listQuotes,
@@ -2736,7 +2736,7 @@ export default {
           },
         },
       });
-      console.log(seq.data.listQuotes);
+
       var datas = seq.data.listQuotes;
       var quotes = [];
       var installments = [];
@@ -2749,7 +2749,6 @@ export default {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
         }
@@ -2757,7 +2756,6 @@ export default {
           services.push(datas[i]);
         }
       }
-      console.log(services);
 
       for (let j = 0; j < services.length; j++) {
         vari = [];
@@ -2768,6 +2766,7 @@ export default {
           variant: vari,
         });
       }
+
       for (let k = 0; k < installments.length; k++) {
         this.is_installment = true;
         this.calc = true;
@@ -2782,7 +2781,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: quotes[0].GSP1SK1,
+              eq: item.GSP1PK1,
             },
             indexs: {
               eq: "table",
@@ -2794,7 +2793,7 @@ export default {
         },
       });
 
-      console.log(l.data.listCustomers[0]);
+      console.log(l);
 
       this.editedItemLeads = l.data.listCustomers[0];
 

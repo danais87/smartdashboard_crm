@@ -1015,7 +1015,7 @@ export default {
       amount: "",
     },
 
-     editedItem_c: {
+    editedItem_c: {
       id: "",
       smName: "",
       emailSent: "",
@@ -1199,7 +1199,7 @@ export default {
     customer: "",
     select_leads: [],
   }),
- mounted() {
+  mounted() {
     this.fillData();
   },
   computed: {
@@ -1265,7 +1265,7 @@ export default {
       "SetConclusion",
       "SetLeads_Seek",
     ]),
-handleClick(value) {
+    handleClick(value) {
       this.editItem(value);
       console.log(value);
     },
@@ -1445,7 +1445,6 @@ handleClick(value) {
       this.total_va = this.formattedCurrencyValue(total_v);
       loading.close();
     },
-
 
     formattedCurrencyValue(value) {
       return (
@@ -1933,7 +1932,7 @@ handleClick(value) {
       PK = this.editedItemLeads.PK;
 
       const seekingService = "N";
-      const l = { SK, PK,seekingService };
+      const l = { SK, PK, seekingService };
       await API.graphql({
         query: updateRecord,
         variables: { input: l },
@@ -2640,9 +2639,6 @@ handleClick(value) {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-        if (datas[i].entityType == "CUSTOMER") {
-          leads.push(datas[i]);
-        }
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
         }
@@ -2650,7 +2646,6 @@ handleClick(value) {
           services.push(datas[i]);
         }
       }
-      console.log(services);
 
       for (let j = 0; j < services.length; j++) {
         vari = [];
@@ -2661,12 +2656,36 @@ handleClick(value) {
           variant: vari,
         });
       }
+
       for (let k = 0; k < installments.length; k++) {
         this.is_installment = true;
         this.calc = true;
         this.installments.push(installments[k]);
       }
 
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: item.GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+
+      console.log(l);
+
+      this.editedItemLeads = l.data.listCustomers[0];
       for (let l = 0; l < leads.length; l++) {
         this.editedItemLeads = leads[l];
       }
