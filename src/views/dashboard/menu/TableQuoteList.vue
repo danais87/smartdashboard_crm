@@ -1182,7 +1182,7 @@ export default {
     process_status: "Created",
     filterText: "",
     service_type: [],
-    
+
     librarys: [],
     quote_status: [],
     l_discount: [],
@@ -1928,13 +1928,12 @@ handleClick(value) {
       });
       //update customer
       var id_quote = a.data.createRecord.SK;
-      var GSP2PK1 = a.data.createRecord.SK;
-      var GSP2SK1 = this.editedItemLeads.SK;
+
       SK = this.editedItemLeads.SK;
       PK = this.editedItemLeads.PK;
 
       const seekingService = "N";
-      const l = { SK, PK, GSP2PK1, GSP2SK1, seekingService };
+      const l = { SK, PK,seekingService };
       await API.graphql({
         query: updateRecord,
         variables: { input: l },
@@ -2142,12 +2141,11 @@ handleClick(value) {
 
       //update customer
       var id_quote = item.SK;
-      var GSP2PK1 = id_quote;
-      var GSP2SK1 = this.editedItemLeads.SK;
+
       SK = this.editedItemLeads.SK;
       PK = this.editedItemLeads.PK;
       const seekingService = "N";
-      const l = { SK, PK, GSP2PK1, GSP2SK1, seekingService };
+      const l = { SK, PK, seekingService };
       await API.graphql({
         query: updateRecord,
         variables: { input: l },

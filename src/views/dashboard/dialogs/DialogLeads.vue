@@ -277,8 +277,7 @@ export default {
       const SK = "CUS#" + id;
       const GSP1PK1 = SK;
       const GSP1SK1 = "#META#" + id;
-      const GSP2PK1 = SK;
-      const GSP2SK1 = SK;
+
       const GSP4PK1 = this.organizationID;
       const GSP4SK1 = "CUS#" + new Date().toISOString().substr(0, 10);
       const entityType = "CUSTOMER";
@@ -307,8 +306,7 @@ export default {
         SK,
         GSP1PK1,
         GSP1SK1,
-        GSP2PK1,
-        GSP2SK1,
+
         GSP4PK1,
         GSP4SK1,
         entityType,
@@ -343,8 +341,7 @@ export default {
         const SK = "PHO#" + phones[i].phone;
         const GSP1PK1 = id_cust;
         const GSP1SK1 = "PHO#" + phones[i].phone;
-        const GSP2PK1 = id_cust;
-        const GSP2SK1 = "PHO#" + phones[i].phone;
+
         const entityType = "PHONENUMBER";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -358,8 +355,7 @@ export default {
           SK,
           GSP1PK1,
           GSP1SK1,
-          GSP2PK1,
-          GSP2SK1,
+
           entityType,
           createdAt,
           updateAt,
@@ -479,8 +475,7 @@ export default {
         const SK = "PHO#" + phones[i].phone;
         const GSP1PK1 = id_cust;
         const GSP1SK1 = "PHO#" + phones[i].phone;
-        const GSP2PK1 = id_cust;
-        const GSP2SK1 = "PHO#" + phones[i].phone;
+
         const entityType = "PHONENUMBER";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -494,8 +489,7 @@ export default {
           SK,
           GSP1PK1,
           GSP1SK1,
-          GSP2PK1,
-          GSP2SK1,
+
           entityType,
           createdAt,
           updateAt,

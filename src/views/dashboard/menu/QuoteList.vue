@@ -2036,15 +2036,14 @@ export default {
         query: createRecord,
         variables: { input: todo },
       });
+
       //update customer
       var id_quote = a.data.createRecord.SK;
-      var GSP2PK1 = a.data.createRecord.SK;
-      var GSP2SK1 = this.editedItemLeads.SK;
       SK = this.editedItemLeads.SK;
       PK = this.editedItemLeads.PK;
 
       const seekingService = "N";
-      const l = { SK, PK, GSP2PK1, GSP2SK1, seekingService };
+      const l = { SK, PK, seekingService };
       await API.graphql({
         query: updateRecord,
         variables: { input: l },
@@ -2252,12 +2251,10 @@ export default {
 
       //update customer
       var id_quote = item.SK;
-      var GSP2PK1 = id_quote;
-      var GSP2SK1 = this.editedItemLeads.SK;
       SK = this.editedItemLeads.SK;
       PK = this.editedItemLeads.PK;
       const seekingService = "N";
-      const l = { SK, PK, GSP2PK1, GSP2SK1, seekingService };
+      const l = { SK, PK, seekingService };
       await API.graphql({
         query: updateRecord,
         variables: { input: l },
@@ -2782,6 +2779,8 @@ export default {
       for (let l = 0; l < leads.length; l++) {
         this.editedItemLeads = leads[l];
       }
+
+      console.log(this.editedItemLeads);
 
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
