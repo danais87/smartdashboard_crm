@@ -1934,7 +1934,8 @@ export default {
           this.lead.l_smName
         )[0].lastName;
       }
-      if (!this.editedItemLeads.name) return alert("ERROR THE CUSTOMER FIELD CANNOT BE BLANK!!!");
+      if (!this.editedItemLeads.name)
+        return alert("ERROR THE CUSTOMER FIELD CANNOT BE BLANK!!!");
       var downPayment = 0;
       var numInstallments = 0;
       const seq = await API.graphql({
@@ -2738,7 +2739,6 @@ export default {
       console.log(seq.data.listQuotes);
       var datas = seq.data.listQuotes;
       var quotes = [];
-      var leads = [];
       var installments = [];
       var services = [];
       let vari = [];
@@ -2749,9 +2749,7 @@ export default {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-        if (datas[i].entityType == "CUSTOMER") {
-          leads.push(datas[i]);
-        }
+
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
         }
@@ -2776,11 +2774,29 @@ export default {
         this.installments.push(installments[k]);
       }
 
-      for (let l = 0; l < leads.length; l++) {
-        this.editedItemLeads = leads[l];
-      }
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: quotes[0].GSP1SK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
 
-      console.log(this.editedItemLeads);
+      console.log(l.data.listCustomers[0]);
+
+      this.editedItemLeads = l.data.listCustomers[0];
 
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName

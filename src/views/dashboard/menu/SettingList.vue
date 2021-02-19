@@ -198,7 +198,7 @@
           >
             Cancel
           </v-btn>
-          <v-btn color="green darken-1" text @click="deleteItemMarketing()">
+          <v-btn color="green darken-1" text @click="deleteItemInvest()">
             Yes
           </v-btn>
         </v-card-actions>
@@ -311,7 +311,7 @@
           icon="el-icon-delete"
           circle
           size="mini"
-          @click="deleteItemInvest(item)"
+          @click="deleteItemMarketing(item)"
         ></el-button>
       </template>
     </v-data-table>
@@ -2162,6 +2162,7 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
+      console.log(this.editedItemInvest);
       const index = this.investment.indexOf(this.editedItemInvest);
       this.investment.splice(index, 1);
       console.log(this.investment);
