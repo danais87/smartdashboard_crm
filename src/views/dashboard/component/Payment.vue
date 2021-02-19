@@ -324,8 +324,9 @@ export default {
     const script = document.createElement("script");
     script.src =
       "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
-    script.addEventListener("load", this.setLoaded);
-    document.body.appendChild(script);
+      script.addEventListener("load", this.setLoaded);
+     document.body.appendChild(script);
+
   },
   created() {
     console.log(this.id);
@@ -448,6 +449,27 @@ export default {
             );
 
             return actions.order.create({
+              payer: {
+                name: {
+                  given_name: this.editedItemLeads.name,
+                  surname: "Customer",
+                },
+                address: {
+                  address_line_1: "123 ABC Street",
+                  address_line_2: "Apt 2",
+                  admin_area_2: "San Jose",
+                  admin_area_1: "CA",
+                  postal_code: "95121",
+                  country_code: "US",
+                },
+                email_address: "customer@domain.com",
+                phone: {
+                  phone_type: "MOBILE",
+                  phone_number: {
+                    national_number: "14082508100",
+                  },
+                },
+              },
               purchase_units: [
                 {
                   description:

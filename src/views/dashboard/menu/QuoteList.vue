@@ -1384,6 +1384,7 @@ export default {
       if (!value) return true;
       return data.label.indexOf(value) !== -1;
     },
+
     clickLeads() {
       console.log(this.$refs.tree_leads.getCheckedKeys());
       this.addLead();
@@ -1933,6 +1934,7 @@ export default {
           this.lead.l_smName
         )[0].lastName;
       }
+      if (!this.editedItemLeads.name) return alert("ERROR THE CUSTOMER FIELD CANNOT BE BLANK!!!");
       var downPayment = 0;
       var numInstallments = 0;
       const seq = await API.graphql({
