@@ -237,7 +237,7 @@
                     <v-card>
                       <v-card-title>
                         <span class="headline"
-                          >Service:{{ editedServiceItem.smName }}
+                          >Service: {{ editedServiceItem.smName }}
                         </span>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" text @click="closeservice"
@@ -273,7 +273,7 @@
                             <v-col cols="12" sm="5" md="5">
                               <v-select
                                 v-model="editedServiceItem.productType"
-                                :items="types"
+                                :items="serviceTypes"
                                 label="Type"
                                 item-text="name"
                                 item-value="id"
@@ -1304,6 +1304,7 @@ export default {
       "listphone",
       "listemails",
       "listaddress",
+      "serviceTypes",
       "body",
     ]),
   },
