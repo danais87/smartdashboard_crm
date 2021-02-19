@@ -200,8 +200,9 @@
 
 <script>
 import { API } from "aws-amplify";
-import { 
+import {
   getOrganization,
+  listCustomers,
   listQuotes,
 } from "../../../graphql/queries";
 import Vuex from "vuex";
@@ -345,8 +346,8 @@ export default {
       card_cvv: "",
       order: "",
       installments: [],
-      q_services:[],
-      editedItemLeads:[],
+      q_services: [],
+      editedItemLeads: [],
       selectedEmails: [],
       product: {
         price: 100,
@@ -366,14 +367,14 @@ export default {
     this.ConfirmQuote(this.inst);
   },
   computed: {
-    ...Vuex.mapState(["response", "usuario", "bodyquote","organizationID"]),
+    ...Vuex.mapState(["response", "usuario", "bodyquote", "organizationID"]),
   },
   methods: {
     ...Vuex.mapMutations(["SetResponse", "SetBodyQuote"]),
 
     async ConfirmQuote(quote) {
       console.log(quote);
-     const seq = await API.graphql({
+      const seq = await API.graphql({
         query: listQuotes,
         variables: {
           filter: {
@@ -399,7 +400,7 @@ export default {
         this.show = true;
       }
 
-       var quotes = [];
+      var quotes = [];
       var leads = [];
       var installments = [];
       var services = [];
@@ -410,9 +411,6 @@ export default {
       for (let i = 0; i < datas.length; i++) {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
-        }
-        if (datas[i].entityType == "CUSTOMER") {
-          leads.push(datas[i]);
         }
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
@@ -433,9 +431,29 @@ export default {
         }
       }
 
-      for (let l = 0; l < leads.length; l++) {
-        this.editedItemLeads = leads[l];
-      }
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: this.item.GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+
+      console.log(l);
+
+      this.editedItemLeads = l.data.listCustomers[0];
 
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
@@ -447,10 +465,10 @@ export default {
         }
       }
 
-
       this.total_disc = quotes[0].finalAmount;
       this.total = quotes[0].downPayment + this.p_inst;
-      this.balance = quotes[0].finalAmount - this.p_inst - quotes[0].downPayment;
+      this.balance =
+        quotes[0].finalAmount - this.p_inst - quotes[0].downPayment;
 
       this.SetBodyQuote(datas);
     },
@@ -595,7 +613,7 @@ export default {
               const payDate = new Date().toISOString().substr(0, 10);
               const SK = instSK;
               const PK = instPK;
-              const todo = { isPaid, payDate, SK,PK };
+              const todo = { isPaid, payDate, SK, PK };
               await API.graphql({
                 query: updateRecord,
                 variables: { input: todo },

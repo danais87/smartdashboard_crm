@@ -408,9 +408,6 @@ export default new Vuex.Store({
         if (data[i].entityType == "QUOTE") {
           quotes.push(data[i]);
         }
-        if (data[i].entityType == "CUSTOMER") {
-          leads.push(data[i]);
-        }
         if (data[i].entityType == "INSTALLMENT") {
           inst.push(data[i]);
         }
@@ -426,11 +423,30 @@ export default new Vuex.Store({
       for (let k = 0; k < inst.length; k++) {
         installments.push(inst[k]);
       }
-      console.log(installments);
-      for (let l = 0; l < leads.length; l++) {
-        editedItemLeads = leads[l];
-      }
       const item = quotes[0];
+
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.state.organizationID,
+            },
+            SK: {
+              eq: quotes[0].GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      editedItemLeads = l.data.listCustomers[0];
+
+
 
       var tabla_installments = '';
       var detalle_installments = '';
@@ -577,7 +593,7 @@ export default new Vuex.Store({
         "</td>" +
         "</tr>" +
         "</table>" +
-        
+
         "<p class=MsoNormal><span lang=EN-US style='display:none;mso-hide:all;mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p>" +
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 width='100%' style='width:100.0%;mso-cellspacing:1.8pt;mso-yfti-tbllook:1184;mso-padding-alt:0in 0in 0in 0in;line-height:inherit'>" +
         "<tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>" +

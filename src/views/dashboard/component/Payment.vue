@@ -167,7 +167,11 @@
 
 <script>
 import { API } from "aws-amplify";
-import { getOrganization, listQuotes } from "../../../graphql/queries";
+import {
+  getOrganization,
+  listCustomers,
+  listQuotes,
+} from "../../../graphql/queries";
 import Vuex from "vuex";
 import { updateRecord } from "../../../graphql/mutations";
 
@@ -324,9 +328,8 @@ export default {
     const script = document.createElement("script");
     script.src =
       "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
-      script.addEventListener("load", this.setLoaded);
-     document.body.appendChild(script);
-
+    script.addEventListener("load", this.setLoaded);
+    document.body.appendChild(script);
   },
   created() {
     console.log(this.id);
@@ -371,7 +374,7 @@ export default {
         this.show = true;
       }
       var quotes = [];
-      var leads = [];
+
       var installments = [];
       var services = [];
 
@@ -381,9 +384,6 @@ export default {
       for (let i = 0; i < datas.length; i++) {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
-        }
-        if (datas[i].entityType == "CUSTOMER") {
-          leads.push(datas[i]);
         }
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
@@ -404,9 +404,29 @@ export default {
         }
       }
 
-      for (let l = 0; l < leads.length; l++) {
-        this.editedItemLeads = leads[l];
-      }
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: this.item.GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+
+      console.log(l);
+
+      this.editedItemLeads = l.data.listCustomers[0];
 
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
