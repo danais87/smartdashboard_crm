@@ -10,7 +10,7 @@ import {
   listCustomers,
   listProducts,
   listQuotes,
-  listSmInstallments
+  listInvestment
 } from "../src/graphql/queries";
 
 Vue.use(Vuex)
@@ -218,7 +218,7 @@ export default new Vuex.Store({
       for (let k = 0; k < inst.length; k++) {
         installments.push(inst[k]);
       }
-       
+
       const item = quotes[0];
 
       const l = await API.graphql({
