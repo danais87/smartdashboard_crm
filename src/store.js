@@ -202,9 +202,7 @@ export default new Vuex.Store({
         if (data[i].entityType == "QUOTE") {
           quotes.push(data[i]);
         }
-        if (data[i].entityType == "CUSTOMER") {
-          leads.push(data[i]);
-        }
+
         if (data[i].entityType == "INSTALLMENT") {
           inst.push(data[i]);
         }
@@ -220,11 +218,30 @@ export default new Vuex.Store({
       for (let k = 0; k < inst.length; k++) {
         installments.push(inst[k]);
       }
-      console.log(installments);
-      for (let l = 0; l < leads.length; l++) {
-        editedItemLeads = leads[l];
-      }
+       
       const item = quotes[0];
+
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.state.organizationID,
+            },
+            SK: {
+              eq: quotes[0].GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      editedItemLeads = l.data.listCustomers[0];
+
 
       var tabla_installments = '';
       var detalle_installments = '';
@@ -449,8 +466,6 @@ export default new Vuex.Store({
         },
       });
       editedItemLeads = l.data.listCustomers[0];
-
-
 
       var tabla_installments = '';
       var detalle_installments = '';
