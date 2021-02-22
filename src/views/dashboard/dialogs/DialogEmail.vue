@@ -34,6 +34,7 @@
                   v-model="editedItemLocalEmail.email"
                   label="Email"
                   :rules="emailRules"
+                  autofocus
                   prepend-icon="mdi-email"
                 ></v-text-field>
               </v-col>
@@ -178,7 +179,7 @@ export default {
 
     handleClick(value) {
       this.editItem_e(value);
-     
+
     },
 
     async addEmail() {
@@ -193,7 +194,7 @@ export default {
       this.list_emaillocal = this.listemails;
       this.list_emaillocal = [...this.list_emaillocal, todo];
       this.SetEmails(this.list_emaillocal);
-      
+
       this.email = "";
       this.e_type = "";
     },
@@ -211,11 +212,11 @@ export default {
       const index = this.editedIndexEmail ;
       confirm("Are you sure you want to delete this item?") &&
         this.list_emaillocal.splice(index, 1);
-      this.close_e();  
+      this.close_e();
       this.SetEmails(this.list_emaillocal);
     },
 
-    async saves_e() {     
+    async saves_e() {
       Object.assign(
         this.list_emaillocal[this.editedIndexEmail],
         this.editedItemLocalEmail

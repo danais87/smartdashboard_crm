@@ -62,6 +62,7 @@
                       v-model="item.name"
                       label="First Name"
                       class="purple-input"
+                      autofocus
                     />
                   </v-col>
 
