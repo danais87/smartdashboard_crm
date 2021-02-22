@@ -40,6 +40,7 @@ export default new Vuex.Store({
     teams: [],
     serviceTypes: [],
     discounts: [],
+    investment: [],
     acquisitions: [],
     taskStatus: [],
     payments: [],
@@ -107,6 +108,9 @@ export default new Vuex.Store({
     },
     SetAccounts(state, p_acc) {
       state.accounts = p_acc;
+    },
+    SetInvestment(state, p_inv) {
+      state.investment = p_inv;
     },
     SetListServices(state, p_serv) {
       state.list_services = p_serv;
@@ -1145,6 +1149,31 @@ export default new Vuex.Store({
       });
       const items = todos.data.listAccounts;
       commit('SetAccounts', items);
+    },
+    async GetInvestment({
+      commit
+    }) {
+      const todos = await API.graphql({
+        query: listInvestment,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.state.organizationID
+            },
+            SK: {
+              eq: "CPG#",
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      const items = todos.data.listInvestment;
+      commit('SetInvestment', items);
     },
     async GetListServices({
       commit

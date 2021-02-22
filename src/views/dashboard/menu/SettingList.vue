@@ -1647,8 +1647,6 @@ export default {
     search_bt: "",
     search_invest: "",
     show: false,
-    accounts: [],
-    investment: [],
     dialog_team: false,
     dialog_account: false,
     dialog_stype: false,
@@ -1690,7 +1688,12 @@ export default {
         value: "description",
       },
       { text: "Amount", align: "start", sortable: true, value: "price" },
-      { text: "Product Type", align: "start", sortable: true, value: "productType" },
+      {
+        text: "Product Type",
+        align: "start",
+        sortable: true,
+        value: "productType",
+      },
       { text: "Date", align: "start", sortable: true, value: "startDate" },
       { text: "Actions", value: "actions", sortable: false },
     ],
@@ -1883,14 +1886,14 @@ export default {
       price: 0,
       startDate: "",
       description: "",
-      productType:"",
+      productType: "",
     },
     defaultItemInvest: {
       id: "",
       price: 0,
       startDate: "",
       description: "",
-      productType:"",
+      productType: "",
     },
     editedItemAccount: {
       id: "",
@@ -1987,6 +1990,8 @@ export default {
       "teams",
       "serviceTypes",
       "discounts",
+      "accounts",
+      "investment",
       "acquisitions",
       "taskStatus",
       "payments",
@@ -2036,38 +2041,14 @@ export default {
 
   created() {
     this.GetCatalogs();
-    this.getAccounts();
-    this.getInvestment();
+    this.GetAccounts();
+    this.GetInvestment();
   },
 
   methods: {
-    ...Vuex.mapActions(["GetCatalogs"]),
+    ...Vuex.mapActions(["GetCatalogs", "GetAccounts", "GetInvestment"]),
 
     //MARKETING INVEST
-    async getInvestment() {
-      const todos = await API.graphql({
-        query: listInvestment,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "CPG#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      console.log(todos);
-      this.investment = todos.data.listInvestment;
-    },
-
     async createInvestment(item) {
       const loading = this.$loading({
         lock: true,
@@ -2092,7 +2073,7 @@ export default {
       const description = item.description;
       const productType = item.productType;
 
-      if (!price || !startDate || !description ) return alert("error en datos");
+      if (!price || !startDate || !description) return alert("error en datos");
 
       const todo = {
         PK,
@@ -2110,13 +2091,13 @@ export default {
         price,
         startDate,
         description,
-        productType
+        productType,
       };
       await API.graphql({
         query: createRecord,
         variables: { input: todo },
       });
-      this.getInvestment();
+      this.GetInvestment();
       loading.close();
     },
 
@@ -2148,7 +2129,7 @@ export default {
         price,
         startDate,
         description,
-        productType
+        productType,
       };
 
       await API.graphql({
@@ -2156,7 +2137,7 @@ export default {
         variables: { input: todo },
       });
       loading.close();
-      this.getInvestment();
+      this.GetInvestment();
     },
 
     editItemInvestment(item) {
@@ -2200,7 +2181,7 @@ export default {
       this.dialog_deleteMarketing = false;
       console.log(this.investment);
       loading.close();
-      this.getInvestment();
+      this.GetInvestment();
     },
 
     closeInvest() {
@@ -2398,30 +2379,6 @@ export default {
     },
 
     //ACCOUNTS
-    async getAccounts() {
-      const todos = await API.graphql({
-        query: listAccounts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: "ACC#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      console.log(todos);
-      this.accounts = todos.data.listAccounts;
-    },
-
     async createAccounts(item) {
       const loading = this.$loading({
         lock: true,
@@ -2464,7 +2421,7 @@ export default {
         query: createRecord,
         variables: { input: todo },
       });
-      this.getAccounts();
+      this.GetAccounts();
       loading.close();
     },
 
@@ -2499,7 +2456,7 @@ export default {
         variables: { input: todo },
       });
       loading.close();
-      this.getAccounts();
+      this.GetAccounts();
     },
 
     editItemAccount(item) {
@@ -2571,7 +2528,7 @@ export default {
         console.log(this.teams);
         loading.close();
       }
-      this.getAccounts();
+      this.GetAccounts();
     },
 
     closeAccount() {

@@ -748,6 +748,7 @@ export default {
       };
 
       var array = Object.values(groupByInver(inv));
+      console.log(array);
 
       var groupByInvo = function (miarray) {
         return miarray.reduce(function (groups, item) {
@@ -759,6 +760,8 @@ export default {
         }, {});
       };
       var array_invo = Object.values(groupByInvo(ventas));
+      console.log(array_invo);
+
       var labels_inv = [];
       var data_inv = [];
       var data_invo = [];
@@ -781,14 +784,14 @@ export default {
         labels: labels_inv,
         datasets: [
           {
-            label: "Sales",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            data: data_invo,
-          },
-          {
             label: "CAMPAIGNS",
             backgroundColor: "rgba(54, 162, 235, 0.2)",
             data: data_inv,
+          },
+          {
+            label: "Sales",
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            data: data_invo,
           },
         ],
       };
@@ -823,6 +826,7 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
       };
+
       this.campchartdata = {
         labels: [
           "Sales(" + this.formattedValue(this.total_i) + ")",
