@@ -95,7 +95,6 @@ export default {
     editedCompare: {},
     editedItem: {
       GSP1SK1: "",
-
       GSP3PK1: "",
       GSP3SK1: "",
       PK: "",
@@ -126,7 +125,7 @@ export default {
 
     defaultItem: {
       GSP1SK1: "",
-      
+
       GSP3PK1: "",
       GSP3SK1: "",
       PK: "",

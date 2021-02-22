@@ -43,14 +43,10 @@
                           v-else
                           :key="`item-${i}`"
                           :value="item.email"
-                          
                         >
                           <template v-slot:default="{ active }">
                             <v-list-item-action>
-                              <v-checkbox
-                                :input-value="active"
-
-                              ></v-checkbox>
+                              <v-checkbox :input-value="active"></v-checkbox>
                             </v-list-item-action>
                             <v-list-item-content>
                               <v-list-item-title
@@ -1248,44 +1244,62 @@ export default {
       { text: "Zip Code", align: "start", sortable: true, value: "zip_code" },
     ],
     editedItemLeads: {
+      GSP1SK1: "",
+      GSP3PK1: "",
+      GSP3SK1: "",
+      PK: "",
+      SK: "",
       id: "",
-      name: "",
-      lastname: "",
-      street_address: "",
-      country: "",
-      city: "",
-      state: "",
-      zip_code: "",
-      a_type: "",
-      phone: "",
-      p_type: "",
-      e_type: "",
-      status: "A",
-      account_id: "",
-      account_name: "",
-      lead_status: "NS",
+      entityType: " ",
+      createdAt: " ",
+      updateAt: " ",
+      createdBy: " ",
+      active: " ",
+      createdBy: " ",
+      account: " ",
+      leadStatus: "No Status",
       seekingService: "Y",
-      smLeadsdetails: [],
+      adquisition: " ",
+      notes: " ",
+      businessType: " ",
+      jobTitle: " ",
+      levelAuthority: " ",
+      numberEmployee: " ",
+      l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
+      name: " ",
+      last_name: " ",
+      l_email: '[{"type":"","value":""}]',
+      l_smAddress:
+        '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
     },
     defaultItemLeads: {
+      GSP1SK1: "",
+      GSP3PK1: "",
+      GSP3SK1: "",
+      PK: "",
+      SK: "",
       id: "",
-      name: "",
-      lastname: "",
-      street_address: "",
-      country: "",
-      city: "",
-      state: "",
-      zip_code: "",
-      a_type: "",
-      phone: "",
-      p_type: "",
-      e_type: "",
-      status: "A",
-      account_id: "",
-      account_name: "",
-      lead_status: "NS",
+      entityType: " ",
+      createdAt: " ",
+      updateAt: " ",
+      createdBy: " ",
+      active: " ",
+      createdBy: " ",
+      account: " ",
+      leadStatus: "No Status",
       seekingService: "Y",
-      smLeadsdetails: [],
+      adquisition: " ",
+      notes: " ",
+      businessType: " ",
+      jobTitle: " ",
+      levelAuthority: " ",
+      numberEmployee: " ",
+      l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
+      name: " ",
+      last_name: " ",
+      l_email: '[{"type":"","value":""}]',
+      l_smAddress:
+        '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
     },
     vari: "new",
     calc: false,
@@ -1685,7 +1699,10 @@ export default {
       console.log(this.editedItemLeads);
       this.editedItemLeads.name = JSON.parse(
         this.editedItemLeads.l_smName
-      )[0].fullName;
+      )[0].firstName;
+      this.editedItemLeads.last_name = JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].lastName;
 
       if (JSON.parse(this.editedItemLeads.l_email)[0]) {
         for (
@@ -2207,7 +2224,13 @@ export default {
       console.log(this.l_discount);
       if (this.lead.id != undefined) {
         this.editedItemLeads = this.lead;
+        this.editedItemLeads.name = JSON.parse(this.lead.l_smName)[0].firstName;
+        this.editedItemLeads.last_name = JSON.parse(
+          this.lead.l_smName
+        )[0].lastName;
       }
+      if (!this.editedItemLeads.name)
+        return alert("ERROR THE CUSTOMER FIELD CANNOT BE BLANK!!!");
       var downPayment = 0;
       var numInstallments = 0;
       var todo = [];
@@ -3199,7 +3222,8 @@ export default {
     async ItemLeadT(item) {
       this.editedIndexLead = this.leads.indexOf(item);
       this.editedItemLeads = Object.assign({}, item);
-      this.editedItemLeads.name = JSON.parse(item.l_smName)[0].fullName;
+      this.editedItemLeads.name = JSON.parse(item.l_smName)[0].firstName;
+      this.editedItemLeads.last_name = JSON.parse(item.l_smName)[0].lastName;
       this.list_email = [];
       this.list_phone = [];
       this.list_address = [];
@@ -3271,11 +3295,13 @@ export default {
       this.sm_verbal = "4";
       this.md_verbal = "4";
     },
+
     getColor(item) {
       if (item == "INST") return "blue";
       else if (item == "DPAY") return "green";
       else return "orange";
     },
+
     remoteMethod(query) {
       if (query !== "") {
         this.loading = true;
