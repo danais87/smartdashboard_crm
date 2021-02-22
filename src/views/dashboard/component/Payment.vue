@@ -662,6 +662,27 @@ export default {
             query: updateRecord,
             variables: { input: inst },
           });
+        } else {
+          const PK = installments[i].PK;
+          const SK = installments[i].SK;
+          const GSP3PK1 = this.organizationID + "#PAY";
+          const GSP3SK1 = "STATUS#N";
+          const GSP4PK1 = this.organizationID;
+          const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
+          const isPaid = "N";
+          inst = {
+            PK,
+            SK,
+            GSP3PK1,
+            GSP3SK1,
+            GSP4PK1,
+            GSP4SK1,
+            isPaid,
+          };
+          await API.graphql({
+            query: updateRecord,
+            variables: { input: inst },
+          });
         }
       }
 
