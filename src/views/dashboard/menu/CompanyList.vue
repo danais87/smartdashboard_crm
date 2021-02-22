@@ -94,6 +94,7 @@
                         <v-text-field
                           v-model="editedItem.smName"
                           label="Name"
+                          autofocus
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" sm="4" md="4">

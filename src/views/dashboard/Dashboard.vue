@@ -140,7 +140,7 @@
         <v-card max-width="400" max-height="400">
           <v-list-item three-line>
             <v-list-item-content>
-              <div class="overline mb-4">Sales - CAMPAIGNS</div>
+              <div class="overline mb-4">CAMPAIGNS - SALES</div>
               <DoughnutChart
                 :height="200"
                 :width="200"
@@ -785,12 +785,12 @@ export default {
         datasets: [
           {
             label: "CAMPAIGNS",
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            backgroundColor: "rgba(153, 102, 255, 0.2)",
             data: data_inv,
           },
           {
             label: "Sales",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            backgroundColor:"rgba(255, 159, 64, 0.2)",
             data: data_invo,
           },
         ],
@@ -829,29 +829,21 @@ export default {
 
       this.campchartdata = {
         labels: [
-          "Sales(" + this.formattedValue(this.total_i) + ")",
           "CAMPAIGNS(" + this.formattedValue(total_camaping) + ")",
+           "Sales(" + this.formattedValue(this.total_i) + ")"
         ],
         datasets: [
           {
             borderWidth: 1,
             borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
               "rgba(153, 102, 255, 1)",
               "rgba(255, 159, 64, 1)",
             ],
             backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
               "rgba(153, 102, 255, 0.2)",
               "rgba(255, 159, 64, 0.2)",
             ],
-            data: [this.total_i, total_camaping],
+            data: [ total_camaping,this.total_i,],
           },
         ],
       };

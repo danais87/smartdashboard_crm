@@ -91,6 +91,7 @@
                             label="Name"
                             :rules="nameRules"
                             required
+                            autofocus
                           ></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="12" md="12">
@@ -430,7 +431,12 @@ export default {
 
   methods: {
     formattedCurrencyValue(value) {
-      return "$ " + parseFloat(value).toFixed(2);
+      return (
+        "$ " +
+        parseFloat(value)
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+      );
     },
 
     ...Vuex.mapActions(["GetListServices"]),
