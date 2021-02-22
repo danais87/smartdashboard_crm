@@ -31,16 +31,37 @@
               </v-row>
               <v-row>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
-                    v-model="selectedEmails"
-                    :items="send_email[0].emails"
-                    label="Select"
-                    multiple
-                    chips
-                    persistent-hint
-                    item-text="email"
-                    item-value="email"
-                  ></v-select>
+                  <v-list>
+                    <v-list-item-group v-model="selectedEmails" multiple>
+                      <template v-for="(item, i) in send_email[0].emails">
+                        <v-divider
+                          v-if="!item.email"
+                          :key="`divider-${i}`"
+                        ></v-divider>
+
+                        <v-list-item
+                          v-else
+                          :key="`item-${i}`"
+                          :value="item.email"
+                          
+                        >
+                          <template v-slot:default="{ active }">
+                            <v-list-item-action>
+                              <v-checkbox
+                                :input-value="active"
+
+                              ></v-checkbox>
+                            </v-list-item-action>
+                            <v-list-item-content>
+                              <v-list-item-title
+                                v-text="item.email"
+                              ></v-list-item-title>
+                            </v-list-item-content>
+                          </template>
+                        </v-list-item>
+                      </template>
+                    </v-list-item-group>
+                  </v-list>
                 </v-col>
               </v-row>
             </v-container>
@@ -2600,6 +2621,7 @@ export default {
             e_type,
           };
           this.list_email = [...this.list_email, todo];
+          this.selectedEmails.push(this.listemails[i].email);
         }
       }
       this.send_email.push({
@@ -2607,6 +2629,8 @@ export default {
         emails: this.list_email,
         quoteSK: item.SK,
       });
+
+      console.log(this.selectedEmails);
       this.SetBody(item);
     },
 
@@ -2696,7 +2720,7 @@ export default {
     },
 
     async editItem(item) {
-      console.log(item)
+      console.log(item);
       this.q_services = [];
       this.installments = [];
       this.list_phone = [];

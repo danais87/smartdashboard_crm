@@ -31,16 +31,33 @@
               </v-row>
               <v-row>
                 <v-col cols="12" sm="12" md="12">
-                  <v-select
-                    v-model="selectedEmails"
-                    :items="send_email[0].emails"
-                    label="Select"
-                    multiple
-                    chips
-                    persistent-hint
-                    item-text="email"
-                    item-value="email"
-                  ></v-select>
+                  <v-list>
+                    <v-list-item-group v-model="selectedEmails" multiple>
+                      <template v-for="(item, i) in send_email[0].emails">
+                        <v-divider
+                          v-if="!item.email"
+                          :key="`divider-${i}`"
+                        ></v-divider>
+
+                        <v-list-item
+                          v-else
+                          :key="`item-${i}`"
+                          :value="item.email"
+                        >
+                          <template v-slot:default="{ active }">
+                            <v-list-item-action>
+                              <v-checkbox :input-value="active"></v-checkbox>
+                            </v-list-item-action>
+                            <v-list-item-content>
+                              <v-list-item-title
+                                v-text="item.email"
+                              ></v-list-item-title>
+                            </v-list-item-content>
+                          </template>
+                        </v-list-item>
+                      </template>
+                    </v-list-item-group>
+                  </v-list>
                 </v-col>
               </v-row>
             </v-container>
@@ -1339,24 +1356,13 @@ export default {
         },
       });
 
-      this.quotes_datac = todos.data.listQuotes;
+     var d = todos.data.listQuotes;
       console.log(this.quotes_datac);
 
-      for (let i = 0; i < this.quotes_datac.length; i++) {
-        console.log(this.quotes_created);
-        if (this.quotes_datac[i].processStatus == "Created") {
-          this.quotes_created.push(this.quotes_datac[i]);
-          total_c = total_c + this.quotes_datac[i].finalAmount;
-        }
-
-        if (this.quotes_datac[i].processStatus == "Negotiations") {
-          this.quotes_s.push(this.quotes_datac[i]);
-          total_s = total_s + this.quotes_datac[i].finalAmount;
-        }
-
-        if (this.quotes_datac[i].processStatus == "Verbal Agreement") {
-          this.quotes_va.push(this.quotes_datac[i]);
-          total_v = total_v + this.quotes_datac[i].finalAmount;
+      for (let i = 0; i < d.length; i++) {
+        if (d[i].processStatus != "Invoice") {
+          this.quotes_datac.push(d[i]);
+          total_c = total_c + d[i].finalAmount;
         }
       }
 
@@ -2489,6 +2495,7 @@ export default {
             e_type,
           };
           this.list_email = [...this.list_email, todo];
+          this.selectedEmails.push(this.listemails[i].email);
         }
       }
       this.send_email.push({
