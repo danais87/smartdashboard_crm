@@ -637,6 +637,7 @@ export default {
       }
 
       //update INSTALLMENT
+      var inst='';
       for (let i = 0; i < installments.length; i++) {
         if (installments[i].type == "DPAY") {
           const PK = installments[i].PK;
