@@ -80,7 +80,7 @@ export default new Router({
         },
         //menu
         {
-          name: 'Customers',
+          name: 'Contacts',
           path: '/menu/customer',
           component: () => import('@/views/dashboard/menu/LeadsList'),
         },
@@ -90,7 +90,7 @@ export default new Router({
           component: () => import('@/views/dashboard/menu/CompanyList'),
         },
         {
-          name: 'Setting',
+          name: 'Settings',
           path: '/menu/setting',
           component: () => import('@/views/dashboard/menu/SettingList'),
         },
@@ -100,7 +100,7 @@ export default new Router({
           component: () => import('@/views/dashboard/menu/ServiceList'),
         },
         {
-          name: 'Quotes',
+          name: 'Sales',
           path: '/menu/quotes',
           component: () => import('@/views/dashboard/menu/QuoteList'),
         },

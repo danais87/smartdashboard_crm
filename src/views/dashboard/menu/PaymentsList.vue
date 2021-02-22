@@ -238,7 +238,7 @@
                       show-icon
                     ></el-alert>
                     <v-text-field
-                      v-model="search_s"
+                      v-model="search_l"
                       append-icon="mdi-magnify"
                       label="Search"
                       single-line
