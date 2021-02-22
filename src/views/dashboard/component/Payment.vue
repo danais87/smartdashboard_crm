@@ -637,7 +637,7 @@ export default {
       }
 
       //update INSTALLMENT
-      var inst='';
+      var inst = "";
       for (let i = 0; i < installments.length; i++) {
         if (installments[i].type == "DPAY") {
           const PK = installments[i].PK;
@@ -658,11 +658,11 @@ export default {
             isPaid,
             payDate,
           };
+          await API.graphql({
+            query: updateRecord,
+            variables: { input: inst },
+          });
         }
-        await API.graphql({
-          query: updateRecord,
-          variables: { input: inst },
-        });
       }
 
       console.log(invo);
