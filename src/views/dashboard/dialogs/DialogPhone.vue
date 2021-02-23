@@ -254,11 +254,12 @@ export default {
       };
       this.list_phonelocal = this.listphone;
       this.list_phonelocal = [...this.list_phonelocal, todo];
-      this.SetPhone(this.list_phonelocal);
-      // console.log(this.listphone);
+      await this.SetPhone(this.list_phonelocal);
+
       this.phone = {};
       this.telephone = "";
-      this.p_type = "";
+      this.p_type = "Work";
+      console.log(this.listphone);
     },
 
     editItem_p(item) {

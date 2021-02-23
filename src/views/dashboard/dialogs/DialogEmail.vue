@@ -179,7 +179,6 @@ export default {
 
     handleClick(value) {
       this.editItem_e(value);
-
     },
 
     async addEmail() {
@@ -193,10 +192,10 @@ export default {
       };
       this.list_emaillocal = this.listemails;
       this.list_emaillocal = [...this.list_emaillocal, todo];
-      this.SetEmails(this.list_emaillocal);
+      await this.SetEmails(this.list_emaillocal);
 
       this.email = "";
-      this.e_type = "";
+      this.e_type = "Work";
     },
 
     editItem_e(item) {
@@ -209,7 +208,7 @@ export default {
     deleteItem_e() {
       const lis = [];
       this.SetEmails(lis);
-      const index = this.editedIndexEmail ;
+      const index = this.editedIndexEmail;
       confirm("Are you sure you want to delete this item?") &&
         this.list_emaillocal.splice(index, 1);
       this.close_e();

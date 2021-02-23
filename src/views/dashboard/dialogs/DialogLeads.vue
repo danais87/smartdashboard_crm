@@ -175,12 +175,7 @@ import {
   updateRecord,
   deletePhoneNumber,
 } from "../../../graphql/mutations";
-import {
-  getOrganization,
-  listAccounts,
-  listPhoneNumber,
-  listSmartDash,
-} from "../../../graphql/queries";
+import { listPhoneNumber, listSmartDash } from "../../../graphql/queries";
 import DialogEmail from "../dialogs/DialogEmail";
 import DialogPhone from "../dialogs/DialogPhone";
 import DialogAddress from "../dialogs/DialogAddress";
@@ -249,18 +244,19 @@ export default {
   created() {
     this.GetAccounts();
     // this.GetCatalogs();
+    console.log(this.item);
   },
 
   watch: {},
 
   methods: {
     ...Vuex.mapActions(["GetLeads", "GetCatalogs", "GetAccounts"]),
-    ...Vuex.mapMutations(["SetLead"]),
+    ...Vuex.mapMutations(["SetLead", "SetPhone", "SetEmails", "SetAddress"]),
 
     async createLeads(item) {
       const loading = this.$loading({
         lock: true,
-        text: "Loading Leads",
+        text: "Created Leads",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
@@ -334,39 +330,38 @@ export default {
 
       this.SetLead(l.data.createRecord);
       console.log(phones);
-      if (phones.length > 0) {
-        for (let i = 0; i < phones.length; i++) {
-          const PK = this.organizationID;
-          const id = uuid.v1();
-          const SK = "PHO#" + phones[i].phone;
-          const GSP1PK1 = id_cust;
-          const GSP1SK1 = "PHO#" + phones[i].phone;
-          const entityType = "PHONENUMBER";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const value = phones[i].phone;
-          const type = phones[i].p_type;
-          const todo = {
-            PK,
-            id,
-            SK,
-            GSP1PK1,
-            GSP1SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            value,
-            type,
-          };
-          const p = await API.graphql({
-            query: createRecord,
-            variables: { input: todo },
-          });
-        }
+
+      for (let i = 0; i < phones.length; i++) {
+        const PK = this.organizationID;
+        const id = uuid.v1();
+        const SK = "PHO#" + phones[i].phone;
+        const GSP1PK1 = id_cust;
+        const GSP1SK1 = "PHO#" + phones[i].phone;
+        const entityType = "PHONENUMBER";
+        const createdAt = new Date().toISOString().substr(0, 10);
+        const updateAt = new Date().toISOString().substr(0, 10);
+        const createdBy = this.usuario;
+        const active = "1";
+        const value = phones[i].phone;
+        const type = phones[i].p_type;
+        const todo = {
+          PK,
+          id,
+          SK,
+          GSP1PK1,
+          GSP1SK1,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          value,
+          type,
+        };
+        const p = await API.graphql({
+          query: createRecord,
+          variables: { input: todo },
+        });
       }
 
       this.GetLeads();
@@ -384,7 +379,8 @@ export default {
 
       this.ser_var = [];
 
-      const phones = this.listphone;
+      const phones_n = this.listphone;
+      console.log(phones_n);
       var names = [];
       names.push({
         firstName: item.name,
@@ -442,10 +438,13 @@ export default {
         numberEmployee,
       };
       console.log(todo);
-      await API.graphql({
+      const l = await API.graphql({
         query: updateRecord,
         variables: { input: todo },
       });
+      console.log("update custumer");
+      console.log(l.data.updateRecord);
+      this.SetLead(l.data.updateRecord);
 
       const all_details = await API.graphql({
         query: listPhoneNumber,
@@ -468,27 +467,26 @@ export default {
         }
       }
       const id_cust = item.SK;
-      for (let i = 0; i < phones.length; i++) {
+      for (let i = 0; i < phones_n.length; i++) {
         const PK = item.PK;
         const id = uuid.v1();
-        const SK = "PHO#" + phones[i].phone;
+        const SK = "PHO#" + phones_n[i].phone;
         const GSP1PK1 = id_cust;
-        const GSP1SK1 = "PHO#" + phones[i].phone;
+        const GSP1SK1 = "PHO#" + phones_n[i].phone;
 
         const entityType = "PHONENUMBER";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
         const createdBy = this.usuario;
         const active = "1";
-        const value = phones[i].phone;
-        const type = phones[i].p_type;
+        const value = phones_n[i].phone;
+        const type = phones_n[i].p_type;
         const todo = {
           PK,
           id,
           SK,
           GSP1PK1,
           GSP1SK1,
-
           entityType,
           createdAt,
           updateAt,
@@ -510,7 +508,14 @@ export default {
       console.log("entra");
       this.GetLeads();
       this.show = false;
-      this.item;
+      const lead = [];
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      this.SetLead(lead);
     },
 
     async save() {
@@ -580,6 +585,14 @@ export default {
         this.show = false;
         loading.close();
       }
+      const lead = [];
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      this.SetLead(lead);
       this.GetLeads();
     },
   },

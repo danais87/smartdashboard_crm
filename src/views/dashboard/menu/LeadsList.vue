@@ -115,17 +115,15 @@ export default {
       jobTitle: " ",
       levelAuthority: " ",
       numberEmployee: " ",
-      l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
+      l_smName: "[]",
       name: " ",
       last_name: " ",
-      l_email: '[{"type":"","value":""}]',
-      l_smAddress:
-        '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
+      l_email: "[]",
+      l_smAddress: "[]",
     },
 
     defaultItem: {
       GSP1SK1: "",
-
       GSP3PK1: "",
       GSP3SK1: "",
       PK: "",
@@ -137,7 +135,7 @@ export default {
       active: " ",
       createdBy: " ",
       account: " ",
-      leadStatus: "NS",
+      leadStatus: "No Status",
       seekingService: "Y",
       adquisition: " ",
       notes: " ",
@@ -145,12 +143,11 @@ export default {
       jobTitle: " ",
       levelAuthority: " ",
       numberEmployee: " ",
-      l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
+      l_smName: "[]",
       name: " ",
       last_name: " ",
-      l_email: '[{"type":"","value":""}]',
-      l_address:
-        '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
+      l_email: "[]",
+      l_address: "[]",
     },
     options: [],
     options_service: [],
@@ -199,7 +196,7 @@ export default {
     },
 
     addLeads() {
-      this.editedItem = this.defaultItem;
+      this.editedItem = Object.assign({}, this.defaultItem);
       this.list_phone = [];
       this.list_email = [];
       this.list_address = [];
@@ -217,7 +214,6 @@ export default {
       this.editedItem = Object.assign({}, item);
       this.editedItem.name = JSON.parse(item.l_smName)[0].firstName;
       this.editedItem.last_name = JSON.parse(item.l_smName)[0].lastName;
-
 
       this.editedCompare = Object.assign({}, item);
       this.list_phone = [];

@@ -444,18 +444,6 @@ export default {
         align: "start",
       },
       {
-        text: "Email Sent",
-        sortable: true,
-        value: "emailSent",
-        align: "start",
-      },
-      {
-        text: "Sent Date",
-        sortable: true,
-        value: "sentDate",
-        align: "start",
-      },
-      {
         text: "Final Amount",
         sortable: true,
         value: "final_amount",

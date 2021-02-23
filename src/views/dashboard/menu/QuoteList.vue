@@ -1265,12 +1265,11 @@ export default {
       jobTitle: " ",
       levelAuthority: " ",
       numberEmployee: " ",
-      l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
+      l_smName: "[]",
       name: " ",
       last_name: " ",
-      l_email: '[{"type":"","value":""}]',
-      l_smAddress:
-        '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
+      l_email: "[]",
+      l_smAddress: "[]",
     },
     defaultItemLeads: {
       GSP1SK1: "",
@@ -1294,12 +1293,11 @@ export default {
       jobTitle: " ",
       levelAuthority: " ",
       numberEmployee: " ",
-      l_smName: '[{"firstName":"","lastName":"","fullName":""}]',
+      l_smName: "[]",
       name: " ",
       last_name: " ",
-      l_email: '[{"type":"","value":""}]',
-      l_smAddress:
-        '[{"type":"","street_address":"","city":"","state":"","zipCode":"","country":""}]',
+      l_email: "[]",
+      l_smAddress: "[]",
     },
     vari: "new",
     calc: false,
@@ -1776,13 +1774,17 @@ export default {
     },
 
     NewLead() {
-      this.editedItemLeads = this.defaultItemLeads;
+      this.editedItemLeads = Object.assign({}, this.defaultItemLeads);
+      this.editedItemLeads.name = "";
+      this.editedItemLeads.last_name = "";
+      const lead = [];
       this.list_phone = [];
       this.list_email = [];
       this.list_address = [];
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
+      this.SetLead(lead);
       this.editedIndexLead = -1;
       this.dialog_lead = true;
     },
@@ -2749,6 +2751,12 @@ export default {
       this.list_phone = [];
       this.list_email = [];
       this.list_address = [];
+      var quotes = [];
+      var installments = [];
+      var services = [];
+      let vari = [];
+      let servi = [];
+      this.editedItemLeads = Object.assign({}, this.defaultItemLeads);
 
       if (item.processStatus == "Created") {
         this.editedIndex = this.quotes_created.indexOf(item);
@@ -2786,12 +2794,6 @@ export default {
       });
 
       var datas = seq.data.listQuotes;
-      var quotes = [];
-      var installments = [];
-      var services = [];
-      let vari = [];
-      let servi = [];
-      this.editedItemLeads = [];
 
       for (let i = 0; i < datas.length; i++) {
         if (datas[i].entityType == "QUOTE") {
@@ -2942,14 +2944,14 @@ export default {
       this.list_email = [];
       this.list_address = [];
       this.conclusion = "";
-      const lead = "";
+      const lead = [];
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
       this.SetLead(lead);
       this.dialog = false;
       this.editedItemLeads.name = "";
-      this.editedItemLeads.lastname = "";
+      this.editedItemLeads.last_name = "";
       this.q_services = [];
       this.discount_id = "";
       this.total = "";
@@ -2967,6 +2969,17 @@ export default {
     },
 
     openDialog() {
+       this.editedItemLeads = Object.assign({}, this.defaultItemLeads);
+      this.editedItemLeads.name = "";
+      this.editedItemLeads.last_name = "";
+      const lead = [];
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      this.SetLead(lead);
       this.dialog = true;
     },
 
@@ -3145,145 +3158,8 @@ export default {
 
     async editItemLead() {
       this.editedIndexLead = 1;
-      this.list_email = [];
-      this.list_phone = [];
-      this.list_address = [];
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
-
-      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.editedItemLeads.l_email).length;
-          i++
-        ) {
-          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
-          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
-          const todo = {
-            email,
-            e_type,
-          };
-          this.list_email = [...this.list_email, todo];
-        }
-      }
-      const todos = await API.graphql({
-        query: listPhoneNumber,
-        variables: { filter: { GSP1PK1: { eq: this.editedItemLeads.SK } } },
-      });
-      this.phones = todos.data.listPhoneNumber;
-      console.log(this.phones);
-
-      if (this.phones.length > 0) {
-        for (let i = 0; i < this.phones.length; i++) {
-          let phone = this.phones[i].value;
-          let p_type = this.phones[i].type;
-          const todo = {
-            phone,
-            p_type,
-          };
-          this.list_phone = [...this.list_phone, todo];
-        }
-      }
-
-      if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
-        for (
-          let i = 0;
-          i < JSON.parse(this.editedItemLeads.l_smAddress).length;
-          i++
-        ) {
-          let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
-          let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
-          let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
-          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i]
-            .street_address;
-          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i]
-            .zip_code;
-          let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
-          const todo = {
-            country,
-            state,
-            city,
-            street_address,
-            zip_code,
-            a_type,
-          };
-          this.list_address = [...this.list_address, todo];
-        }
-      }
-
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
 
       this.dialog_lead = true;
-    },
-
-    async ItemLeadT(item) {
-      this.editedIndexLead = this.leads.indexOf(item);
-      this.editedItemLeads = Object.assign({}, item);
-      this.editedItemLeads.name = JSON.parse(item.l_smName)[0].firstName;
-      this.editedItemLeads.last_name = JSON.parse(item.l_smName)[0].lastName;
-      this.list_email = [];
-      this.list_phone = [];
-      this.list_address = [];
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
-
-      if (JSON.parse(item.l_email)[0]) {
-        for (let i = 0; i < JSON.parse(item.l_email).length; i++) {
-          let e_type = JSON.parse(item.l_email)[i].e_type;
-          let email = JSON.parse(item.l_email)[i].email;
-          const todo = {
-            email,
-            e_type,
-          };
-          this.list_email = [...this.list_email, todo];
-        }
-      }
-      const todos = await API.graphql({
-        query: listPhoneNumber,
-        variables: { filter: { GSP1PK1: { eq: item.SK } } },
-      });
-      this.phones = todos.data.listPhoneNumber;
-      console.log(this.phones);
-
-      if (this.phones.length > 0) {
-        for (let i = 0; i < this.phones.length; i++) {
-          let phone = this.phones[i].value;
-          let p_type = this.phones[i].type;
-          const todo = {
-            phone,
-            p_type,
-          };
-          this.list_phone = [...this.list_phone, todo];
-        }
-      }
-
-      if (JSON.parse(item.l_smAddress)[0]) {
-        for (let i = 0; i < JSON.parse(item.l_smAddress).length; i++) {
-          let country = JSON.parse(item.l_smAddress)[i].country;
-          let state = JSON.parse(item.l_smAddress)[i].state;
-          let city = JSON.parse(item.l_smAddress)[i].city;
-          let street_address = JSON.parse(item.l_smAddress)[i].street_address;
-          let zip_code = JSON.parse(item.l_smAddress)[i].zip_code;
-          let a_type = JSON.parse(item.l_smAddress)[i].a_type;
-          const todo = {
-            country,
-            state,
-            city,
-            street_address,
-            zip_code,
-            a_type,
-          };
-          this.list_address = [...this.list_address, todo];
-        }
-      }
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
-      this.dialog = true;
     },
 
     closeLead() {

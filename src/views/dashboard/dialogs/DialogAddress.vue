@@ -270,13 +270,13 @@ export default {
       };
       this.list_addresslocal = this.listaddress;
       this.list_addresslocal = [...this.list_addresslocal, todo];
-      this.SetAddress(this.list_addresslocal);
+      await this.SetAddress(this.list_addresslocal);
       this.street_address = "";
       this.country = "";
       this.state = "";
       this.city = "";
       this.zip_code = "";
-      this.a_type = "";
+      this.a_type = "Work";
     },
 
     editItem_a(item) {
