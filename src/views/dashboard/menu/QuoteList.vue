@@ -3158,7 +3158,14 @@ export default {
 
     async editItemLead() {
       this.editedIndexLead = 1;
-
+      if (this.lead.id != undefined) {
+        this.editedItemLeads = this.lead;
+        this.editedItemLeads.name = JSON.parse(this.lead.l_smName)[0].firstName;
+        this.editedItemLeads.last_name = JSON.parse(
+          this.lead.l_smName
+        )[0].lastName;
+      }
+      console.log(this.editedItemLeads);
       this.dialog_lead = true;
     },
 

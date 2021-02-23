@@ -380,7 +380,7 @@ export default {
     },
 
     async updateLeads(item) {
-      console.log(this.item);
+      console.log(item);
       const loading = this.$loading({
         lock: true,
         text: "Update Contact",
