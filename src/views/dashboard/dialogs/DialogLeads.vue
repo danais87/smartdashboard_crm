@@ -263,6 +263,7 @@ export default {
       console.log(item);
       const phones = this.listphone;
       var names = [];
+      var l ='';
       names.push({
         firstName: item.name,
         lastName: item.last_name,
@@ -322,46 +323,51 @@ export default {
         levelAuthority,
         numberEmployee,
       };
-      const l = await API.graphql({
-        query: createRecord,
-        variables: { input: todo },
-      });
-      const id_cust = "CUS#" + id;
-
-      this.SetLead(l.data.createRecord);
-      console.log(phones);
-
-      for (let i = 0; i < phones.length; i++) {
-        const PK = this.organizationID;
-        const id = uuid.v1();
-        const SK = "PHO#" + phones[i].phone;
-        const GSP1PK1 = id_cust;
-        const GSP1SK1 = "PHO#" + phones[i].phone;
-        const entityType = "PHONENUMBER";
-        const createdAt = new Date().toISOString().substr(0, 10);
-        const updateAt = new Date().toISOString().substr(0, 10);
-        const createdBy = this.usuario;
-        const active = "1";
-        const value = phones[i].phone;
-        const type = phones[i].p_type;
-        const todo = {
-          PK,
-          id,
-          SK,
-          GSP1PK1,
-          GSP1SK1,
-          entityType,
-          createdAt,
-          updateAt,
-          createdBy,
-          active,
-          value,
-          type,
-        };
-        const p = await API.graphql({
+      try {
+         l = await API.graphql({
           query: createRecord,
           variables: { input: todo },
         });
+      } catch (error) {
+        console.log(error);
+      }
+      console.log(l.data.createRecord);
+      this.SetLead(l.data.createRecord);
+      try {
+        for (let i = 0; i < phones.length; i++) {
+          const PK = this.organizationID;
+          const id = uuid.v1();
+          const SK = "PHO#" + phones[i].phone;
+          const GSP1PK1 = l.data.createRecord.SK;
+          const GSP1SK1 = "PHO#" + phones[i].phone;
+          const entityType = "PHONENUMBER";
+          const createdAt = new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
+          const createdBy = this.usuario;
+          const active = "1";
+          const value = phones[i].phone;
+          const type = phones[i].p_type;
+          const todo = {
+            PK,
+            id,
+            SK,
+            GSP1PK1,
+            GSP1SK1,
+            entityType,
+            createdAt,
+            updateAt,
+            createdBy,
+            active,
+            value,
+            type,
+          };
+          const p = await API.graphql({
+            query: createRecord,
+            variables: { input: todo },
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
 
       this.GetLeads();
@@ -508,14 +514,6 @@ export default {
       console.log("entra");
       this.GetLeads();
       this.show = false;
-      const lead = [];
-      this.list_phone = [];
-      this.list_email = [];
-      this.list_address = [];
-      this.SetPhone(this.list_phone);
-      this.SetEmails(this.list_email);
-      this.SetAddress(this.list_address);
-      this.SetLead(lead);
     },
 
     async save() {
