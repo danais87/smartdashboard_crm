@@ -1728,9 +1728,11 @@ export default {
         for (let i = 0; i < this.phones.length; i++) {
           let phone = this.phones[i].value;
           let p_type = this.phones[i].type;
+          let sk = this.phones[i].SK;
           const todo = {
             phone,
             p_type,
+            sk
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -2882,9 +2884,11 @@ export default {
         for (let i = 0; i < this.phones.length; i++) {
           let phone = this.phones[i].value;
           let p_type = this.phones[i].type;
+          let sk = this.phones[i].SK;
           const todo = {
             phone,
             p_type,
+            sk
           };
           this.list_phone = [...this.list_phone, todo];
         }

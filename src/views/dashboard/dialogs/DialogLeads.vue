@@ -170,11 +170,8 @@
 <script>
 import { API } from "aws-amplify";
 import Vuex from "vuex";
-import {
-  createRecord,
-  updateRecord, 
-} from "../../../graphql/mutations";
-import {   listSmartDash } from "../../../graphql/queries";
+import { createRecord, updateRecord } from "../../../graphql/mutations";
+import { listSmartDash } from "../../../graphql/queries";
 import DialogEmail from "../dialogs/DialogEmail";
 import DialogPhone from "../dialogs/DialogPhone";
 import DialogAddress from "../dialogs/DialogAddress";
@@ -192,7 +189,8 @@ export default {
   },
   data() {
     return {
-      phones_n:[],
+      phones_n: [],
+      phones: [],
       apiRequest: false,
       showPhone: true,
       showEmail: true,
@@ -253,24 +251,22 @@ export default {
     ...Vuex.mapActions(["GetLeads", "GetCatalogs", "GetAccounts"]),
     ...Vuex.mapMutations(["SetLead", "SetPhone", "SetEmails", "SetAddress"]),
 
-    async createLeads(item) {
+    async CULeads(item, index) {
       const loading = this.$loading({
         lock: true,
-        text: "Created Contact",
+        text: "Contact...",
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.7)",
       });
-      console.log(item);
-      const phones = this.listphone;
+      this.phones = [];
+      this.phones = this.listphone;
       var names = [];
       var l = "";
-
       names.push({
         firstName: item.name,
         lastName: item.last_name,
         fullName: item.name + " " + item.last_name,
       });
-
       const PK = this.organizationID;
       const id = uuid.v1();
       const SK = "CUS#" + id;
@@ -298,205 +294,163 @@ export default {
 
       if (!l_smName) return alert("error en datos incompletos leads");
 
-      const todo = {
-        PK,
-        id,
-        SK,
-        GSP1PK1,
-        GSP1SK1,
-        GSP4PK1,
-        GSP4SK1,
-        entityType,
-        createdAt,
-        updateAt,
-        createdBy,
-        active,
-        l_smName,
-        leadStatus,
-        account,
-        l_email,
-        l_smAddress,
-        seekingService,
-        adquisition,
-        notes,
-        businessType,
-        jobTitle,
-        levelAuthority,
-        numberEmployee,
-      };
-      try {
-        l = await API.graphql({
-          query: createRecord,
-          variables: { input: todo },
-        });
-      } catch (error) {
-        console.log("error crear usuario");
-        console.log(error);
-      }
-      console.log(l.data.createRecord);
-      this.SetLead(l.data.createRecord);
-
-      try {
-        await this.createPhone(phones,l.data.createRecord.SK);
-      } catch (error) {
-        console.log("error crear telefono");
-        console.log(error);
-      }
-
-      this.GetLeads();
-      loading.close();
-    },
-
-    async createPhone(phones,id) {
-      console.log(id);
-      console.log(this.organizationID);
-      for (let i = 0; i < phones.length; i++) {
-        const PK = this.organizationID;
-        const SK = "PHO#" + phones[i].phone;
-        const entityType = "PHONENUMBER";
-        const createdAt = new Date().toISOString().substr(0, 10);
-        const updateAt = new Date().toISOString().substr(0, 10);
-        const createdBy = this.usuario;
-        const active = "1";
-        const value = phones[i].phone;
-        const type = phones[i].p_type;
+      if (index > -1) {
+        console.log("edit");
+        this.ser_var = [];
+        var list_e = "";
+        for (let i = 0; i < this.listemails.length; i++) {
+          list_e += JSON.stringify(this.listemails[i]) + ",";
+        }
+        var list_a = "";
+        for (let i = 0; i < this.listaddress.length; i++) {
+          list_a += JSON.stringify(this.listaddress[i]) + ",";
+        }
+        const l_smName = JSON.stringify(names[0]);
+        const l_email = list_e.slice(0, -1);
+        const l_smAddress = list_a.slice(0, -1);
         const todo = {
           PK,
           SK,
+          GSP4PK1,
+          GSP4SK1,
+          updateAt,
+          l_smName,
+          account,
+          l_email,
+          l_smAddress,
+          seekingService,
+          adquisition,
+          leadStatus,
+          notes,
+          businessType,
+          jobTitle,
+          levelAuthority,
+          numberEmployee,
+        };
+        try {
+          l = await API.graphql({
+            query: updateRecord,
+            variables: { input: todo },
+          });
+          await this.SetLead(l.data.updateRecord);
+        } catch (error) {
+          console.log("error update contact");
+          console.log(error);
+        }
+        try {
+          for (let i = 0; i < this.phones.length; i++) {
+            const PK = this.organizationID;
+            const SK = "PHO#" + this.phones[i].phone;
+            const GSP1PK1 = item.SK;
+            const GSP1SK1 = SK;
+            const entityType = "PHONENUMBER";
+            const createdAt = new Date().toISOString().substr(0, 10);
+            const updateAt = new Date().toISOString().substr(0, 10);
+            const createdBy = this.usuario;
+            const active = "1";
+            const value = this.phones[i].phone;
+            const type = this.phones[i].p_type;
+            const todo = {
+              PK,
+              SK,
+              GSP1PK1,
+              GSP1SK1,
+              entityType,
+              createdAt,
+              updateAt,
+              createdBy,
+              active,
+              value,
+              type,
+            };
+            console.log(todo);
+            await API.graphql({
+              query: updateRecord,
+              variables: { input: todo },
+            });
+          }
+        } catch (error) {
+          console.log("error update telefono");
+          console.log(error);
+        }
+      } else {
+        console.log("created");
+        const todo = {
+          PK,
+          id,
+          SK,
+          GSP1PK1,
+          GSP1SK1,
+          GSP4PK1,
+          GSP4SK1,
           entityType,
           createdAt,
           updateAt,
           createdBy,
           active,
-          value,
-          type,
+          l_smName,
+          leadStatus,
+          account,
+          l_email,
+          l_smAddress,
+          seekingService,
+          adquisition,
+          notes,
+          businessType,
+          jobTitle,
+          levelAuthority,
+          numberEmployee,
         };
-        console.log(todo);
-        await API.graphql({
-          query: createRecord,
-          variables: { input: todo },
-        });
-      }
-    },
-
-    async updateLeads(item) {
-      console.log(item);
-      const loading = this.$loading({
-        lock: true,
-        text: "Update Contact",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-
-      this.ser_var = [];
-      this.phones_n = [];
-
-      this.phones_n = this.listphone;
-      console.log(this.phones_n);
-      var names = [];
-      var l = "";
-      names.push({
-        firstName: item.name,
-        lastName: item.last_name,
-        fullName: item.name + " " + item.last_name,
-      });
-
-      var list_e = "";
-      for (let i = 0; i < this.listemails.length; i++) {
-        list_e += JSON.stringify(this.listemails[i]) + ",";
-      }
-      var list_a = "";
-      for (let i = 0; i < this.listaddress.length; i++) {
-        list_a += JSON.stringify(this.listaddress[i]) + ",";
-      }
-      const PK = this.organizationID;
-      const SK = item.SK;
-      const GSP4PK1 = this.organizationID;
-      const GSP4SK1 = "CUS#" + new Date().toISOString().substr(0, 10);
-      const updateAt = new Date().toISOString().substr(0, 10);
-      const account = item.account;
-      const l_smName = JSON.stringify(names[0]);
-      const l_email = list_e.slice(0, -1);
-      const l_smAddress = list_a.slice(0, -1);
-      const seekingService = item.seekingService;
-      const adquisition = item.adquisition;
-      const leadStatus = item.leadStatus;
-      const notes = item.notes;
-      const businessType = item.businessType;
-      const jobTitle = item.jobTitle;
-      const levelAuthority = item.levelAuthority;
-      const numberEmployee = item.numberEmployee;
-
-      if (!l_smName) return alert("error en datos update leads");
-
-      const todo = {
-        PK,
-        SK,
-        GSP4PK1,
-        GSP4SK1,
-        updateAt,
-        l_smName,
-        account,
-        l_email,
-        l_smAddress,
-        seekingService,
-        adquisition,
-        leadStatus,
-        notes,
-        businessType,
-        jobTitle,
-        levelAuthority,
-        numberEmployee,
-      };
-      console.log(todo);
-      try {
-        l = await API.graphql({
-          query: updateRecord,
-          variables: { input: todo },
-        });
-        await this.SetLead(l.data.updateRecord);
-      } catch (error) {
-        console.log("error update contact");
-        console.log(error);
-      }
-      try {
-        for (let i = 0; i < this.phones_n.length; i++) {
-          const PK = this.organizationID;
-          const SK = "PHO#" + this.phones_n[i].phone;
-          const GSP1PK1 = item.SK;
-          const GSP1SK1 = SK;
-          const entityType = "PHONENUMBER";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const value = this.phones_n[i].phone;
-          const type = this.phones_n[i].p_type;
-          const todo = {
-            PK,
-            SK,
-            GSP1PK1,
-            GSP1SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            value,
-            type,
-          };
-          console.log(todo);
-          await API.graphql({
-            query: updateRecord,
+        try {
+          l = await API.graphql({
+            query: createRecord,
             variables: { input: todo },
           });
+          this.SetLead(l.data.createRecord);
+        } catch (error) {
+          console.log("error crear usuario");
+          console.log(error);
         }
-      } catch (error) {
-        console.log("error update telefono");
-        console.log(error);
-      }
 
+        try {
+          for (let i = 0; i < this.phones.length; i++) {
+            const PK = this.organizationID;
+            const SK = "PHO#" + this.phones[i].phone;
+            const GSP1PK1 = l.data.createRecord.SK;
+            const GSP1SK1 = SK;
+            const entityType = "PHONENUMBER";
+            const createdAt = new Date().toISOString().substr(0, 10);
+            const updateAt = new Date().toISOString().substr(0, 10);
+            const createdBy = this.usuario;
+            const active = "1";
+            const value = this.phones[i].phone;
+            const type = this.phones[i].p_type;
+            const todo = {
+              PK,
+              SK,
+              GSP1PK1,
+              GSP1SK1,
+              entityType,
+              createdAt,
+              updateAt,
+              createdBy,
+              active,
+              value,
+              type,
+            };
+            console.log(todo);
+            await API.graphql({
+              query: updateRecord,
+              variables: { input: todo },
+            });
+          }
+        } catch (error) {
+          console.log("error crear telefono");
+          console.log(error);
+        }
+      }
       loading.close();
+      this.GetLeads();
     },
 
     close() {
@@ -506,13 +460,7 @@ export default {
     },
 
     async save() {
-      if (this.index > -1) {
-        console.log("edit");
-        await this.updateLeads(this.item);
-      } else {
-        console.log("crear");
-        this.createLeads(this.item);
-      }
+      await this.CULeads(this.item, this.index);
       this.close();
     },
 
