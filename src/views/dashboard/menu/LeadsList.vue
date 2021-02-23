@@ -240,12 +240,15 @@ export default {
         variables: { filter: { GSP1PK1: { eq: item.SK } } },
       });
       this.phones = todos.data.listPhoneNumber;
-
+      console.log(this.phones);
+      
       if (this.phones.length > 0) {
         for (let i = 0; i < this.phones.length; i++) {
           let phone = this.phones[i].value;
           let p_type = this.phones[i].type;
+          let SK = this.phones[i].SK;
           const todo = {
+            sk: SK,
             phone,
             p_type,
           };

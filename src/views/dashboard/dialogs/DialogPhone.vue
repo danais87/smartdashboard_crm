@@ -1,5 +1,21 @@
 <template>
   <div>
+    <v-dialog v-model="dialog_delete" max-width="400">
+      <v-card>
+        <v-card-title class="headline">
+          Are you sure you want to delete this item?
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="dialog_delete = false">
+            Cancel
+          </v-btn>
+          <v-btn color="green darken-1" text @click="deletePhoneItem">
+            Yes
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog v-model="dialog_p" max-width="500px">
       <v-card>
         <v-card-title>
@@ -23,7 +39,7 @@
                   label="Type"
                   item-text="label"
                   item-value="value"
-                  required
+                  disabled
                   dense
                   solo
                   default="Active"
@@ -31,33 +47,13 @@
               </v-col>
               <v-col cols="12" sm="8" md="8">
                 <vue-tel-input
+                  disabled
                   v-model="editedItemLocalPhone.phone"
                   @onInput="onInput"
                   :valid-characters-only="true"
                   :preferredCountries="['us']"
                 >
                 </vue-tel-input>
-                <div v-if="phone.number" style="color: #1976d2">
-                  <span>
-                    Number:
-                    <strong>{{ phone.number }}</strong
-                    >,&nbsp;
-                  </span>
-                  <span>
-                    Country:
-                    <strong>{{ phone.country }}</strong>
-                  </span>
-                  <span v-if="phone.valid == true" style="color: #4caf50">
-                    Is valid:
-                    <strong>{{ phone.valid }}</strong
-                    >,&nbsp;
-                  </span>
-                  <span v-else-if="phone.valid == false" style="color: #ff5252">
-                    Is valid:
-                    <strong>{{ phone.valid }}</strong
-                    >,&nbsp;
-                  </span>
-                </div>
               </v-col>
             </v-row>
           </v-container>
@@ -92,32 +88,10 @@
           <v-col cols="12" sm="6" md="6">
             <vue-tel-input
               v-model="telephone"
-              @onInput="onInput"
               :valid-characters-only="true"
               :preferredCountries="['us']"
             >
             </vue-tel-input>
-            <div v-if="phone.number" style="color: #1976d2">
-              <span>
-                Number:
-                <strong>{{ phone.number }}</strong
-                >,&nbsp;
-              </span>
-              <span>
-                Country:
-                <strong>{{ phone.country }}</strong>
-              </span>
-              <span v-if="phone.valid == true" style="color: #4caf50">
-                Is valid:
-                <strong>{{ phone.valid }}</strong
-                >,&nbsp;
-              </span>
-              <span v-else-if="phone.valid == false" style="color: #ff5252">
-                Is valid:
-                <strong>{{ phone.valid }}</strong
-                >,&nbsp;
-              </span>
-            </div>
           </v-col>
           <v-btn
             class="ma-2"
@@ -158,7 +132,8 @@
 
 <script>
 import Vuex from "vuex";
-
+import { deletePhoneNumber } from "../../../graphql/mutations";
+import { API } from "aws-amplify";
 export default {
   name: "Home",
   components: {},
@@ -166,6 +141,7 @@ export default {
   data() {
     return {
       show: false,
+      dialog_delete: false,
       p_type: "Work",
       telephone: "",
       country: "",
@@ -202,10 +178,12 @@ export default {
       ],
       editedIndexPhone: -1,
       editedItemLocalPhone: {
+        sk: "",
         phone: "",
         p_type: "Work",
       },
       defaultItemPhone: {
+        sk: "",
         phone: "",
         p_type: "Work",
       },
@@ -213,7 +191,7 @@ export default {
   },
 
   computed: {
-    ...Vuex.mapState(["company", "leads", "listphone"]),
+    ...Vuex.mapState(["company", "leads", "listphone", "organizationID"]),
   },
 
   created() {
@@ -232,7 +210,6 @@ export default {
 
     handleClick(value) {
       this.editItem_p(value);
-      console.log(value);
     },
 
     onInput({ number, valid, country }) {
@@ -244,7 +221,7 @@ export default {
     },
 
     async addPhone() {
-      console.log( this.telephone );
+      console.log(this.telephone);
       const phone = this.telephone;
       const p_type = this.p_type;
       if (!phone || !p_type) return alert("error en datos phone");
@@ -267,16 +244,34 @@ export default {
       this.editedIndexPhone = this.listphone.indexOf(item);
       this.editedItemLocalPhone = Object.assign({}, item);
       this.dialog_p = true;
+      console.log(this.editedItemLocalPhone);
     },
 
     deleteItem_p() {
+      this.dialog_delete = true;
+    },
+
+    async deletePhoneItem() {
       const lis = [];
       this.SetPhone(lis);
+      if (this.editedItemLocalPhone.sk) {
+        const PK = this.organizationID;
+        const SK = this.editedItemLocalPhone.sk;
+        const todo = {
+          PK,
+          SK,
+        };
+        const a = await API.graphql({
+          query: deletePhoneNumber,
+          variables: { input: todo },
+        });
+        console.log(a);
+      }
       const index = this.editedIndexPhone;
-      confirm("Are you sure you want to delete this item?") &&
-        this.list_phonelocal.splice(index, 1);
+      this.list_phonelocal.splice(index, 1);
       this.close_p();
-      this.SetPhone(this.list_phonelocal);
+      await this.SetPhone(this.list_phonelocal);
+      this.dialog_delete = false;
     },
 
     async saves_p() {

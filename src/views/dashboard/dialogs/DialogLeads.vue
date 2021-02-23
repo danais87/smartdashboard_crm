@@ -172,10 +172,9 @@ import { API } from "aws-amplify";
 import Vuex from "vuex";
 import {
   createRecord,
-  updateRecord,
-  deletePhoneNumber,
+  updateRecord, 
 } from "../../../graphql/mutations";
-import { listPhoneNumber, listSmartDash } from "../../../graphql/queries";
+import {   listSmartDash } from "../../../graphql/queries";
 import DialogEmail from "../dialogs/DialogEmail";
 import DialogPhone from "../dialogs/DialogPhone";
 import DialogAddress from "../dialogs/DialogAddress";
@@ -193,6 +192,7 @@ export default {
   },
   data() {
     return {
+      phones_n:[],
       apiRequest: false,
       showPhone: true,
       showEmail: true,
@@ -337,39 +337,7 @@ export default {
       this.SetLead(l.data.createRecord);
 
       try {
-        for (let i = 0; i < phones.length; i++) {
-          const PK = this.organizationID;
-          const id = uuid.v1();
-          const SK = "PHO#" + phones[i].phone;
-          const GSP1PK1 = l.data.createRecord.SK;
-          const GSP1SK1 = "PHO#" + phones[i].phone;
-          const entityType = "PHONENUMBER";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const value = phones[i].phone;
-          const type = phones[i].p_type;
-          const todo = {
-            PK,
-            id,
-            SK,
-            GSP1PK1,
-            GSP1SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            value,
-            type,
-          };
-          console.log(todo);
-          await API.graphql({
-            query: createRecord,
-            variables: { input: todo },
-          });
-        }
+        await this.createPhone(phones,l.data.createRecord.SK);
       } catch (error) {
         console.log("error crear telefono");
         console.log(error);
@@ -377,6 +345,38 @@ export default {
 
       this.GetLeads();
       loading.close();
+    },
+
+    async createPhone(phones,id) {
+      console.log(id);
+      console.log(this.organizationID);
+      for (let i = 0; i < phones.length; i++) {
+        const PK = this.organizationID;
+        const SK = "PHO#" + phones[i].phone;
+        const entityType = "PHONENUMBER";
+        const createdAt = new Date().toISOString().substr(0, 10);
+        const updateAt = new Date().toISOString().substr(0, 10);
+        const createdBy = this.usuario;
+        const active = "1";
+        const value = phones[i].phone;
+        const type = phones[i].p_type;
+        const todo = {
+          PK,
+          SK,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          value,
+          type,
+        };
+        console.log(todo);
+        await API.graphql({
+          query: createRecord,
+          variables: { input: todo },
+        });
+      }
     },
 
     async updateLeads(item) {
@@ -389,9 +389,10 @@ export default {
       });
 
       this.ser_var = [];
-      this.phones = [];
-      const phones_n = this.listphone;
-      console.log(phones_n);
+      this.phones_n = [];
+
+      this.phones_n = this.listphone;
+      console.log(this.phones_n);
       var names = [];
       var l = "";
       names.push({
@@ -399,8 +400,6 @@ export default {
         lastName: item.last_name,
         fullName: item.name + " " + item.last_name,
       });
-
-      console.log(this.listemails);
 
       var list_e = "";
       for (let i = 0; i < this.listemails.length; i++) {
@@ -460,30 +459,10 @@ export default {
         console.log("error update contact");
         console.log(error);
       }
-
-      const all_details = await API.graphql({
-        query: listPhoneNumber,
-        variables: { filter: { GSP1PK1: { eq: item.SK } } },
-      });
-      this.phones = all_details.data.listPhoneNumber;
       try {
-        if (this.phones.length > 0) {
-          for (let i = 0; i < this.phones.length; i++) {
-            const PK = this.phones[i].PK;
-            const SK = this.phones[i].SK;
-            const todo = {
-              PK,
-              SK,
-            };
-            await API.graphql({
-              query: deletePhoneNumber,
-              variables: { input: todo },
-            });
-          }
-        }
-        for (let i = 0; i < phones_n.length; i++) {
+        for (let i = 0; i < this.phones_n.length; i++) {
           const PK = this.organizationID;
-          const SK = "PHO#" + phones_n[i].phone;
+          const SK = "PHO#" + this.phones_n[i].phone;
           const GSP1PK1 = item.SK;
           const GSP1SK1 = SK;
           const entityType = "PHONENUMBER";
@@ -491,8 +470,8 @@ export default {
           const updateAt = new Date().toISOString().substr(0, 10);
           const createdBy = this.usuario;
           const active = "1";
-          const value = phones_n[i].phone;
-          const type = phones_n[i].p_type;
+          const value = this.phones_n[i].phone;
+          const type = this.phones_n[i].p_type;
           const todo = {
             PK,
             SK,
@@ -508,7 +487,7 @@ export default {
           };
           console.log(todo);
           await API.graphql({
-            query: createRecord,
+            query: updateRecord,
             variables: { input: todo },
           });
         }
