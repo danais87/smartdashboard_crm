@@ -455,13 +455,11 @@ export default {
           query: updateRecord,
           variables: { input: todo },
         });
+        await this.SetLead(l.data.updateRecord);
       } catch (error) {
-        console.log("error crear contact");
+        console.log("error update contact");
         console.log(error);
       }
-
-      console.log(l.data.updateRecord);
-      this.SetLead(l.data.updateRecord);
 
       const all_details = await API.graphql({
         query: listPhoneNumber,
@@ -485,10 +483,9 @@ export default {
         }
         for (let i = 0; i < phones_n.length; i++) {
           const PK = this.organizationID;
-          const id = uuid.v1();
           const SK = "PHO#" + phones_n[i].phone;
           const GSP1PK1 = item.SK;
-          const GSP1SK1 = "PHO#" + phones_n[i].phone;
+          const GSP1SK1 = SK;
           const entityType = "PHONENUMBER";
           const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
@@ -498,7 +495,6 @@ export default {
           const type = phones_n[i].p_type;
           const todo = {
             PK,
-            id,
             SK,
             GSP1PK1,
             GSP1SK1,
@@ -510,13 +506,14 @@ export default {
             value,
             type,
           };
-          const p = await API.graphql({
+          console.log(todo);
+          await API.graphql({
             query: createRecord,
             variables: { input: todo },
           });
         }
       } catch (error) {
-        console.log("error crear telefono");
+        console.log("error update telefono");
         console.log(error);
       }
 
