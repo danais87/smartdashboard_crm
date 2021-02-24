@@ -34,7 +34,6 @@
                   v-model="editedItemLocalEmail.email"
                   label="Email"
                   :rules="emailRules"
-                  autofocus
                   prepend-icon="mdi-email"
                 ></v-text-field>
               </v-col>

@@ -30,6 +30,12 @@ export default new Router({
       component: () => import( /* webpackChunkName: "forgotPassword" */ '@/views/dashboard/auth/forgotPassword.vue')
     },
     {
+      name: "Payment",
+      path: '/payments',
+      component: () => import('@/views/dashboard/component/Payment')
+    },
+
+    {
       path: '/index',
       component: () => import('@/views/dashboard/Index'),
       children: [
@@ -110,14 +116,19 @@ export default new Router({
           component: () => import('@/views/dashboard/menu/InvoiceList'),
         },
         {
-          name: "Payment",
-          path: '/payment',
-          component: () => import('@/views/dashboard/component/Payment')
+          name: 'Payments',
+          path: '/menu/payments',
+          component: () => import('@/views/dashboard/menu/PaymentsList'),
         },
         {
           name: "Payment Installments",
           path: '/paymentinstallments',
           component: () => import('@/views/dashboard/component/PaymentInstallments')
+        },
+        {
+          name: "Payment",
+          path: '/menu/menu/payment',
+          component: () => import('@/views/dashboard/component/Payment')
         },
 
         {
@@ -135,11 +146,7 @@ export default new Router({
           path: '/quotes',
           component: () => import('@/views/dashboard/menu/QuoteList'),
         },
-        {
-          name: 'Payments',
-          path: '/menu/payments',
-          component: () => import('@/views/dashboard/menu/PaymentsList'),
-        },
+
         {
           name: 'Task Monitor',
           path: '/menu/task',
@@ -147,6 +154,7 @@ export default new Router({
         },
 
       ],
+
     }
   ],
 })

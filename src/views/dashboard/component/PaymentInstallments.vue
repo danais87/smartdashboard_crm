@@ -552,7 +552,7 @@ export default {
         .render("#paypal_sdk");
     },
 
-    async invokeLambda(item) {
+    async invokeLambda() {
       var AWS = require("aws-sdk");
 
       const todos = await API.graphql({

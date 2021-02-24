@@ -20,11 +20,11 @@
           </v-row>
           <v-divider></v-divider>
           <el-row>
-            <el-col :span="24"
+            <el-col :span="24" autofocus
               ><div class="grid-content bg-purple-dark">
                 <br />
                 <el-col cols="12" :md="12" :sm="12">
-                  <h4 style="font-size: 20px">Quote #: {{ item.smName }}</h4>
+                  <h4  style="font-size: 20px">Quote #: {{ item.smName }}</h4>
                 </el-col>
                 <el-col cols="12" :md="12" :sm="12">
                   <h4 style="font-size: 20px">
@@ -340,7 +340,7 @@ export default {
     };
   },
   mounted() {},
-  
+
   async created() {
     console.log(this.id);
     await this.ConfirmQuote(this.id);
@@ -366,7 +366,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: "QUO#" + id_quote,
+              eq: id_quote,
             },
             indexs: {
               eq: "2",

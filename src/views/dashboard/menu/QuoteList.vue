@@ -1610,7 +1610,7 @@ export default {
       this.$router.push({
         path: "/payment",
         query: {
-          id: item.id,
+          id: item.SK,
           orgid: this.organizationID,
         },
       });
