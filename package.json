@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@aws-amplify/ui-vue": "^0.3.0",
+    "@paypal/checkout-server-sdk": "^1.0.2",
     "aws-amplify": "^3.3.16",
     "aws-sdk": "^2.835.0",
     "chart.js": "^2.9.4",

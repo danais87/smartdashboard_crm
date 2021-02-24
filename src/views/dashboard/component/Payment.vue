@@ -23,22 +23,35 @@
             <el-col :span="24"
               ><div class="grid-content bg-purple-dark">
                 <br />
-                <h4 style="font-size: 20px" align="center">
-                  <i class="el-icon-lock" aria-hidden="true"></i> &nbsp; Secure
-                  Checkout
-                </h4>
-                <br /></div
+                <el-col cols="12" :md="12" :sm="12">
+                  <h4 style="font-size: 20px">Quote #: {{ item.smName }}</h4>
+                </el-col>
+                <el-col cols="12" :md="12" :sm="12">
+                  <h4 style="font-size: 20px">
+                    <i class="el-icon-lock" aria-hidden="true"></i> &nbsp;
+                    Secure Checkout
+                  </h4>
+                </el-col>
+                <br /><br /></div
             ></el-col>
           </el-row>
+          <br />
           <v-row>
-            <v-col cols="12" sm="12" md="12"
+            <v-col cols="12" sm="6" md="6"
               ><div class="grid-content bg-purple-dark">
-                <h5>
-                  <span>
-                    <i class="fa fa-user text-primary" aria-hidden="true"></i
-                    >Order Summary
-                  </span>
-                </h5>
+                <v-row class="pa-md-4 mx-lg-auto">
+                  <v-col cols="12" sm="6" md="6">
+                    <h4>
+                      <span>
+                        <i
+                          class="fa fa-user text-primary"
+                          aria-hidden="true"
+                        ></i
+                        >Client: {{ item.customerName }}
+                      </span>
+                    </h4>
+                  </v-col>
+                </v-row>
                 <v-divider></v-divider>
                 <div v-for="el in q_services" :key="el.id">
                   <v-row class="pa-md-4 mx-lg-auto">
@@ -63,6 +76,51 @@
                     </p>
                   </v-col>
                 </v-row>
+
+                <div
+                  style="
+                    margin-top: 20px;
+                    border-radius: 15px;
+                    background-color: #fefedc;
+                  "
+                >
+                  <h5 style="padding-left: 15px">
+                    <span>
+                      <i
+                        class="fas fa-dollar-sign text-primary"
+                        aria-hidden="true"
+                      ></i>
+                      Installment Schedule</span
+                    >
+                  </h5>
+                  <v-divider></v-divider>
+                  <v-row class="pa-md-4 mx-lg-auto">
+                    <v-col cols="12" sm="6" md="6">
+                      <h4>Installment Date</h4>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="6">
+                      <p align="right" color="primary">Amount</p>
+                    </v-col>
+                  </v-row>
+                  <v-divider></v-divider>
+                  <div v-for="inst in installments" :key="inst.id">
+                    <v-row class="pa-md-4 mx-lg-auto">
+                      <v-col cols="12" sm="6" md="6">
+                        <h4>{{ inst.startDate }}</h4>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="6">
+                        <p align="right" color="primary">
+                          {{ formattedCurrencyValue(inst.amount) }}
+                        </p>
+                      </v-col>
+                    </v-row>
+                    <v-divider></v-divider>
+                  </div>
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="12" sm="6" md="6">
+              <div class="grid-content bg-purple-dark">
                 <v-row class="pa-md-4 mx-lg-auto">
                   <v-col cols="12" sm="8" md="8"
                     ><strong class="primary--text text--lighten-1"
@@ -113,55 +171,16 @@
                     </template>
                   </v-checkbox>
                 </div>
-                <div
-                  style="
-                    margin-top: 20px;
-                    border-radius: 15px;
-                    background-color: #fefedc;
-                  "
-                >
-                  <h5 style="padding-left: 15px">
-                    <span>
-                      <i
-                        class="fas fa-dollar-sign text-primary"
-                        aria-hidden="true"
-                      ></i>
-                      Installment Schedule</span
-                    >
-                  </h5>
-                  <v-divider></v-divider>
-                  <v-row class="pa-md-4 mx-lg-auto">
-                    <v-col cols="12" sm="6" md="6">
-                      <h4>Installment Date</h4>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="6">
-                      <p align="right" color="primary">Amount</p>
-                    </v-col>
-                  </v-row>
-                  <v-divider></v-divider>
-                  <div v-for="inst in installments" :key="inst.id">
-                    <v-row class="pa-md-4 mx-lg-auto">
-                      <v-col cols="12" sm="6" md="6">
-                        <h4>{{ inst.startDate }}</h4>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="6">
-                        <p align="right" color="primary">
-                          {{ formattedCurrencyValue(inst.amount) }}
-                        </p>
-                      </v-col>
-                    </v-row>
-                    <v-divider></v-divider>
-                  </div>
-                </div>
+
+                <v-col>
+                  <div id="paypal-button-container" style="width: 20%"></div>
+                </v-col>
               </div>
             </v-col>
           </v-row>
         </v-list-item-content>
       </v-list-item>
     </v-card>
-    <v-col align="center">
-      <div ref="paypal" style="width: 20%"></div>
-    </v-col>
   </v-container>
 </template>
 
@@ -318,22 +337,13 @@ export default {
       phones: [],
       installments: [],
       selectedEmails: [],
-      product: {
-        price: 100,
-        description: "dsadasdas",
-      },
     };
   },
-  mounted() {
-    const script = document.createElement("script");
-    script.src =
-      "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
-    script.addEventListener("load", this.setLoaded);
-    document.body.appendChild(script);
-  },
-  created() {
+  mounted() {},
+  
+  async created() {
     console.log(this.id);
-    this.ConfirmQuote(this.id);
+    await this.ConfirmQuote(this.id);
   },
   computed: {
     ...Vuex.mapState(["response", "usuario", "bodyquote"]),
@@ -436,6 +446,12 @@ export default {
       this.total_disc = quotes[0].finalAmount;
 
       this.SetBodyQuote(datas);
+
+      const script = document.createElement("script");
+      script.src =
+        "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
+      script.addEventListener("load", this.setLoaded);
+      document.body.appendChild(script);
     },
 
     formattedCurrencyValue(value) {
@@ -522,7 +538,7 @@ export default {
             console.log(this.error);
           },
         })
-        .render(this.$refs.paypal);
+        .render("#paypal-button-container");
     },
 
     async createInvoice() {
@@ -669,7 +685,6 @@ export default {
           const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
           const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
-          const isPaid = "N";
           inst = {
             PK,
             SK,
@@ -677,7 +692,6 @@ export default {
             GSP3SK1,
             GSP4PK1,
             GSP4SK1,
-            isPaid,
           };
           await API.graphql({
             query: updateRecord,

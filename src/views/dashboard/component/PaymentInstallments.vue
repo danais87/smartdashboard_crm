@@ -26,15 +26,20 @@
             <el-col :span="24"
               ><div class="grid-content bg-purple-dark">
                 <br />
-                <h4 style="font-size: 20px" align="center">
-                  <i class="el-icon-lock" aria-hidden="true"></i> &nbsp; Secure
-                  Checkout
-                </h4>
-                <br /></div
+                <el-col cols="12" :md="12" :sm="12">
+                  <h4 style="font-size: 20px">Quote #: {{ item.smName }}</h4>
+                </el-col>
+                <el-col cols="12" :md="12" :sm="12">
+                  <h4 style="font-size: 20px">
+                    <i class="el-icon-lock" aria-hidden="true"></i> &nbsp;
+                    Secure Checkout
+                  </h4>
+                </el-col>
+                <br /><br /></div
             ></el-col>
           </el-row>
           <v-row>
-            <v-col cols="12" sm="12" md="12"
+            <v-col cols="12" sm="6" md="6"
               ><div class="grid-content bg-purple-dark">
                 <v-row class="pa-md-4 mx-lg-auto">
                   <v-col cols="12" sm="6" md="6">
@@ -44,7 +49,7 @@
                           class="fa fa-user text-primary"
                           aria-hidden="true"
                         ></i
-                        >BizPlanEasy Services-Quote #: {{ item.smName }}
+                        >Client: {{ item.customerName }}
                       </span>
                     </h4>
                   </v-col>
@@ -84,56 +89,7 @@
                   </v-col>
                 </v-row>
                 <v-divider></v-divider>
-                <v-row class="pa-md-4 mx-lg-auto">
-                  <v-col cols="12" sm="8" md="8"
-                    ><strong class="primary--text text--lighten-1"
-                      >Amount to pay today:</strong
-                    >
-                  </v-col>
-                  <v-col cols="12" sm="4" md="4">
-                    <strong
-                      ><h4 align="right">
-                        {{ formattedCurrencyValue(inst.payment) }}
-                      </h4></strong
-                    ></v-col
-                  >
-                </v-row>
-                <div id="agree_text" style="font-size: 14px; padding: 10px">
-                  <v-checkbox v-model="checkbox">
-                    <template v-slot:label>
-                      <div>
-                        <strong>By clicking, you agree to </strong>
-                        <v-tooltip bottom>
-                          <template v-slot:activator="{ on }">
-                            <a
-                              target="_blank"
-                              href="privacy_policy.php"
-                              @click.stop
-                              v-on="on"
-                            >
-                              BizPlanEasy Privacy Policy
-                            </a>
-                          </template>
-                          Opens in new window
-                        </v-tooltip>
-                        &
-                        <v-tooltip bottom>
-                          <template v-slot:activator="{ on }">
-                            <a
-                              target="_blank"
-                              href="terms.php"
-                              @click.stop
-                              v-on="on"
-                            >
-                              Terms of Service
-                            </a>
-                          </template>
-                          Opens in new window
-                        </v-tooltip>
-                      </div>
-                    </template>
-                  </v-checkbox>
-                </div>
+
                 <div
                   style="
                     margin-top: 20px;
@@ -188,13 +144,67 @@
                 </div>
               </div>
             </v-col>
+            <v-col cols="12" sm="6" md="6">
+              <div class="grid-content bg-purple-dark">
+                <v-row class="pa-md-4 mx-lg-auto">
+                  <v-col cols="12" sm="8" md="8"
+                    ><strong class="primary--text text--lighten-1"
+                      >Amount to pay today:</strong
+                    >
+                  </v-col>
+                  <v-col cols="12" sm="4" md="4">
+                    <strong
+                      ><h4 align="right">
+                        {{ formattedCurrencyValue(inst.payment) }}
+                      </h4></strong
+                    ></v-col
+                  >
+                </v-row>
+                <div id="agree_text" style="font-size: 14px; padding: 10px">
+                  <v-checkbox v-model="checkbox">
+                    <template v-slot:label>
+                      <div>
+                        <strong>By clicking, you agree to </strong>
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on }">
+                            <a
+                              target="_blank"
+                              href="privacy_policy.php"
+                              @click.stop
+                              v-on="on"
+                            >
+                              BizPlanEasy Privacy Policy
+                            </a>
+                          </template>
+                          Opens in new window
+                        </v-tooltip>
+                        &
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on }">
+                            <a
+                              target="_blank"
+                              href="terms.php"
+                              @click.stop
+                              v-on="on"
+                            >
+                              Terms of Service
+                            </a>
+                          </template>
+                          Opens in new window
+                        </v-tooltip>
+                      </div>
+                    </template>
+                  </v-checkbox>
+                </div>
+                <v-col>
+                  <div id="paypal_sdk" style="width: 20%"></div>
+                </v-col>
+              </div>
+            </v-col>
           </v-row>
         </v-list-item-content>
       </v-list-item>
     </v-card>
-    <v-col align="center">
-      <div ref="paypal" style="width: 20%"></div>
-    </v-col>
   </v-container>
 </template>
 
@@ -355,16 +365,9 @@ export default {
       },
     };
   },
-  mounted() {
-    const script = document.createElement("script");
-    script.src =
-      "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
-    script.addEventListener("load", this.setLoaded);
-    document.body.appendChild(script);
-  },
-  created() {
-    console.log(this.inst);
-    this.ConfirmQuote(this.inst);
+  mounted() {},
+  async created() {
+    await this.ConfirmQuote(this.inst);
   },
   computed: {
     ...Vuex.mapState(["response", "usuario", "bodyquote", "organizationID"]),
@@ -372,8 +375,8 @@ export default {
   methods: {
     ...Vuex.mapMutations(["SetResponse", "SetBodyQuote"]),
 
-    async ConfirmQuote(quote) {
-      console.log(quote);
+    async ConfirmQuote(quoteID) {
+      console.log(quoteID);
       const seq = await API.graphql({
         query: listQuotes,
         variables: {
@@ -382,7 +385,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: quote.quoteID,
+              eq: quoteID,
             },
             indexs: {
               eq: "2",
@@ -471,6 +474,13 @@ export default {
         quotes[0].finalAmount - this.p_inst - quotes[0].downPayment;
 
       this.SetBodyQuote(datas);
+
+      const script = document.createElement("script");
+      script.src =
+        "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
+      script.addEventListener("load", this.setLoaded);
+      document.body.appendChild(script);
+
     },
 
     formattedCurrencyValue(value) {
@@ -535,7 +545,7 @@ export default {
             console.log(this.error);
           },
         })
-        .render(this.$refs.paypal);
+        .render("#paypal_sdk");
     },
 
     async invokeLambda(item) {

@@ -494,11 +494,11 @@ export default {
     },
 
     OpenPayment(item) {
-      console.log(item);
+      console.log(item.quoteID);
       this.$router.push({
         path: "/paymentinstallments",
         query: {
-          inst: item,
+          inst: item.quoteID,
         },
       });
     },
