@@ -34,7 +34,11 @@ export default new Router({
       path: '/payments',
       component: () => import('@/views/dashboard/component/Payment')
     },
-
+    {
+      name: "Payment Installments",
+      path: '/paymentinstallments',
+      component: () => import('@/views/dashboard/component/PaymentInstallments')
+    },
     {
       path: '/index',
       component: () => import('@/views/dashboard/Index'),
@@ -122,7 +126,7 @@ export default new Router({
         },
         {
           name: "Payment Installments",
-          path: '/paymentinstallments',
+          path: '/menu/menu/paymentinstallments',
           component: () => import('@/views/dashboard/component/PaymentInstallments')
         },
         {

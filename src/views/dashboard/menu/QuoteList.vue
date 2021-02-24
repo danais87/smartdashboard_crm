@@ -1608,7 +1608,7 @@ export default {
 
     OpenPayment(item) {
       this.$router.push({
-        path: "/payment",
+        path: "menu/payment",
         query: {
           id: item.SK,
           orgid: this.organizationID,

@@ -496,7 +496,7 @@ export default {
     OpenPayment(item) {
       console.log(item.quoteID);
       this.$router.push({
-        path: "/paymentinstallments",
+        path: "menu/paymentinstallments",
         query: {
           inst: item.instSK,
           quote:item.quoteID
