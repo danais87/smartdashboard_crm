@@ -241,8 +241,6 @@ export default {
 
   created() {
     this.GetAccounts();
-    // this.GetCatalogs();
-    console.log(this.item);
   },
 
   watch: {},
@@ -308,35 +306,41 @@ export default {
         const l_smName = JSON.stringify(names[0]);
         const l_email = list_e.slice(0, -1);
         const l_smAddress = list_a.slice(0, -1);
+        const SK = item.SK;
         const todo = {
           PK,
+          id,
           SK,
+          GSP1PK1,
+          GSP1SK1,
           GSP4PK1,
           GSP4SK1,
+          entityType,
+          createdAt,
           updateAt,
+          createdBy,
+          active,
           l_smName,
+          leadStatus,
           account,
           l_email,
           l_smAddress,
           seekingService,
           adquisition,
-          leadStatus,
           notes,
           businessType,
           jobTitle,
           levelAuthority,
           numberEmployee,
         };
-        try {
-          l = await API.graphql({
-            query: updateRecord,
-            variables: { input: todo },
-          });
-          await this.SetLead(l.data.updateRecord);
-        } catch (error) {
-          console.log("error update contact");
-          console.log(error);
-        }
+        console.log(todo);
+
+        l = await API.graphql({
+          query: updateRecord,
+          variables: { input: todo },
+        });
+        await this.SetLead(l.data.updateRecord);
+
         try {
           for (let i = 0; i < this.phones.length; i++) {
             const PK = this.organizationID;
@@ -363,7 +367,7 @@ export default {
               value,
               type,
             };
-            console.log(todo);
+
             await API.graphql({
               query: updateRecord,
               variables: { input: todo },
@@ -454,7 +458,6 @@ export default {
     },
 
     close() {
-      console.log("entra");
       this.GetLeads();
       this.show = false;
     },
