@@ -649,6 +649,7 @@ export default {
     },
 
     async invokeLambda() {
+      
       var AWS = require("aws-sdk");
 
       const todos = await API.graphql({

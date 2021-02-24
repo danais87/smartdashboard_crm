@@ -410,7 +410,7 @@ export default new Vuex.Store({
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 style='mso-cellspacing:1.5pt;margin-left:22.5pt;mso-yfti-tbllook:1184; mso-padding-alt:0in 0in 0in 0in'>" +
         "<tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>" +
         "<td style='background:#4DB24C;padding:7.5pt 11.25pt 7.5pt 11.25pt;border-radius: 5px'>" +
-        "<p class=MsoNormal align=center style='margin-bottom:7.5pt;text-align:center'><a href='https://master.ddqrxn9rg7lbw.amplifyapp.com/payments?id=" + urlencode(item.SK) + '&orgid=' + item.PK + "'><span style='font-size:13.5pt;font-family:'Arial',sans-serif;color:white;letter-spacing:.75pt;text-decoration:none;text-underline:none'>Confirm Order </span></a></p>" +
+        "<p class=MsoNormal align=center style='margin-bottom:7.5pt;text-align:center'><a href='https://master.ddqrxn9rg7lbw.amplifyapp.com/payments?id=" + encodeURIComponent(item.SK) + '&orgid=' + encodeURIComponent(item.PK) + "'><span style='font-size:13.5pt;font-family:'Arial',sans-serif;color:white;letter-spacing:.75pt;text-decoration:none;text-underline:none'>Confirm Order </span></a></p>" +
         "</td></tr>" +
         "</table>" +
         "</body></canvas></html>";
@@ -804,7 +804,7 @@ export default new Vuex.Store({
         "<table class=MsoNormalTable border=0 cellspacing=3 cellpadding=0 style='mso-cellspacing:1.5pt;margin-left:22.5pt;mso-yfti-tbllook:1184; mso-padding-alt:0in 0in 0in 0in'>" +
         "<tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes'>" +
         "<td style='background:#4DB24C;padding:7.5pt 11.25pt 7.5pt 11.25pt;border-radius: 5px'>" +
-        "<p class=MsoNormal align=center style='margin-bottom:7.5pt;text-align:center'><a href='https://master.ddqrxn9rg7lbw.amplifyapp.com/paymentinstallments?id=" + urlencode(item.SK) + '&orgid=' + item.PK + "'><span style='font-size:13.5pt;font-family:'Arial',sans-serif;color:white;letter-spacing:.75pt;text-decoration:none;text-underline:none'>Confirm Order </span></a></p>" +
+        "<p class=MsoNormal align=center style='margin-bottom:7.5pt;text-align:center'><a href='https://master.ddqrxn9rg7lbw.amplifyapp.com/paymentinstallments?inst=" + encodeURIComponent(p_item.instSK) + '&quote=' + encodeURIComponent(item.SK) + "'><span style='font-size:13.5pt;font-family:'Arial',sans-serif;color:white;letter-spacing:.75pt;text-decoration:none;text-underline:none'>Confirm Order </span></a></p>" +
         "</td></tr>" +
         "</table>" +
         "</body></canvas></html>";
