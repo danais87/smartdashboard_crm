@@ -155,7 +155,7 @@
                   <v-col cols="12" sm="4" md="4">
                     <strong
                       ><h4 align="right">
-                        {{ formattedCurrencyValue(inst.payment) }}
+                        {{ formattedCurrencyValue(install.amount) }}
                       </h4></strong
                     ></v-col
                   >
@@ -228,6 +228,7 @@ export default {
       paidFor: false,
       error: "",
       inst: this.$route.query.inst,
+      quoteID: this.$route.query.quote,
       item: {},
       show: false,
       p_inst: 0,
@@ -359,6 +360,7 @@ export default {
       q_services: [],
       editedItemLeads: [],
       selectedEmails: [],
+      install: [],
       product: {
         price: 100,
         description: "dsadasdas",
@@ -367,7 +369,9 @@ export default {
   },
   mounted() {},
   async created() {
-    await this.ConfirmQuote(this.inst);
+    await this.ConfirmQuote(this.inst, this.quoteID);
+    console.log(this.quoteID);
+    console.log(this.inst);
   },
   computed: {
     ...Vuex.mapState(["response", "usuario", "bodyquote", "organizationID"]),
@@ -375,8 +379,7 @@ export default {
   methods: {
     ...Vuex.mapMutations(["SetResponse", "SetBodyQuote"]),
 
-    async ConfirmQuote(quoteID) {
-      console.log(quoteID);
+    async ConfirmQuote(instID, quoteID) {
       const seq = await API.graphql({
         query: listQuotes,
         variables: {
@@ -404,7 +407,6 @@ export default {
       }
 
       var quotes = [];
-      var leads = [];
       var installments = [];
       var services = [];
 
@@ -427,12 +429,15 @@ export default {
       for (let j = 0; j < services.length; j++) {
         this.q_services.push(services[j]);
       }
-      console.log(this.q_services);
-      if (this.item.isInstallment == "true") {
-        for (let k = 0; k < installments.length; k++) {
-          this.installments.push(installments[k]);
+
+      for (let k = 0; k < installments.length; k++) {
+        if ((installments[k].SK == instID)) {
+          this.install = installments[k];
         }
+        this.installments.push(installments[k]);
       }
+
+      console.log(this.install);
 
       const l = await API.graphql({
         query: listCustomers,
@@ -480,7 +485,6 @@ export default {
         "https://www.paypal.com/sdk/js?client-id=AQ0B-cxEGdNi2dOEqb9vks-J91RWIsabXcVecRoKeRBjnwA3a-zgq39Y2ZtRoSzK1g7lICLOIC6EuzAb";
       script.addEventListener("load", this.setLoaded);
       document.body.appendChild(script);
-
     },
 
     formattedCurrencyValue(value) {
@@ -505,11 +509,11 @@ export default {
             allowed: [window.paypal.FUNDING.CARD],
           },
           createOrder: (data, actions) => {
-            console.log(this.inst);
+
             const final_amount = this.formattedCurrencyValue(
               this.item.finalAmount
             );
-            const payment = this.formattedCurrencyValue(this.inst.payment);
+            const payment = this.formattedCurrencyValue(this.install.amount);
             const balance = this.formattedCurrencyValue(this.balance);
 
             return actions.order.create({
@@ -527,7 +531,7 @@ export default {
                     ")",
                   amount: {
                     currency_code: "USD",
-                    value: this.inst.payment,
+                    value: this.install.amount,
                   },
                 },
               ],
@@ -611,7 +615,7 @@ export default {
         };
         var pullResults = null;
         const instPK = this.organizationID;
-        const instSK = this.inst.instSK;
+        const instSK = this.install.SK;
         await lambda.invoke(pullParams, async function (error, data) {
           if (error) {
             prompt(error);

@@ -498,7 +498,8 @@ export default {
       this.$router.push({
         path: "/paymentinstallments",
         query: {
-          inst: item.quoteID,
+          inst: item.instSK,
+          quote:item.quoteID
         },
       });
     },
