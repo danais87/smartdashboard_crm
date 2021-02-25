@@ -184,26 +184,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog_deleteMarketing" max-width="400">
-      <v-card>
-        <v-card-title class="headline">
-          Are you sure you want to delete this item?
-        </v-card-title>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog_deleteMarketing = false"
-          >
-            Cancel
-          </v-btn>
-          <v-btn color="green darken-1" text @click="deleteItemInvest()">
-            Yes
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+
     <v-dialog v-model="dialog_conf_delete" persistent max-width="400">
       <v-card>
         <v-card-title class="headline">
@@ -221,111 +202,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-data-table
-      :headers="headers_invest"
-      :items="investment"
-      sort-by="description"
-      class="elevation-1"
-      :search="search_invest"
-      :items-per-page="5"
-    >
-      <template v-slot:top>
-        <v-toolbar flat color="white">
-          <v-toolbar-title>Marketing Investment</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-text-field
-            v-model="search_invest"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog_invest" max-width="900px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                class="ma-2"
-                outlined
-                x-small
-                fab
-                color="indigo"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>mdi-plus</v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="headline">Marketing Investment</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="4" md="4">
-                      <v-text-field
-                        v-model="editedItemInvest.description"
-                        label="Campaing Name"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="2" md="2">
-                      <v-text-field
-                        v-model="editedItemInvest.price"
-                        label="Amount"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="3" md="3">
-                      <v-text-field
-                        v-model="editedItemInvest.startDate"
-                        label="Date(YYYY-MM-DD)"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="4" sm="3" md="3">
-                      <v-select
-                        v-model="editedItemInvest.productType"
-                        :items="serviceTypes"
-                        label="Product Type"
-                        item-text="name"
-                        item-value="id"
-                        outlined
-                      ></v-select>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeInvest"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="saveInvest"
-                  >Save</v-btn
-                >
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <el-button
-          type="primary"
-          icon="el-icon-edit"
-          circle
-          size="mini"
-          @click="editItemInvestment(item)"
-        ></el-button>
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          circle
-          size="mini"
-          @click="deleteItemMarketing(item)"
-        ></el-button>
-      </template>
-    </v-data-table>
-    <br />
+ 
     <v-data-table
       :headers="headers_team"
       :items="teams"

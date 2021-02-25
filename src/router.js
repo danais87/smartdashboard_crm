@@ -105,6 +105,11 @@ export default new Router({
           component: () => import('@/views/dashboard/menu/SettingList'),
         },
         {
+          name: 'Campaings',
+          path: '/menu/campaings',
+          component: () => import('@/views/dashboard/menu/CampaingsList'),
+        },
+        {
           name: 'Products',
           path: '/menu/products',
           component: () => import('@/views/dashboard/menu/ServiceList'),

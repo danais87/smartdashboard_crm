@@ -780,6 +780,7 @@ export default {
       }
       console.log(data_inv);
       console.log(data_invo);
+
       this.invochartdata = {
         labels: labels_inv,
         datasets: [
@@ -789,7 +790,7 @@ export default {
             data: data_inv,
           },
           {
-            label: "Sales",
+            label: "SALES",
             backgroundColor:"rgba(255, 159, 64, 0.2)",
             data: data_invo,
           },
@@ -830,7 +831,7 @@ export default {
       this.campchartdata = {
         labels: [
           "CAMPAIGNS(" + this.formattedValue(total_camaping) + ")",
-           "Sales(" + this.formattedValue(this.total_i) + ")"
+           "SALES(" + this.formattedValue(this.total_i) + ")"
         ],
         datasets: [
           {

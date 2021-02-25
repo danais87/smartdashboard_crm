@@ -75,10 +75,15 @@ export default {
       },
       {
         icon: "mdi-information-outline",
+        title: "camp",
+        to: "/menu/campaings",
+      },
+      {
+        icon: "mdi-information-outline",
         title: "se",
         to: "/menu/setting",
       },
- 
+
       /* {
         title: "rtables",
         icon: "mdi-clipboard-outline",

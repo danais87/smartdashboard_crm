@@ -48,5 +48,6 @@
   "quo":"Sales",
   "invo":"Invoices",
   "pay": "Payments",
-  "task": "Task Monitor"
+  "task": "Task Monitor",
+  "camp":"Campaings"
 }
