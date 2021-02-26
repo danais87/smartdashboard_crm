@@ -10,7 +10,7 @@ import {
   listCustomers,
   listProducts,
   listQuotes,
-  listInvestment
+  listCampaings
 } from "../src/graphql/queries";
 
 Vue.use(Vuex)
@@ -1169,7 +1169,7 @@ export default new Vuex.Store({
       commit
     }) {
       const todos = await API.graphql({
-        query: listInvestment,
+        query: listCampaings,
         variables: {
           filter: {
             PK: {
@@ -1187,7 +1187,7 @@ export default new Vuex.Store({
           },
         },
       });
-      const items = todos.data.listInvestment;
+      const items = todos.data.listCampaings;
       commit('SetInvestment', items);
     },
     async GetListServices({

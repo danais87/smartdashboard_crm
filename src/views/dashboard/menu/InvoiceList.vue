@@ -410,16 +410,7 @@ export default {
     accounts: [],
     apiRequest: false,
     valid: true,
-    headers_v: [
-      {
-        text: "Start Date",
-        align: "start",
-        sortable: true,
-        value: "startDate",
-      },
-      { text: "Amount", align: "start", sortable: true, value: "amount" },
-      { text: "Actions", value: "actions", sortable: false },
-    ],
+
     headers_i: [
       {
         text: "Start Date",
@@ -449,20 +440,27 @@ export default {
         value: "final_amount",
         align: "right",
       },
+      {
+        text: "Purchase Date",
+        sortable: true,
+        value: "final_amount",
+        align: "right",
+      },
+      {
+        text: "Paid",
+        sortable: true,
+        value: "final_amount",
+        align: "right",
+      },
+      {
+        text: "Balance",
+        sortable: true,
+        value: "final_amount",
+        align: "right",
+      },
       { text: "Actions", value: "actions", sortable: false },
     ],
-    sheaders: [
-      { text: "Name", align: "start", sortable: true, value: "name" },
 
-      { text: "Price", align: "right", sortable: true, value: "price" },
-      { text: "Type", sortable: true, value: "type_name", align: "start" },
-      {
-        text: "Other Type",
-        sortable: true,
-        value: "other_type",
-        align: "start",
-      },
-    ],
     item_editquote: [],
     editedIndex: -1,
     editedIndexLead: -1,
@@ -687,12 +685,6 @@ export default {
     },
 
     async getInvoices() {
-      const loading = this.$loading({
-        lock: true,
-        text: "Update Invoices",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
       const todos = await API.graphql({
         query: listQuotes,
         variables: {
@@ -719,7 +711,6 @@ export default {
         },
       });
       this.invoices = todos.data.listQuotes;
-      loading.close();
     },
 
     async editItem(item) {

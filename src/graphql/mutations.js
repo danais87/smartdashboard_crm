@@ -20,30 +20,40 @@ export const createRecord = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -55,44 +65,44 @@ export const createRecord = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -115,30 +125,40 @@ export const updateRecord = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -150,44 +170,44 @@ export const updateRecord = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -212,6 +232,8 @@ export const deletePhoneNumber = /* GraphQL */ `
       createdBy
       value
       type
+      l_emails
+      customerName
     }
   }
 `;
@@ -240,6 +262,7 @@ export const deleteInstallments = /* GraphQL */ `
       isPaid
       reference
       method
+      customerName
       payDate
       scale
     }

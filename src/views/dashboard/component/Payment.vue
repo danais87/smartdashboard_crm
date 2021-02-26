@@ -550,7 +550,7 @@ export default {
       });
 
       const seq = await API.graphql({
-        query: listQuotes,
+        query: listInvoices,
         variables: {
           filter: {
             PK: {
@@ -576,13 +576,16 @@ export default {
       const paymentStatus = "GS";
       const orderNumber = "INV#" + c;
       const processStatus = "Invoice";
-
+      const payDate = new Date().toISOString().substr(0, 10);
+      const updateAt = new Date().toISOString().substr(0, 10);
       const todo = {
         PK,
         SK,
         paymentStatus,
         orderNumber,
         processStatus,
+        payDate,
+        updateAt
       };
 
       const invo = await API.graphql({
@@ -614,6 +617,7 @@ export default {
       var datas = quote.data.listQuotes;
       var installments = [];
       var services = [];
+
       for (let i = 0; i < datas.length; i++) {
         if (datas[i].entityType == "INSTALLMENT") {
           installments.push(datas[i]);
@@ -633,6 +637,7 @@ export default {
         const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
         const taskStatus = "In Progress";
         const taskStart = new Date().toISOString().substr(0, 10);
+        const updateAt = new Date().toISOString().substr(0, 10);
         const todo = {
           PK,
           SK,
@@ -645,6 +650,7 @@ export default {
           paymentStatus,
           orderNumber,
           processStatus,
+          updateAt
         };
         await API.graphql({
           query: updateRecord,
@@ -664,6 +670,7 @@ export default {
           const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
           const isPaid = "Y";
           const payDate = new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
           inst = {
             PK,
             SK,
@@ -673,6 +680,7 @@ export default {
             GSP4SK1,
             isPaid,
             payDate,
+            updateAt
           };
           await API.graphql({
             query: updateRecord,
@@ -685,6 +693,7 @@ export default {
           const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
           const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
           inst = {
             PK,
             SK,
@@ -692,6 +701,7 @@ export default {
             GSP3SK1,
             GSP4PK1,
             GSP4SK1,
+            updateAt
           };
           await API.graphql({
             query: updateRecord,

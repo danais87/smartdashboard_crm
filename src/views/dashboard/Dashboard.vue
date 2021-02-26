@@ -177,7 +177,7 @@ import { API } from "aws-amplify";
 import {
   listCustomers,
   listInstallments,
-  listInvestment,
+  listCampaings,
   listQuoteItems,
   listQuotes,
 } from "../../graphql/queries";
@@ -705,7 +705,7 @@ export default {
       };
 
       const invest = await API.graphql({
-        query: listInvestment,
+        query: listCampaings,
         variables: {
           filter: {
             PK: {
@@ -731,8 +731,9 @@ export default {
       });
       console.log(invest);
 
-      var inv = invest.data.listInvestment;
+      var inv = invest.data.listCampaings;
       var total_camaping = 0;
+      
       for (let i = 0; i < inv.length; i++) {
         total_camaping += inv[i].price;
       }
@@ -791,7 +792,7 @@ export default {
           },
           {
             label: "SALES",
-            backgroundColor:"rgba(255, 159, 64, 0.2)",
+            backgroundColor: "rgba(255, 159, 64, 0.2)",
             data: data_invo,
           },
         ],
@@ -831,20 +832,17 @@ export default {
       this.campchartdata = {
         labels: [
           "CAMPAIGNS(" + this.formattedValue(total_camaping) + ")",
-           "SALES(" + this.formattedValue(this.total_i) + ")"
+          "SALES(" + this.formattedValue(this.total_i) + ")",
         ],
         datasets: [
           {
             borderWidth: 1,
-            borderColor: [
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)",
-            ],
+            borderColor: ["rgba(153, 102, 255, 1)", "rgba(255, 159, 64, 1)"],
             backgroundColor: [
               "rgba(153, 102, 255, 0.2)",
               "rgba(255, 159, 64, 0.2)",
             ],
-            data: [ total_camaping,this.total_i,],
+            data: [total_camaping, this.total_i],
           },
         ],
       };

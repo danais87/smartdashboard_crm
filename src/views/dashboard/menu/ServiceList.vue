@@ -128,6 +128,24 @@
                             label="Other Type"
                           ></v-text-field>
                         </v-col>
+                        <v-col cols="4" sm="2" md="2">
+                          <v-text-field
+                            v-model="editedItem.estimatedHours"
+                            label="Estimated Hours"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="4" sm="5" md="5">
+                          <v-text-field
+                            v-model="editedItem.publicLink"
+                            label="Public Link"
+                          ></v-text-field>
+                        </v-col>
+                        <v-col cols="4" sm="5" md="5">
+                          <v-text-field
+                            v-model="editedItem.internalLink"
+                            label="Internal Link"
+                          ></v-text-field>
+                        </v-col>
                         <v-col class="d-flex" cols="4" sm="2" md="2">
                           <v-select
                             v-model="editedItem.isRecurrent"
@@ -366,6 +384,9 @@ export default {
       isVariant: "N",
       otherType: "",
       l_variant: [],
+      estimatedHours: "",
+      publicLink: "",
+      internalLink: "",
     },
     defaultItem: {
       smName: "",
@@ -376,6 +397,9 @@ export default {
       isVariant: "N",
       otherType: "",
       l_variant: [],
+      estimatedHours: "",
+      publicLink: "",
+      internalLink: "",
     },
     editedItem_v: {
       id: "",
@@ -477,6 +501,9 @@ export default {
       const isRecurrent = item.isRecurrent;
       const isVariant = item.isVariant;
       const l_variant = JSON.stringify(this.variants);
+      const estimatedHours = item.estimatedHours;
+      const publicLink = item.publicLink;
+      const internalLink = item.internalLink;
 
       if (!smName || !description || !price) {
         this.alert = false;
@@ -501,6 +528,9 @@ export default {
           SK,
           id,
           l_variant,
+          estimatedHours,
+          publicLink,
+          internalLink,
         };
         const serv = await API.graphql({
           query: createRecord,
@@ -542,6 +572,10 @@ export default {
       const isRecurrent = item.isRecurrent;
       const isVariant = item.isVariant;
       const l_variant = l_team.slice(0, -1);
+      const estimatedHours = item.estimatedHours;
+      const publicLink = item.publicLink;
+      const internalLink = item.internalLink;
+
       if (!smName || !description || !price) {
         this.alert = false;
         this.openMS();
@@ -558,6 +592,9 @@ export default {
           isRecurrent,
           isVariant,
           l_variant,
+          estimatedHours,
+          publicLink,
+          internalLink,
         };
         const prod = await API.graphql({
           query: updateRecord,

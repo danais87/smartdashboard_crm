@@ -109,7 +109,7 @@ export const listCustomers = /* GraphQL */ `
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
       businessType
@@ -143,7 +143,7 @@ export const getCustomer = /* GraphQL */ `
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
       businessType
@@ -184,6 +184,9 @@ export const listProducts = /* GraphQL */ `
       isRecurrent
       isVariant
       l_variant
+      estimatedHours
+      publicLink
+      internalLink
     }
   }
 `;
@@ -214,6 +217,9 @@ export const getProduct = /* GraphQL */ `
       isRecurrent
       isVariant
       l_variant
+      estimatedHours
+      publicLink
+      internalLink
     }
   }
 `;
@@ -236,30 +242,40 @@ export const listQuotes = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -271,44 +287,44 @@ export const listQuotes = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -331,30 +347,40 @@ export const getQuote = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -366,44 +392,44 @@ export const getQuote = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -430,30 +456,40 @@ export const listQuoteItems = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -465,44 +501,44 @@ export const listQuoteItems = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -535,11 +571,10 @@ export const getQuoteItem = /* GraphQL */ `
       variantName
       variantPrice
       internalComments
-      taskStatus
-      taskStart
-      taskEnd
-      taskNameresp
       customerName
+      estimatedHours
+      publicLink
+      internalLink
     }
   }
 `;
@@ -566,30 +601,40 @@ export const listInstallments = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -601,44 +646,44 @@ export const listInstallments = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -667,6 +712,7 @@ export const getInstallment = /* GraphQL */ `
       isPaid
       reference
       method
+      customerName
       payDate
       scale
     }
@@ -801,6 +847,8 @@ export const listPhoneNumber = /* GraphQL */ `
       createdBy
       value
       type
+      l_emails
+      customerName
     }
   }
 `;
@@ -825,6 +873,8 @@ export const getPhoneNumber = /* GraphQL */ `
       createdBy
       value
       type
+      l_emails
+      customerName
     }
   }
 `;
@@ -851,30 +901,40 @@ export const listSmartDash = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -886,44 +946,44 @@ export const listSmartDash = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
-      l_businessType
-      jobTitle
-      levelAuthority
-      numberEmployee
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;
@@ -977,13 +1037,13 @@ export const getAccounts = /* GraphQL */ `
     }
   }
 `;
-export const listInvestment = /* GraphQL */ `
-  query ListInvestment(
+export const listCampaings = /* GraphQL */ `
+  query ListCampaings(
     $filter: TableFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listInvestment(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listCampaings(filter: $filter, limit: $limit, nextToken: $nextToken) {
       GSP1PK1
       GSP1SK1
       GSP2PK1
@@ -1000,30 +1060,40 @@ export const listInvestment = /* GraphQL */ `
       updateAt
       active
       createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
       l_smName
       l_email
       l_smAddress
       leadStatus
       seekingService
-      adquisition
+      acquisition
       account
       notes
-      smName
-      smAddress
-      l_productType
-      l_acquisition
-      l_taskStatusType
-      l_paymentMethod
-      l_discount
-      l_team
-      l_leadsStatus
-      l_quoteLibrary
-      l_quoteStatus
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
       l_variant
-      funcRegion
-      funcIdentityPoolId
-      funcName
-      funcSource
+      estimatedHours
+      publicLink
+      internalLink
       subject
       introduction
       conclusion
@@ -1035,44 +1105,149 @@ export const listInvestment = /* GraphQL */ `
       isInstallment
       downPayment
       numInstallments
-      disccountAmount
-      l_disccount
+      discountAmount
+      l_discount
+      l_installments
       quotationAmount
       finalAmount
-      paymentStatus
-      orderNumber
       processStatus
-      description
-      price
-      productType
-      otherType
-      isRecurrent
-      isVariant
-      variants
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
       variantName
       variantPrice
       taskStatus
       taskStart
       taskEnd
-      taskNameResponsible
+      taskResponsible
       startDate
-      amount
       isPaid
       reference
       method
-      payDate
-      value
-      type
-      live
-      revisitDate
-      customerID
-      customerName
-      businessType
+      scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
       l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
+    }
+  }
+`;
+export const listTask = /* GraphQL */ `
+  query ListTask($filter: TableFilterInput, $limit: Int, $nextToken: String) {
+    listTask(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      GSP1PK1
+      GSP1SK1
+      GSP2PK1
+      GSP2SK1
+      GSP3PK1
+      GSP3SK1
+      GSP4PK1
+      GSP4SK1
+      PK
+      SK
+      id
+      entityType
+      createdAt
+      updateAt
+      active
+      createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
+      l_smName
+      l_email
+      l_smAddress
+      leadStatus
+      seekingService
+      acquisition
+      account
+      notes
+      businessType
       jobTitle
       levelAuthority
       numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
+      l_variant
+      estimatedHours
+      publicLink
+      internalLink
+      subject
+      introduction
+      conclusion
+      internalComments
+      emailSent
+      sentDate
+      sentBy
+      isDiscount
+      isInstallment
+      downPayment
+      numInstallments
+      discountAmount
+      l_discount
+      l_installments
+      quotationAmount
+      finalAmount
+      processStatus
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
+      variantName
+      variantPrice
+      taskStatus
+      taskStart
+      taskEnd
+      taskResponsible
+      startDate
+      isPaid
+      reference
+      method
       scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;

@@ -202,7 +202,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
- 
+
     <v-data-table
       :headers="headers_team"
       :items="teams"
@@ -1480,8 +1480,6 @@
 import { API } from "aws-amplify";
 import { createRecord, updateRecord } from "../../../graphql/mutations";
 import {
-  listAccounts,
-  listInvestment,
   listSmartDash,
 } from "../../../graphql/queries";
 import Vuex from "vuex";

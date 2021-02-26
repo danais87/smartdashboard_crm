@@ -83,10 +83,10 @@ export default {
         value: "account",
       },
       {
-        text: "Adquisition",
+        text: "Acquisition",
         align: "start",
         sortable: true,
-        value: "adquisition",
+        value: "acquisition",
       },
       { text: "CreatedAt", align: "start", sortable: true, value: "createdAt" },
     ],
@@ -109,7 +109,7 @@ export default {
       account: " ",
       leadStatus: "No Status",
       seekingService: "Y",
-      adquisition: " ",
+      acquisition: " ",
       notes: " ",
       businessType: " ",
       jobTitle: " ",
@@ -137,7 +137,7 @@ export default {
       account: " ",
       leadStatus: "No Status",
       seekingService: "Y",
-      adquisition: " ",
+      acquisition: " ",
       notes: " ",
       businessType: " ",
       jobTitle: " ",
@@ -241,7 +241,7 @@ export default {
       });
       this.phones = todos.data.listPhoneNumber;
       console.log(this.phones);
-      
+
       if (this.phones.length > 0) {
         for (let i = 0; i < this.phones.length; i++) {
           let phone = this.phones[i].value;

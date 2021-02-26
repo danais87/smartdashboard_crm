@@ -999,7 +999,7 @@ export default {
       {
         text: "From",
         sortable: true,
-        value: "adquisition",
+        value: "acquisition",
         align: "right",
       },
       { text: "Actions", value: "actions", sortable: false },

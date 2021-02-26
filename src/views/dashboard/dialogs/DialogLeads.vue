@@ -148,7 +148,7 @@
                   </v-col>
                   <v-col class="d-flex" cols="12" sm="3" md="3">
                     <v-select
-                      v-model="item.adquisition"
+                      v-model="item.acquisition"
                       :items="acquisitions"
                       label="Acquisition"
                       item-text="description"
@@ -282,7 +282,7 @@ export default {
       const l_email = JSON.stringify(this.listemails);
       const l_smAddress = JSON.stringify(this.listaddress);
       const seekingService = item.seekingService;
-      const adquisition = item.adquisition;
+      const acquisition = item.acquisition;
       const leadStatus = item.leadStatus;
       const notes = item.notes;
       const businessType = item.businessType;
@@ -326,7 +326,7 @@ export default {
           l_email,
           l_smAddress,
           seekingService,
-          adquisition,
+          acquisition,
           notes,
           businessType,
           jobTitle,
@@ -398,7 +398,7 @@ export default {
           l_email,
           l_smAddress,
           seekingService,
-          adquisition,
+          acquisition,
           notes,
           businessType,
           jobTitle,
