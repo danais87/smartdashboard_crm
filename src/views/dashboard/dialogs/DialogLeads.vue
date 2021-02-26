@@ -307,14 +307,12 @@ export default {
         const l_email = list_e.slice(0, -1);
         const l_smAddress = list_a.slice(0, -1);
         const SK = item.SK;
+        const PK = this.organizationID;
+        const id = item.id;
         const todo = {
           PK,
           id,
           SK,
-          GSP1PK1,
-          GSP1SK1,
-          GSP4PK1,
-          GSP4SK1,
           entityType,
           createdAt,
           updateAt,

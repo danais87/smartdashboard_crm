@@ -2063,7 +2063,7 @@ export default {
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
-      const live = ite.live;
+      const live = item.live;
       const purchased = "Y";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
