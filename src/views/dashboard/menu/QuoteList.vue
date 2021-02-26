@@ -303,6 +303,24 @@
                                 label="Other Type"
                               ></v-text-field>
                             </v-col>
+                            <v-col cols="4" sm="2" md="2">
+                              <v-text-field
+                                v-model="editedServiceItem.estimatedHours"
+                                label="Estimated Hours"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="4" sm="5" md="5">
+                              <v-text-field
+                                v-model="editedServiceItem.publicLink"
+                                label="Public Link"
+                              ></v-text-field>
+                            </v-col>
+                            <v-col cols="4" sm="5" md="5">
+                              <v-text-field
+                                v-model="editedServiceItem.internalLink"
+                                label="Internal Link"
+                              ></v-text-field>
+                            </v-col>
                             <v-col cols="12" sm="12" md="12">
                               <v-textarea
                                 outlined
@@ -317,6 +335,7 @@
                       <v-card-actions> </v-card-actions>
                     </v-card>
                   </v-dialog>
+
                   <v-col v-for="item in q_services" :key="item.variant.id">
                     <v-card outlined elevation="1">
                       <br />
@@ -336,8 +355,8 @@
                       <v-card-text
                         ><b>Description: </b>{{ item.service.description }}
                         <v-spacer></v-spacer>
-                        <b>Recurrent: </b>
-                        {{ item.service.isRecurrent }}
+                        <b>Product Type: </b>
+                        {{ item.service.productType }}
                         <v-spacer></v-spacer>
                         <b>Internal Comments: </b
                         >{{ item.service.internalComments }}
@@ -1195,6 +1214,9 @@ export default {
       other_type: "",
       variants: [],
       internalComments: "",
+      estimatedHours: "",
+      publicLink: "",
+      internalLink: "",
     },
     values_services: [],
     defaulServicetItem: {
@@ -1211,6 +1233,9 @@ export default {
       other_type: "",
       variants: [],
       internalComments: "",
+      estimatedHours: "",
+      publicLink: "",
+      internalLink: "",
     },
     editedItem_v: {
       id: "",
@@ -1732,7 +1757,7 @@ export default {
           const todo = {
             phone,
             p_type,
-            sk
+            sk,
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -2038,7 +2063,8 @@ export default {
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
-      const live = "Y";
+      const live = ite.live;
+      const purchased = "Y";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
 
@@ -2072,6 +2098,7 @@ export default {
         isInstallment,
         processStatus,
         live,
+        purchased,
         downPayment,
         numInstallments,
       };
@@ -2118,6 +2145,9 @@ export default {
         const internalComments = this.q_services[i].service.internalComments;
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+        const estimatedHours = this.q_services[i].service.estimatedHours;
+        const publicLink = this.q_services[i].service.publicLink;
+        const internalLink = this.q_services[i].service.internalLink;
 
         const t = {
           PK,
@@ -2143,6 +2173,9 @@ export default {
           isVariant,
           internalComments,
           customerName,
+          estimatedHours,
+          publicLink,
+          internalLink,
         };
         await API.graphql({
           query: createRecord,
@@ -2266,6 +2299,7 @@ export default {
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = item.live;
+      const purchased = "Y";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       todo = {
@@ -2287,6 +2321,7 @@ export default {
         isInstallment,
         processStatus,
         live,
+        purchased,
         downPayment,
         numInstallments,
       };
@@ -2375,7 +2410,9 @@ export default {
         const internalComments = this.q_services[i].service.internalComments;
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
+        const estimatedHours = this.q_services[i].service.estimatedHours;
+        const publicLink = this.q_services[i].service.publicLink;
+        const internalLink = this.q_services[i].service.internalLink;
         const t = {
           PK,
           SK,
@@ -2400,6 +2437,9 @@ export default {
           isVariant,
           internalComments,
           customerName,
+          estimatedHours,
+          publicLink,
+          internalLink
         };
         await API.graphql({
           query: createRecord,
@@ -2533,9 +2573,13 @@ export default {
         const isRecurrent = item.isRecurrent;
         const isVariant = item.isVariant;
         const internalComments = item.internalComments;
+        const estimatedHours = item.internalComments;
+        const publicLink = item.internalComments;
+        const internalLink = item.internalComments;
         const l_variant = l_team.slice(0, -1);
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+
         if (!smName || !description || !price) {
           this.alert = false;
           this.openMS();
@@ -2554,6 +2598,9 @@ export default {
             internalComments,
             l_variant,
             customerName,
+            estimatedHours,
+            publicLink,
+            internalLink,
           };
           const prod = await API.graphql({
             query: updateRecord,
@@ -2888,7 +2935,7 @@ export default {
           const todo = {
             phone,
             p_type,
-            sk
+            sk,
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -2973,7 +3020,7 @@ export default {
     },
 
     openDialog() {
-       this.editedItemLeads = Object.assign({}, this.defaultItemLeads);
+      this.editedItemLeads = Object.assign({}, this.defaultItemLeads);
       this.editedItemLeads.name = "";
       this.editedItemLeads.last_name = "";
       const lead = [];
