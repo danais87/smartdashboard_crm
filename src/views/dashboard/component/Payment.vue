@@ -608,9 +608,9 @@ export default {
       const internalComments = this.item.internalComments;
       const isDiscount = this.item.isDiscount;
       const isInstallment = this.item.isInstallment;
-      const downPayment = this.downPayment;
-      const numInstallments = this.numInstallments;
-      const discountAmount = this.discountAmount;
+      const downPayment = this.item.downPayment;
+      const numInstallments = this.item.numInstallments;
+      const discountAmount = this.item.discountAmount;
       const l_discount = this.item.l_discount;
       const quotationAmount = this.item.quotationAmount;
       const finalAmount = this.item.finalAmount;
@@ -618,8 +618,7 @@ export default {
       const quoteID = this.item.SK;
       const balance = this.item.finalAmount - this.item.downPayment;
       const paidAmount = this.item.downPayment;
-      const customerName =
-        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+      const customerName = this.item.customerName;
 
       const todo = {
         PK,
@@ -660,6 +659,7 @@ export default {
         variables: { input: todo },
       });
       console.log(invo);
+
       // UPDATE QUOTE
        PK = this.item.PK;
        SK = this.item.SK;
@@ -671,10 +671,11 @@ export default {
          GSP4PK,
          GSP4SK
        }
-      const invo = await API.graphql({
+      await API.graphql({
         query: updateRecord,
         variables: { input: quote },
       });
+
       //CREATE TASK
       console.log(this.q_services);
       for (let i = 0; i < this.q_services.length; i++) {
@@ -792,7 +793,7 @@ export default {
           const GSP2PK1 = this.item.SK;
           const GSP2SK1 = SK;
           const GSP3PK1 = this.organizationID + "#INS";
-          const GSP3SK1 = "STATUS#Y";
+          const GSP3SK1 = "STATUS#N";
           const GSP4PK1 = this.organizationID;
           const GSP4SK1 = "INS#" + this.installments[i].startDate;
           const entityType = "INSTALLMENT";
