@@ -81,7 +81,7 @@ export default {
       "SetOrganizationID",
       "SetRole",
     ]),
-    ...Vuex.mapActions(["GetCatalogs"]),
+    ...Vuex.mapActions(["GetCatalogs","GetListServices"]),
 
     async isUserSignedIn() {
       try {
@@ -105,7 +105,7 @@ export default {
           this.SetOrganizationID(user.attributes["custom:organizationID"]);
           this.SetRole(user.signInUserSession.accessToken["payload"]["cognito:groups"]);
           this.GetCatalogs();
-
+          this.GetListServices();
           this.$router.push({
             path: "/index",
             query: {

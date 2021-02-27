@@ -823,12 +823,15 @@
 
 
 <script>
-import { API, Auth } from "aws-amplify";
-import { createRecord, updateRecord } from "../../../graphql/mutations";
+import { API } from "aws-amplify";
+import {
+  createRecord,
+  deleteInstallments,
+  updateRecord,
+} from "../../../graphql/mutations";
 import {
   listQuotes,
   getOrganization,
-  listAccounts,
   listProducts,
   listPhoneNumber,
   listCustomers,
@@ -838,6 +841,9 @@ import {
 import DialogLeads from "../dialogs/DialogLeads";
 import DialogLibrary from "../dialogs/DialogLibrary";
 import Vuex from "vuex";
+
+import { uuid } from "vue-uuid";
+import "element-ui/lib/theme-chalk/display.css";
 
 export default {
   name: "Quote",
@@ -1104,6 +1110,9 @@ export default {
       other_type: "",
       variants: [],
       internalComments: "",
+      estimatedHours: 0,
+      publicLink: "",
+      internalLink: "",
     },
     values_services: [],
     defaulServicetItem: {
@@ -1120,6 +1129,9 @@ export default {
       other_type: "",
       variants: [],
       internalComments: "",
+      estimatedHours: 0,
+      publicLink: "",
+      internalLink: "",
     },
     editedItem_c_v: {
       id: "",
@@ -1274,6 +1286,7 @@ export default {
 
   methods: {
     ...Vuex.mapActions(["GetLeads_Seek", "GetListServices"]),
+
     ...Vuex.mapMutations([
       "SetPhone",
       "SetEmails",
@@ -1283,10 +1296,12 @@ export default {
       "SetConclusion",
       "SetLeads_Seek",
     ]),
+
     handleClick(value) {
       this.editItem(value);
       console.log(value);
     },
+
     async focusFilter(e) {
       await this.GetLeads_Seek(this.customer);
       this.GetSelectLeads();
@@ -1356,7 +1371,7 @@ export default {
         },
       });
 
-     var d = todos.data.listQuotes;
+      var d = todos.data.listQuotes;
       console.log(this.quotes_datac);
 
       for (let i = 0; i < d.length; i++) {
@@ -1582,7 +1597,7 @@ export default {
           const todo = {
             phone,
             p_type,
-            sk
+            sk,
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -1887,15 +1902,38 @@ export default {
         numInstallments = this.number;
       }
 
-      const disccountAmount = this.discount_amount;
+      const discountAmount = this.discount_amount;
       const l_discount = JSON.stringify(this.l_discount);
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
-      const live = "Y";
+      const live = item.live;
+      const purchased = "Y";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
+      var insta = [];
+      if (this.is_installment != false) {
+        let inst = "";
+        for (let i = 0; i < this.installments.length; i++) {
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
+          const isPaid = "N";
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+          inst = {
+            startDate,
+            amount,
+            type,
+            isPaid,
+            customerName,
+            scale,
+          };
+          insta.push(inst);
+        }
+      }
+      const l_installments = JSON.stringify(insta);
       const todo = {
         PK,
         id,
@@ -1920,12 +1958,14 @@ export default {
         introduction,
         isDiscount,
         l_discount,
-        disccountAmount,
+        l_installments,
+        discountAmount,
         quotationAmount,
         finalAmount,
         isInstallment,
         processStatus,
         live,
+        purchased,
         downPayment,
         numInstallments,
       };
@@ -1972,7 +2012,9 @@ export default {
         const internalComments = this.q_services[i].service.internalComments;
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
+        const estimatedHours = this.q_services[i].service.estimatedHours;
+        const publicLink = this.q_services[i].service.publicLink;
+        const internalLink = this.q_services[i].service.internalLink;
         const t = {
           PK,
           SK,
@@ -1997,64 +2039,14 @@ export default {
           isVariant,
           internalComments,
           customerName,
+          estimatedHours,
+          publicLink,
+          internalLink,
         };
         await API.graphql({
           query: createRecord,
           variables: { input: t },
         });
-      }
-
-      if (this.installments != null) {
-        let inst = "";
-        for (let i = 0; i < this.installments.length; i++) {
-          const id = uuid.v1();
-          const SK = "INS#" + id;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = SK;
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
-          const entityType = "INSTALLMENT";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const startDate = this.installments[i].startDate;
-          const amount = this.installments[i].amount;
-          const type = this.installments[i].type;
-          const scale = this.installments[i].scale;
-          const isPaid = "N";
-          const customerName =
-            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
-          inst = {
-            PK,
-            SK,
-            id,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            GSP4PK1,
-            GSP4SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            startDate,
-            amount,
-            type,
-            isPaid,
-            customerName,
-            scale,
-          };
-          await API.graphql({
-            query: createRecord,
-            variables: { input: inst },
-          });
-        }
       }
 
       this.name = "";
@@ -2108,12 +2100,20 @@ export default {
       for (let i = 0; i < this.l_discount.length; i++) {
         list_e += JSON.stringify(this.l_discount[i]) + ",";
       }
-      const disccountAmount = this.discount_amount;
+
+      var list_int = "";
+      for (let i = 0; i < this.installments.length; i++) {
+        list_int += JSON.stringify(this.installments[i]) + ",";
+      }
+
+      const discountAmount = this.discount_amount;
       const l_discount = list_e.slice(0, -1);
+      const l_installments = list_int.slice(0, -1);
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = item.live;
+      const purchased = "Y";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       todo = {
@@ -2129,12 +2129,14 @@ export default {
         introduction,
         isDiscount,
         l_discount,
-        disccountAmount,
+        l_installments,
+        discountAmount,
         quotationAmount,
         finalAmount,
         isInstallment,
         processStatus,
         live,
+        purchased,
         downPayment,
         numInstallments,
       };
@@ -2224,7 +2226,9 @@ export default {
         const internalComments = this.q_services[i].service.internalComments;
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
+        const estimatedHours = this.q_services[i].service.estimatedHours;
+        const publicLink = this.q_services[i].service.publicLink;
+        const internalLink = this.q_services[i].service.internalLink;
         const t = {
           PK,
           SK,
@@ -2248,103 +2252,15 @@ export default {
           isRecurrent,
           isVariant,
           internalComments,
+          estimatedHours,
+          publicLink,
+          internalLink,
           customerName,
         };
         await API.graphql({
           query: createRecord,
           variables: { input: t },
         });
-      }
-      //update installments
-      if (this.installments != null) {
-        const seq = await API.graphql({
-          query: listQuotes,
-          variables: {
-            filter: {
-              PK: {
-                eq: this.organizationID,
-              },
-              SK: {
-                eq: id_quote,
-              },
-              indexs: {
-                eq: "2",
-              },
-              active: {
-                eq: "1",
-              },
-            },
-          },
-        });
-        var datas = seq.data.listQuotes;
-        var ins = [];
-        for (let i = 0; i < datas.length; i++) {
-          if (datas[i].entityType == "INSTALLMENT") {
-            ins.push(datas[i]);
-          }
-        }
-        for (let i = 0; i < ins.length; i++) {
-          const PK = ins[i].PK;
-          const SK = ins[i].SK;
-          const todo = {
-            PK,
-            SK,
-          };
-          await API.graphql({
-            query: deleteInstallments,
-            variables: { input: todo },
-          });
-        }
-        let inst = "";
-        for (let i = 0; i < this.installments.length; i++) {
-          const id = uuid.v1();
-          const SK = "INS#" + id;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = SK;
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
-          const entityType = "INSTALLMENT";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const startDate = this.installments[i].startDate;
-          const amount = this.installments[i].amount;
-          const type = this.installments[i].type;
-          const scale = this.installments[i].scale;
-          const isPaid = "N";
-          const customerName =
-            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
-          inst = {
-            PK,
-            SK,
-            id,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            GSP4PK1,
-            GSP4SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            startDate,
-            amount,
-            isPaid,
-            type,
-            customerName,
-            scale,
-          };
-          await API.graphql({
-            query: createRecord,
-            variables: { input: inst },
-          });
-        }
       }
 
       this.name = "";
@@ -2383,6 +2299,9 @@ export default {
         const isVariant = item.isVariant;
         const internalComments = item.internalComments;
         const l_variant = l_team.slice(0, -1);
+        const estimatedHours = item.estimatedHours;
+        const publicLink = item.publicLink;
+        const internalLink = item.internalLink;
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
         if (!smName || !description || !price) {
@@ -2401,6 +2320,9 @@ export default {
             isRecurrent,
             isVariant,
             internalComments,
+            estimatedHours,
+            publicLink,
+            internalLink,
             l_variant,
             customerName,
           };
@@ -2451,6 +2373,23 @@ export default {
           }
           console.log(this.q_services);
         }
+        this.total = this.total_s;
+        this.payment = this.total;
+        this.number = 1;
+        this.calc = true;
+
+        this.installments = [];
+        const startDate = new Date().toISOString().substr(0, 10);
+        const amount = this.payment;
+        const type = "DPAY";
+        const scale = "1/1";
+        const pay = {
+          startDate,
+          amount,
+          type,
+          scale,
+        };
+        this.installments = [...this.installments, pay];
         this.aply();
       } else {
         console.log("cambair local");
@@ -2639,19 +2578,16 @@ export default {
       var datas = seq.data.listQuotes;
       var quotes = [];
       var leads = [];
-      var installments = [];
       var services = [];
       let vari = [];
       let servi = [];
-      this.editedItemLeads = [];
+      this.editedItemLeads = Object.assign({}, this.defaultItemLeads);
 
       for (let i = 0; i < datas.length; i++) {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-        if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
-        }
+
         if (datas[i].entityType == "QUOTEITEM") {
           services.push(datas[i]);
         }
@@ -2667,10 +2603,26 @@ export default {
         });
       }
 
-      for (let k = 0; k < installments.length; k++) {
+      if (item.isInstallment == "true") {
         this.is_installment = true;
         this.calc = true;
-        this.installments.push(installments[k]);
+        for (let i = 0; i < JSON.parse(item.l_installments).length; i++) {
+          let startDate = JSON.parse(item.l_installments)[i].startDate;
+          let amount = JSON.parse(item.l_installments)[i].amount;
+          let type = JSON.parse(item.l_installments)[i].type;
+          let isPaid = JSON.parse(item.l_installments)[i].isPaid;
+          let customerName = JSON.parse(item.l_installments)[i].customerName;
+          let scale = JSON.parse(item.l_installments)[i].scale;
+          const todo = {
+            startDate,
+            amount,
+            type,
+            isPaid,
+            customerName,
+            scale,
+          };
+          this.installments.push(todo);
+        }
       }
 
       const l = await API.graphql({
@@ -2735,11 +2687,11 @@ export default {
         for (let i = 0; i < this.phones.length; i++) {
           let phone = this.phones[i].value;
           let p_type = this.phones[i].type;
-           let sk = this.phones[i].SK;
+          let sk = this.phones[i].SK;
           const todo = {
             phone,
             p_type,
-            sk
+            sk,
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -2828,13 +2780,9 @@ export default {
     },
 
     async save() {
-      if (this.editedIndex > -1) {
-        console.log("edit");
-        await this.updateQuote(this.editedItem_c);
-      } else {
-        console.log("crear");
-        await this.createQuotes(this.editedItem_c);
-      }
+      console.log("edit");
+      await this.updateQuote(this.editedItem_c);
+
       this.close();
       this.fillData();
     },
@@ -3017,11 +2965,11 @@ export default {
         for (let i = 0; i < this.phones.length; i++) {
           let phone = this.phones[i].value;
           let p_type = this.phones[i].type;
-           let sk = this.phones[i].SK;
+          let sk = this.phones[i].SK;
           const todo = {
             phone,
             p_type,
-            sk
+            sk,
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -3097,7 +3045,7 @@ export default {
           const todo = {
             phone,
             p_type,
-            sk
+            sk,
           };
           this.list_phone = [...this.list_phone, todo];
         }
@@ -3137,11 +3085,13 @@ export default {
       this.sm_verbal = "4";
       this.md_verbal = "4";
     },
+
     getColor(item) {
       if (item == "INST") return "blue";
       else if (item == "DPAY") return "green";
       else return "orange";
     },
+
     remoteMethod(query) {
       if (query !== "") {
         this.loading = true;

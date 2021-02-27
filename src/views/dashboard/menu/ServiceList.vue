@@ -384,7 +384,7 @@ export default {
       isVariant: "N",
       otherType: "",
       l_variant: [],
-      estimatedHours: "",
+      estimatedHours: 0,
       publicLink: "",
       internalLink: "",
     },
@@ -397,7 +397,7 @@ export default {
       isVariant: "N",
       otherType: "",
       l_variant: [],
-      estimatedHours: "",
+      estimatedHours: 0,
       publicLink: "",
       internalLink: "",
     },
@@ -441,15 +441,15 @@ export default {
     },
   },
 
-  created() {
+  async created() {
     const loading = this.$loading({
       lock: true,
       text: "Loading Products",
       spinner: "el-icon-loading",
       background: "rgba(0, 0, 0, 0.7)",
     });
-    this.GetListServices();
-
+    await this.GetListServices();
+    console.log(this.list_services);
     loading.close();
   },
 

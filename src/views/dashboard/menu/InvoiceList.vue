@@ -143,8 +143,8 @@
                       label="Introduction Notes:"
                     ></v-textarea>
                   </v-col>
-                  <v-col v-for="item in q_services" :key="item.variant.id">
-                    <v-card outlined elevation="1">
+                  <v-col v-for="item in q_services" :key="item.variant.id" >
+                    <v-card outlined elevation="1" color="orange">
                       <br />
                       <v-row>
                         <v-col sm="2" md="4">
@@ -159,8 +159,8 @@
                       <v-card-text
                         ><b>Description: </b>{{ item.service.description }}
                         <v-spacer></v-spacer>
-                        <b>Recurrent: </b>
-                        {{ item.service.is_recurrent }}
+                        <b>Product Type: </b>
+                        {{ item.service.productType }}
                         <v-spacer></v-spacer>
                         <b>Internal Comments: </b>{{ item.service.comments }}
                       </v-card-text>
@@ -345,6 +345,7 @@ import {
   listQuotes,
   listPhoneNumber,
   listCustomers,
+  listInvoices,
 } from "../../../graphql/queries";
 
 import DialogLeads from "../dialogs/DialogLeads";
@@ -427,7 +428,7 @@ export default {
       },
     ],
     headers: [
-      { text: "Name", sortable: true, value: "orderNumber", align: "start" },
+      { text: "Name", sortable: true, value: "smName", align: "start" },
       {
         text: "Contact",
         sortable: true,
@@ -443,19 +444,19 @@ export default {
       {
         text: "Purchase Date",
         sortable: true,
-        value: "final_amount",
+        value: "payDate",
         align: "right",
       },
       {
         text: "Paid",
         sortable: true,
-        value: "final_amount",
+        value: "paidAmount",
         align: "right",
       },
       {
         text: "Balance",
         sortable: true,
-        value: "final_amount",
+        value: "balance",
         align: "right",
       },
       { text: "Actions", value: "actions", sortable: false },
@@ -686,14 +687,14 @@ export default {
 
     async getInvoices() {
       const todos = await API.graphql({
-        query: listQuotes,
+        query: listInvoices,
         variables: {
           filter: {
             PK: {
               eq: this.organizationID,
             },
             SK: {
-              eq: "QUO#",
+              eq: "INV#",
             },
             indexs: {
               eq: "4_order",
@@ -702,15 +703,15 @@ export default {
               eq: "1",
             },
             startDate: {
-              eq: "QUO#" + this.startDate,
+              eq: "INV#" + this.startDate,
             },
             endDate: {
-              eq: "QUO#" + this.end_date,
+              eq: "INV#" + this.end_date,
             },
           },
         },
       });
-      this.invoices = todos.data.listQuotes;
+      this.invoices = todos.data.listInvoices;
     },
 
     async editItem(item) {
@@ -721,15 +722,6 @@ export default {
       this.list_address = [];
       console.log(item);
       this.editedItem = item;
-      if (item.processStatus == "Created") {
-        this.editedIndex = this.quotes_created.indexOf(item);
-      }
-      if (item.processStatus == "Negotiations") {
-        this.editedIndex = this.quotes_s.indexOf(item);
-      }
-      if (item.processStatus == "Verbal Agreement") {
-        this.editedIndex = this.quotes_va.indexOf(item);
-      }
 
       this.conclusion = item.conclusion;
       this.number = item.numInstallments;
@@ -743,7 +735,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: item.SK,
+              eq: item.quoteID,
             },
             indexs: {
               eq: "2",
@@ -758,7 +750,7 @@ export default {
       var datas = seq.data.listQuotes;
       var quotes = [];
 
-      var installments = [];
+      var inst = [];
       var services = [];
       let vari = [];
       let servi = [];
@@ -770,14 +762,14 @@ export default {
         }
 
         if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
+          inst.push(datas[i]);
         }
         if (datas[i].entityType == "QUOTEITEM") {
           services.push(datas[i]);
         }
       }
       console.log(services);
-
+      console.log(inst);
       for (let j = 0; j < services.length; j++) {
         vari = [];
         servi = [];
@@ -787,11 +779,13 @@ export default {
           variant: vari,
         });
       }
-      for (let k = 0; k < installments.length; k++) {
+
+      for (let k = 0; k < inst.length; k++) {
         this.is_installment = true;
         this.calc = true;
-        this.installments.push(installments[k]);
+        this.installments.push(inst[k]);
       }
+
 
       const l = await API.graphql({
         query: listCustomers,

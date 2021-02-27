@@ -428,7 +428,7 @@ export default {
         variables: {
            filter: {
             PK: {
-              eq: this.organizationID + "#TASK",
+              eq: this.organizationID + "#TSK",
             },
             SK: {
               eq: "STATUS#",
@@ -456,7 +456,7 @@ export default {
           label: this.task[i].customerName,
           name: this.task[i].smName,
           status: this.task[i].taskStatus,
-          resp: this.task[i].taskNameResponsible,
+          resp: this.task[i].taskResponsible,
           servi_PK: this.task[i].PK,
           servi_SK: this.task[i].SK,
         });
@@ -476,13 +476,13 @@ export default {
       const SK = item.servi_SK;
       const PK = item.servi_PK;
       const taskStatus = item.status;
-      const taskNameResponsible = item.responsible;
+      const taskResponsible = item.responsible;
 
       const lineq = {
         SK,
         PK,
         taskStatus,
-        taskNameResponsible,
+        taskResponsible,
       };
       await API.graphql({
         query: updateRecord,

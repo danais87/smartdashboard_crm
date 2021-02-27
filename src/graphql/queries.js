@@ -328,6 +328,115 @@ export const listQuotes = /* GraphQL */ `
     }
   }
 `;
+export const listInvoices = /* GraphQL */ `
+  query ListInvoices(
+    $filter: TableFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listInvoices(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      GSP1PK1
+      GSP1SK1
+      GSP2PK1
+      GSP2SK1
+      GSP3PK1
+      GSP3SK1
+      GSP4PK1
+      GSP4SK1
+      PK
+      SK
+      id
+      entityType
+      createdAt
+      updateAt
+      active
+      createdBy
+      smName
+      smAddress
+      website
+      productType
+      amount
+      date
+      l_smName
+      l_email
+      l_smAddress
+      leadStatus
+      seekingService
+      acquisition
+      account
+      notes
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
+      description
+      price
+      otherType
+      isRecurrent
+      isVariant
+      l_variant
+      estimatedHours
+      publicLink
+      internalLink
+      subject
+      introduction
+      conclusion
+      internalComments
+      emailSent
+      sentDate
+      sentBy
+      isDiscount
+      isInstallment
+      downPayment
+      numInstallments
+      discountAmount
+      l_discount
+      l_installments
+      quotationAmount
+      finalAmount
+      processStatus
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
+      variantName
+      variantPrice
+      taskStatus
+      taskStart
+      taskEnd
+      taskResponsible
+      startDate
+      isPaid
+      reference
+      method
+      scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
+    }
+  }
+`;
 export const getQuote = /* GraphQL */ `
   query GetQuote($PK: String!, $SK: String!) {
     getQuote(PK: $PK, SK: $SK) {

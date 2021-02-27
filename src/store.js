@@ -1213,6 +1213,7 @@ export default new Vuex.Store({
         },
       });
       const items = todos.data.listProducts;
+      console.log(todos);
       commit('SetListServices', items);
     },
   },

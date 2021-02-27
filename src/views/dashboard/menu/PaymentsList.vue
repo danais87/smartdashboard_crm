@@ -527,7 +527,7 @@ export default {
         variables: {
           filter: {
             PK: {
-              eq: this.organizationID + "#PAY",
+              eq: this.organizationID + "#INS",
             },
             SK: {
               eq: "STATUS#",
@@ -649,7 +649,7 @@ export default {
     },
 
     async invokeLambda() {
-      
+
       var AWS = require("aws-sdk");
 
       const todos = await API.graphql({

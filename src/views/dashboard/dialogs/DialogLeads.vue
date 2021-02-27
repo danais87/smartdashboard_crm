@@ -156,6 +156,14 @@
                       outlined
                     ></v-select>
                   </v-col>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-textarea
+                      outlined
+                      name="notes"
+                      v-model="item.notes"
+                      label="Notes"
+                    ></v-textarea>
+                  </v-col>
                 </v-row>
               </v-container>
             </v-form>

@@ -24,7 +24,7 @@
               ><div class="grid-content bg-purple-dark">
                 <br />
                 <el-col cols="12" :md="12" :sm="12">
-                  <h4  style="font-size: 20px">Quote #: {{ item.smName }}</h4>
+                  <h4 style="font-size: 20px">Quote #: {{ item.smName }}</h4>
                 </el-col>
                 <el-col cols="12" :md="12" :sm="12">
                   <h4 style="font-size: 20px">
@@ -189,10 +189,12 @@ import { API } from "aws-amplify";
 import {
   getOrganization,
   listCustomers,
+  listInvoices,
   listQuotes,
 } from "../../../graphql/queries";
 import Vuex from "vuex";
-import { updateRecord } from "../../../graphql/mutations";
+import { createRecord, updateRecord } from "../../../graphql/mutations";
+import { uuid } from "vue-uuid";
 
 export default {
   name: "Payment",
@@ -395,9 +397,7 @@ export default {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-        if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
-        }
+
         if (datas[i].entityType == "QUOTEITEM") {
           services.push(datas[i]);
         }
@@ -409,10 +409,26 @@ export default {
       }
       console.log(this.q_services);
       if (this.item.isInstallment == "true") {
-        for (let k = 0; k < installments.length; k++) {
-          this.installments.push(installments[k]);
+        for (let i = 0; i < JSON.parse(this.item.l_installments).length; i++) {
+          let startDate = JSON.parse(this.item.l_installments)[i].startDate;
+          let amount = JSON.parse(this.item.l_installments)[i].amount;
+          let type = JSON.parse(this.item.l_installments)[i].type;
+          let isPaid = JSON.parse(this.item.l_installments)[i].isPaid;
+          let customerName = JSON.parse(this.item.l_installments)[i]
+            .customerName;
+          let scale = JSON.parse(this.item.l_installments)[i].scale;
+          const todo = {
+            startDate,
+            amount,
+            type,
+            isPaid,
+            customerName,
+            scale,
+          };
+          this.installments.push(todo);
         }
       }
+      console.log(this.installments);
 
       const l = await API.graphql({
         query: listCustomers,
@@ -542,6 +558,7 @@ export default {
     },
 
     async createInvoice() {
+      console.log(this.item);
       const loading = this.$loading({
         lock: true,
         text: "Create Invoice",
@@ -557,10 +574,10 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: "QUO#",
+              eq: "INV#",
             },
             indexs: {
-              eq: "table_order",
+              eq: "table",
             },
             active: {
               eq: "1",
@@ -568,149 +585,259 @@ export default {
           },
         },
       });
-      console.log(seq.data.listQuotes);
-      var sequence = seq.data.listQuotes.length;
+      //CREATE INVOICE
+      var sequence = seq.data.listInvoices.length;
       const c = sequence++;
-      const PK = this.item.PK;
-      const SK = this.item.SK;
-      const paymentStatus = "GS";
-      const orderNumber = "INV#" + c;
-      const processStatus = "Invoice";
+      var PK = this.organizationID;
+      const id = uuid.v1();
+      var SK = "INV#" + id;
+      const GSP1PK1 = this.editedItemLeads.SK;
+      const GSP1SK1 = SK;
       const payDate = new Date().toISOString().substr(0, 10);
+      var GSP4PK1 = this.organizationID;
+      var GSP4SK1 = "INV#" + payDate;
+      const entityType = "INVOICE";
+      const createdAt = new Date().toISOString().substr(0, 10);
       const updateAt = new Date().toISOString().substr(0, 10);
+      const createdBy = this.usuario;
+      const active = "1";
+      const smName = "INV" + c;
+      const subject = this.item.subject;
+      const introduction = this.item.introduction;
+      const conclusion = this.item.conclusion;
+      const internalComments = this.item.internalComments;
+      const isDiscount = this.item.isDiscount;
+      const isInstallment = this.item.isInstallment;
+      const downPayment = this.downPayment;
+      const numInstallments = this.numInstallments;
+      const discountAmount = this.discountAmount;
+      const l_discount = this.item.l_discount;
+      const quotationAmount = this.item.quotationAmount;
+      const finalAmount = this.item.finalAmount;
+      const processStatus = this.item.processStatus;
+      const quoteID = this.item.SK;
+      const balance = this.item.finalAmount - this.item.downPayment;
+      const paidAmount = this.item.downPayment;
+      const customerName =
+        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+
       const todo = {
         PK,
+        id,
         SK,
-        paymentStatus,
-        orderNumber,
-        processStatus,
+        GSP1PK1,
+        GSP1SK1,
+        GSP4PK1,
+        GSP4SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        balance,
+        paidAmount,
+        smName,
         payDate,
-        updateAt
+        customerName,
+        conclusion,
+        internalComments,
+        subject,
+        introduction,
+        isDiscount,
+        l_discount,
+        discountAmount,
+        quotationAmount,
+        finalAmount,
+        isInstallment,
+        processStatus,
+        quoteID,
+        downPayment,
+        numInstallments,
       };
 
       const invo = await API.graphql({
-        query: updateRecord,
+        query: createRecord,
         variables: { input: todo },
       });
-
-      console.log(this.item);
-      const quote = await API.graphql({
-        query: listQuotes,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.organizationID,
-            },
-            SK: {
-              eq: this.item.SK,
-            },
-            indexs: {
-              eq: "2",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
+      console.log(invo);
+      // UPDATE QUOTE
+       PK = this.item.PK;
+       SK = this.item.SK;
+       GSP4PK = "";
+       GSP4SK = "";
+       const quote ={
+         SK,
+         PK,
+         GSP4PK,
+         GSP4SK
+       }
+      const invo = await API.graphql({
+        query: updateRecord,
+        variables: { input: quote },
       });
-      console.log(quote);
-      var datas = quote.data.listQuotes;
-      var installments = [];
-      var services = [];
-
-      for (let i = 0; i < datas.length; i++) {
-        if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
-        }
-        if (datas[i].entityType == "QUOTEITEM") {
-          services.push(datas[i]);
-        }
-      }
-      //update QUOTEITEM
-      console.log(services);
-      for (let i = 0; i < services.length; i++) {
-        const PK = services[i].PK;
-        const SK = services[i].SK;
-        const GSP3PK1 = this.organizationID + "#TASK";
+      //CREATE TASK
+      console.log(this.q_services);
+      for (let i = 0; i < this.q_services.length; i++) {
+        const id = uuid.v1();
+        const PK = this.organizationID;
+        const SK = "TSK#" + id;
+        const GSP1PK1 = this.editedItemLeads.SK;
+        const GSP1SK1 = SK;
+        const GSP2PK1 = this.item.SK;
+        const GSP2SK1 = SK;
+        const GSP3PK1 = this.organizationID + "#TSK";
         const GSP3SK1 = "STATUS#" + "IP";
         const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
+        const GSP4SK1 = "TSK#" + new Date().toISOString().substr(0, 10);
         const taskStatus = "In Progress";
         const taskStart = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
+        const createdAt = new Date().toISOString().substr(0, 10);
+        const active = "1";
+        const entityType = "TASK";
+        const smName = this.q_services[i].smName;
+        const customerName = this.q_services[i].customerName;
+        const productType = this.q_services[i].productType;
+        const estimatedHours = this.q_services[i].estimatedHours;
         const todo = {
           PK,
           SK,
+          GSP1PK1,
+          GSP1SK1,
+          GSP2PK1,
+          GSP2SK1,
           GSP3PK1,
           GSP3SK1,
           GSP4PK1,
           GSP4SK1,
+          entityType,
           taskStatus,
           taskStart,
-          paymentStatus,
-          orderNumber,
-          processStatus,
-          updateAt
+          updateAt,
+          createdAt,
+          active,
+          smName,
+          customerName,
+          productType,
+          estimatedHours,
         };
         await API.graphql({
-          query: updateRecord,
+          query: createRecord,
           variables: { input: todo },
         });
       }
 
       //update INSTALLMENT
       var inst = "";
-      for (let i = 0; i < installments.length; i++) {
-        if (installments[i].type == "DPAY") {
-          const PK = installments[i].PK;
-          const SK = installments[i].SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
+      for (let i = 0; i < this.installments.length; i++) {
+        if (this.installments[i].type == "DPAY") {
+          const id = uuid.v1();
+          const PK = this.organizationID;
+          const SK = "INS#" + id;
+          const GSP1PK1 = this.editedItemLeads.SK;
+          const GSP1SK1 = SK;
+          const GSP2PK1 = this.item.SK;
+          const GSP2SK1 = SK;
+          const GSP3PK1 = this.organizationID + "#INS";
           const GSP3SK1 = "STATUS#Y";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
+          const GSP4SK1 = "INS#" + this.installments[i].startDate;
+          const entityType = "INSTALLMENT";
+          const createdAt = new Date().toISOString().substr(0, 10);
+          const updateAt = new Date().toISOString().substr(0, 10);
+          const createdBy = this.usuario;
+          const active = "1";
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
           const isPaid = "Y";
           const payDate = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
           inst = {
+            id,
             PK,
             SK,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            entityType,
+            createdAt,
+            createdBy,
+            active,
+            startDate,
+            amount,
+            type,
+            scale,
+            customerName,
             GSP3PK1,
             GSP3SK1,
             GSP4PK1,
             GSP4SK1,
             isPaid,
             payDate,
-            updateAt
+            updateAt,
           };
           await API.graphql({
-            query: updateRecord,
+            query: createRecord,
             variables: { input: inst },
           });
         } else {
-          const PK = installments[i].PK;
-          const SK = installments[i].SK;
-          const GSP3PK1 = this.organizationID + "#PAY";
-          const GSP3SK1 = "STATUS#N";
+          const id = uuid.v1();
+          const SK = "INS#" + id;
+          const GSP1PK1 = this.editedItemLeads.SK;
+          const GSP1SK1 = SK;
+          const GSP2PK1 = this.item.SK;
+          const GSP2SK1 = SK;
+          const GSP3PK1 = this.organizationID + "#INS";
+          const GSP3SK1 = "STATUS#Y";
           const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + new Date().toISOString().substr(0, 10);
+          const GSP4SK1 = "INS#" + this.installments[i].startDate;
+          const entityType = "INSTALLMENT";
+          const createdAt = new Date().toISOString().substr(0, 10);
           const updateAt = new Date().toISOString().substr(0, 10);
+          const createdBy = this.usuario;
+          const active = "1";
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
+          const isPaid = "N";
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
           inst = {
+            id,
             PK,
             SK,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
             GSP3PK1,
             GSP3SK1,
             GSP4PK1,
             GSP4SK1,
-            updateAt
+            entityType,
+            createdAt,
+            createdBy,
+            active,
+            startDate,
+            amount,
+            type,
+            scale,
+            isPaid,
+            customerName,
+            updateAt,
           };
           await API.graphql({
-            query: updateRecord,
+            query: createRecord,
             variables: { input: inst },
           });
         }
       }
 
-      console.log(invo);
       loading.close();
       this.$router.push({
         path: "./menu/invoice",

@@ -1214,7 +1214,7 @@ export default {
       other_type: "",
       variants: [],
       internalComments: "",
-      estimatedHours: "",
+      estimatedHours: 0,
       publicLink: "",
       internalLink: "",
     },
@@ -1233,7 +1233,7 @@ export default {
       other_type: "",
       variants: [],
       internalComments: "",
-      estimatedHours: "",
+      estimatedHours: 0,
       publicLink: "",
       internalLink: "",
     },
@@ -2058,15 +2058,38 @@ export default {
         numInstallments = this.number;
       }
 
-      const disccountAmount = this.discount_amount;
+      const discountAmount = this.discount_amount;
       const l_discount = JSON.stringify(this.l_discount);
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = item.live;
-      const purchased = "Y";
+      const purchased = "N";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+      var insta = [];
+      if (this.is_installment != false) {
+        let inst = "";
+        for (let i = 0; i < this.installments.length; i++) {
+          const startDate = this.installments[i].startDate;
+          const amount = this.installments[i].amount;
+          const type = this.installments[i].type;
+          const scale = this.installments[i].scale;
+          const isPaid = "N";
+          const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+          inst = {
+            startDate,
+            amount,
+            type,
+            isPaid,
+            customerName,
+            scale,
+          };
+          insta.push(inst);
+        }
+      }
+      const l_installments = JSON.stringify(insta);
 
       const todo = {
         PK,
@@ -2092,7 +2115,8 @@ export default {
         introduction,
         isDiscount,
         l_discount,
-        disccountAmount,
+        l_installments,
+        discountAmount,
         quotationAmount,
         finalAmount,
         isInstallment,
@@ -2112,8 +2136,8 @@ export default {
       var id_quote = a.data.createRecord.SK;
       SK = this.editedItemLeads.SK;
       PK = this.editedItemLeads.PK;
-
       const seekingService = "N";
+
       const l = { SK, PK, seekingService };
       await API.graphql({
         query: updateRecord,
@@ -2128,8 +2152,6 @@ export default {
         const GSP1SK1 = SK;
         const GSP2PK1 = id_quote;
         const GSP2SK1 = SK;
-        const GSP4PK1 = this.organizationID;
-        const GSP4SK1 = "TASK#" + new Date().toISOString().substr(0, 10);
         const entityType = "QUOTEITEM";
         const createdAt = new Date().toISOString().substr(0, 10);
         const updateAt = new Date().toISOString().substr(0, 10);
@@ -2148,6 +2170,7 @@ export default {
         const estimatedHours = this.q_services[i].service.estimatedHours;
         const publicLink = this.q_services[i].service.publicLink;
         const internalLink = this.q_services[i].service.internalLink;
+        var insta = [];
 
         const t = {
           PK,
@@ -2157,8 +2180,6 @@ export default {
           GSP1SK1,
           GSP2PK1,
           GSP2SK1,
-          GSP4PK1,
-          GSP4SK1,
           entityType,
           createdAt,
           updateAt,
@@ -2181,59 +2202,6 @@ export default {
           query: createRecord,
           variables: { input: t },
         });
-      }
-
-      if (this.installments != null) {
-        let inst = "";
-        for (let i = 0; i < this.installments.length; i++) {
-          const id = uuid.v1();
-          const SK = "INS#" + id;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = SK;
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
-          const entityType = "INSTALLMENT";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const startDate = this.installments[i].startDate;
-          const amount = this.installments[i].amount;
-          const type = this.installments[i].type;
-          const scale = this.installments[i].scale;
-          const isPaid = "N";
-          const customerName =
-            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
-          inst = {
-            PK,
-            SK,
-            id,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            GSP4PK1,
-            GSP4SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            startDate,
-            amount,
-            type,
-            isPaid,
-            customerName,
-            scale,
-          };
-          await API.graphql({
-            query: createRecord,
-            variables: { input: inst },
-          });
-        }
       }
 
       this.name = "";
@@ -2293,13 +2261,20 @@ export default {
       for (let i = 0; i < this.l_discount.length; i++) {
         list_e += JSON.stringify(this.l_discount[i]) + ",";
       }
-      const disccountAmount = this.discount_amount;
+
+      var list_int = "";
+      for (let i = 0; i < this.installments.length; i++) {
+        list_int += JSON.stringify(this.installments[i]) + ",";
+      }
+
+      const discountAmount = this.discount_amount;
       const l_discount = list_e.slice(0, -1);
+      const l_installments = list_int.slice(0, -1);
       const quotationAmount = this.total;
       const finalAmount = this.total_disc;
       const processStatus = item.processStatus;
       const live = item.live;
-      const purchased = "Y";
+      const purchased = "N";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       todo = {
@@ -2315,7 +2290,8 @@ export default {
         introduction,
         isDiscount,
         l_discount,
-        disccountAmount,
+        l_installments,
+        discountAmount,
         quotationAmount,
         finalAmount,
         isInstallment,
@@ -2439,103 +2415,12 @@ export default {
           customerName,
           estimatedHours,
           publicLink,
-          internalLink
+          internalLink,
         };
         await API.graphql({
           query: createRecord,
           variables: { input: t },
         });
-      }
-      //update installments
-      if (this.installments != null) {
-        const seq = await API.graphql({
-          query: listQuotes,
-          variables: {
-            filter: {
-              PK: {
-                eq: this.organizationID,
-              },
-              SK: {
-                eq: id_quote,
-              },
-              indexs: {
-                eq: "2",
-              },
-              active: {
-                eq: "1",
-              },
-            },
-          },
-        });
-        var datas = seq.data.listQuotes;
-        var ins = [];
-        for (let i = 0; i < datas.length; i++) {
-          if (datas[i].entityType == "INSTALLMENT") {
-            ins.push(datas[i]);
-          }
-        }
-        for (let i = 0; i < ins.length; i++) {
-          const PK = ins[i].PK;
-          const SK = ins[i].SK;
-          const todo = {
-            PK,
-            SK,
-          };
-          await API.graphql({
-            query: deleteInstallments,
-            variables: { input: todo },
-          });
-        }
-        let inst = "";
-        for (let i = 0; i < this.installments.length; i++) {
-          const id = uuid.v1();
-          const SK = "INS#" + id;
-          const GSP1PK1 = this.editedItemLeads.SK;
-          const GSP1SK1 = SK;
-          const GSP2PK1 = id_quote;
-          const GSP2SK1 = SK;
-          const GSP4PK1 = this.organizationID;
-          const GSP4SK1 = "PAY#" + this.installments[i].startDate;
-          const entityType = "INSTALLMENT";
-          const createdAt = new Date().toISOString().substr(0, 10);
-          const updateAt = new Date().toISOString().substr(0, 10);
-          const createdBy = this.usuario;
-          const active = "1";
-          const startDate = this.installments[i].startDate;
-          const amount = this.installments[i].amount;
-          const type = this.installments[i].type;
-          const scale = this.installments[i].scale;
-          const isPaid = "N";
-          const customerName =
-            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-
-          inst = {
-            PK,
-            SK,
-            id,
-            GSP1PK1,
-            GSP1SK1,
-            GSP2PK1,
-            GSP2SK1,
-            GSP4PK1,
-            GSP4SK1,
-            entityType,
-            createdAt,
-            updateAt,
-            createdBy,
-            active,
-            startDate,
-            amount,
-            isPaid,
-            type,
-            customerName,
-            scale,
-          };
-          await API.graphql({
-            query: createRecord,
-            variables: { input: inst },
-          });
-        }
       }
 
       this.name = "";
@@ -2573,9 +2458,9 @@ export default {
         const isRecurrent = item.isRecurrent;
         const isVariant = item.isVariant;
         const internalComments = item.internalComments;
-        const estimatedHours = item.internalComments;
-        const publicLink = item.internalComments;
-        const internalLink = item.internalComments;
+        const estimatedHours = item.estimatedHours;
+        const publicLink = item.publicLink;
+        const internalLink = item.internalLink;
         const l_variant = l_team.slice(0, -1);
         const customerName =
           this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
@@ -2649,6 +2534,27 @@ export default {
           }
           console.log(this.q_services);
         }
+        for (let i = 0; i < this.q_services.length; i++) {
+          this.total_s += parseFloat(this.q_services[i].service.price);
+        }
+        console.log(this.q_services);
+        this.total = this.total_s;
+        this.payment = this.total;
+        this.number = 1;
+        this.calc = true;
+        this.installments = [];
+        const startDate = new Date().toISOString().substr(0, 10);
+        const amount = this.payment;
+        const type = "DPAY";
+        const scale = "1/1";
+        const pay = {
+          startDate,
+          amount,
+          type,
+          scale,
+        };
+        this.installments = [...this.installments, pay];
+
         this.aply();
       } else {
         console.log("cambair local");
@@ -2664,7 +2570,6 @@ export default {
         this.payment = this.total;
         this.number = 1;
         this.calc = true;
-
         this.installments = [];
         const startDate = new Date().toISOString().substr(0, 10);
         const amount = this.payment;
@@ -2801,7 +2706,7 @@ export default {
       this.list_email = [];
       this.list_address = [];
       var quotes = [];
-      var installments = [];
+
       var services = [];
       let vari = [];
       let servi = [];
@@ -2848,9 +2753,7 @@ export default {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-        if (datas[i].entityType == "INSTALLMENT") {
-          installments.push(datas[i]);
-        }
+
         if (datas[i].entityType == "QUOTEITEM") {
           services.push(datas[i]);
         }
@@ -2866,12 +2769,28 @@ export default {
         });
       }
 
-      for (let k = 0; k < installments.length; k++) {
+      if (item.isInstallment == "true") {
         this.is_installment = true;
         this.calc = true;
-        this.installments.push(installments[k]);
+        for (let i = 0; i < JSON.parse(item.l_installments).length; i++) {
+          let startDate = JSON.parse(item.l_installments)[i].startDate;
+          let amount = JSON.parse(item.l_installments)[i].amount;
+          let type = JSON.parse(item.l_installments)[i].type;
+          let isPaid = JSON.parse(item.l_installments)[i].isPaid;
+          let customerName = JSON.parse(item.l_installments)[i].customerName;
+          let scale = JSON.parse(item.l_installments)[i].scale;
+          const todo = {
+            startDate,
+            amount,
+            type,
+            isPaid,
+            customerName,
+            scale,
+          };
+          this.installments.push(todo);
+        }
       }
-
+      console.log(this.installments);
       const l = await API.graphql({
         query: listCustomers,
         variables: {
