@@ -232,7 +232,7 @@ export const deletePhoneNumber = /* GraphQL */ `
       createdBy
       value
       type
-      l_emails
+      l_email
       customerName
     }
   }

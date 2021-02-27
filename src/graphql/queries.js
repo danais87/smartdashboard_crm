@@ -956,7 +956,7 @@ export const listPhoneNumber = /* GraphQL */ `
       createdBy
       value
       type
-      l_emails
+      l_email
       customerName
     }
   }
@@ -982,7 +982,7 @@ export const getPhoneNumber = /* GraphQL */ `
       createdBy
       value
       type
-      l_emails
+      l_email
       customerName
     }
   }

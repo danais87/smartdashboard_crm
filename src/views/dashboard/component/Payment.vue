@@ -663,13 +663,13 @@ export default {
       // UPDATE QUOTE
        PK = this.item.PK;
        SK = this.item.SK;
-       GSP4PK = "";
-       GSP4SK = "";
+       GSP4PK1 = null
+       GSP4SK1 = null
        const quote ={
          SK,
          PK,
-         GSP4PK,
-         GSP4SK
+         GSP4PK1,
+         GSP4SK1
        }
       await API.graphql({
         query: updateRecord,

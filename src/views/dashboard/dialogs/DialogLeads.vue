@@ -360,6 +360,7 @@ export default {
             const active = "1";
             const value = this.phones[i].phone;
             const type = this.phones[i].p_type;
+            const customerName = item.name + " " + item.last_name;
             const todo = {
               PK,
               SK,
@@ -371,6 +372,8 @@ export default {
               createdBy,
               active,
               value,
+              l_email,
+              customerName,
               type,
             };
 
@@ -435,6 +438,7 @@ export default {
             const active = "1";
             const value = this.phones[i].phone;
             const type = this.phones[i].p_type;
+            const customerName = item.name + " " + item.last_name;
             const todo = {
               PK,
               SK,
@@ -446,6 +450,8 @@ export default {
               createdBy,
               active,
               value,
+              customerName,
+              l_email,
               type,
             };
             console.log(todo);
