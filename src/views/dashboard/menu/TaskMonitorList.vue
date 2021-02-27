@@ -100,14 +100,14 @@
                   <v-col cols="12" sm="6" md="6">
                     <v-text-field
                       v-model="editedItem.label"
-                      label="datos lead"
+                      label="Datos Contact"
                       disabled
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="6" md="6">
                     <v-text-field
                       v-model="editedItem.name"
-                      label="service name"
+                      label="Product Name"
                       disabled
                     ></v-text-field>
                   </v-col>
@@ -126,7 +126,7 @@
                   </v-col>
                   <v-col cols="12" sm="4" md="4">
                     <v-select
-                      v-model="editedItem.responsible"
+                      v-model="editedItem.resp"
                       :items="teams"
                       label="Responsible"
                       item-text="teamName"
@@ -136,6 +136,13 @@
                       solo
                       default="Active"
                     ></v-select>
+                  </v-col>
+                   <v-col cols="12" sm="4" md="4">
+                     <v-text-field
+                      v-model="editedItem.estimatedHours"
+                      label="Estimated Hours"
+                      disabled
+                    ></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="5" md="5" align="center">
                     <v-menu
@@ -300,6 +307,12 @@ export default {
         sortable: true,
         value: "resp",
       },
+        {
+        text: "Estimated Hours",
+        align: "start",
+        sortable: true,
+        value: "estimatedHours",
+      },
     ],
     teams: [],
     task_status: [],
@@ -459,6 +472,7 @@ export default {
           resp: this.task[i].taskResponsible,
           servi_PK: this.task[i].PK,
           servi_SK: this.task[i].SK,
+          estimatedHours: this.task[i].estimatedHours
         });
       }
       loading.close();
