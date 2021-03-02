@@ -594,6 +594,8 @@ export default {
       const GSP1PK1 = this.editedItemLeads.SK;
       const GSP1SK1 = SK;
       const payDate = new Date().toISOString().substr(0, 10);
+      const GSP3PK1 = this.organizationID + "#INV";
+      const GSP3SK1 = "STATUS#";
       var GSP4PK1 = this.organizationID;
       var GSP4SK1 = "INV#" + payDate;
       const entityType = "INVOICE";
@@ -626,8 +628,10 @@ export default {
         SK,
         GSP1PK1,
         GSP1SK1,
+        GSP3PK1,
         GSP4PK1,
         GSP4SK1,
+        GSP3SK1,
         entityType,
         createdAt,
         updateAt,
@@ -661,16 +665,14 @@ export default {
       console.log(invo);
 
       // UPDATE QUOTE
-       PK = this.item.PK;
-       SK = this.item.SK;
-       GSP4PK1 = null
-       GSP4SK1 = null
-       const quote ={
-         SK,
-         PK,
-         GSP4PK1,
-         GSP4SK1
-       }
+      PK = this.item.PK;
+      SK = this.item.SK;
+      const purchased = "Y";
+      const quote = {
+        SK,
+        PK,
+        purchased,
+      };
       await API.graphql({
         query: updateRecord,
         variables: { input: quote },
@@ -841,7 +843,7 @@ export default {
 
       loading.close();
       this.$router.push({
-        path: "./menu/invoice",
+        path: "./invoice",
       });
     },
 
@@ -886,7 +888,7 @@ export default {
         ...this.selectedEmails,
         this.order.payer["email_address"],
       ];*/
-      
+
       console.log(this.selectedEmails);
 
       for (let i = 0; i < this.selectedEmails.length; i++) {

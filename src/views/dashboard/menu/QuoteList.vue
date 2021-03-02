@@ -2041,6 +2041,8 @@ export default {
       const entityType = "QUOTE";
       const GSP4PK1 = this.organizationID;
       const GSP4SK1 = "QUO#" + revisitDate;
+      const GSP3PK1 = this.organizationID+"#QUO";
+      const GSP3SK1 = "STATUS#C";
       const createdAt = new Date().toISOString().substr(0, 10);
       var updateAt = new Date().toISOString().substr(0, 10);
       const createdBy = this.usuario;
@@ -2101,6 +2103,8 @@ export default {
         GSP1SK1,
         GSP2PK1,
         GSP2SK1,
+        GSP3PK1,
+        GSP3SK1,
         GSP4PK1,
         GSP4SK1,
         entityType,
