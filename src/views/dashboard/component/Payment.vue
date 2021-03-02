@@ -621,7 +621,7 @@ export default {
       const balance = this.item.finalAmount - this.item.downPayment;
       const paidAmount = this.item.downPayment;
       const customerName = this.item.customerName;
-
+      const acquisition = this.item.acquisition;
       const todo = {
         PK,
         id,
@@ -642,6 +642,7 @@ export default {
         smName,
         payDate,
         customerName,
+        acquisition,
         conclusion,
         internalComments,
         subject,
@@ -730,7 +731,7 @@ export default {
         });
       }
 
-      //update INSTALLMENT
+      //CREATE INSTALLMENT
       var inst = "";
       for (let i = 0; i < this.installments.length; i++) {
         if (this.installments[i].type == "DPAY") {
@@ -756,8 +757,7 @@ export default {
           const scale = this.installments[i].scale;
           const isPaid = "Y";
           const payDate = new Date().toISOString().substr(0, 10);
-          const customerName =
-            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+          const customerName = this.item.customerName;
           inst = {
             id,
             PK,
@@ -808,8 +808,7 @@ export default {
           const type = this.installments[i].type;
           const scale = this.installments[i].scale;
           const isPaid = "N";
-          const customerName =
-            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+          const customerName =this.item.customerName;
           inst = {
             id,
             PK,
@@ -843,7 +842,7 @@ export default {
 
       loading.close();
       this.$router.push({
-        path: "./invoice",
+        path: "../invoice",
       });
     },
 

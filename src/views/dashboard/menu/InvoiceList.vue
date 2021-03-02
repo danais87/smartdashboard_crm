@@ -73,11 +73,21 @@
             <el-container style=" solid #eee">
               <el-container>
                 <el-header style="text-align: center; font-size: 16px">
-                  <span>Invoice : {{ editedItem.orderNumber }}</span>
-                  <v-btn color="blue darken-1" text @click="close"
-                    >Cancel</v-btn
-                  >
-                  <v-btn color="blue darken-1" text @click="close">Save</v-btn>
+                  <v-row>
+                    <v-col cols="12" sm="4" md="4">
+                      <span>Invoice : {{ editedItem.smName }}</span>
+                      </v-col>
+                      <v-spacer></v-spacer>
+                      <v-col cols="12" sm="6" md="6">
+                      <v-btn color="blue darken-1" text @click="close"
+                        >Cancel</v-btn
+                      >
+                      <v-btn color="blue darken-1" text @click="close"
+                        >Save</v-btn
+                      >
+                      </v-col>
+                    </v-col>
+                  </v-row>
                 </el-header>
                 <el-main>
                   <v-col v-if="editedItemLeads.name != ''">
@@ -236,14 +246,14 @@
                                 class="elevation-1"
                                 :items-per-page="-1"
                               >
-                                <template v-slot:[`item.type`]="{ item }">
+                                <template v-slot:[`item.scale`]="{ item }">
                                   <v-chip
                                     class="ma-2"
-                                    :color="getColor(item.type)"
+                                    :color="getColor(item.scale)"
                                     outlined
                                     light
                                     small
-                                    >{{ item.type }}</v-chip
+                                    >{{ item.scale }}</v-chip
                                   >
                                 </template>
                                 <template v-slot:top>
@@ -421,10 +431,10 @@ export default {
       },
       { text: "Amount", align: "start", sortable: true, value: "amount" },
       {
-        text: "Type of Payment",
+        text: "#",
         align: "start",
         sortable: true,
-        value: "type",
+        value: "scale",
       },
     ],
     headers: [
@@ -762,7 +772,6 @@ export default {
         if (datas[i].entityType == "QUOTE") {
           quotes.push(datas[i]);
         }
-
         if (datas[i].entityType == "INSTALLMENT") {
           inst.push(datas[i]);
         }

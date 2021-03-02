@@ -486,8 +486,7 @@ export default {
       const PK = this.organizationID;
       const id = uuid.v1();
       const SK = "PRO#" + id;
-      const GSP1PK1 = SK;
-      const GSP1SK1 = "#META#" + id;
+
       const entityType = "PRODUCT";
       const createdAt = new Date().toISOString().substr(0, 10);
       const updateAt = new Date().toISOString().substr(0, 10);
@@ -522,8 +521,7 @@ export default {
           updateAt,
           createdAt,
           entityType,
-          GSP1SK1,
-          GSP1PK1,
+          
           PK,
           SK,
           id,

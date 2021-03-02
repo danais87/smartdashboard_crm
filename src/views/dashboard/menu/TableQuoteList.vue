@@ -315,7 +315,7 @@
                     </v-card>
                   </v-dialog>
                   <v-col v-for="item in q_services" :key="item.variant.id">
-                    <v-card outlined elevation="1">
+                    <v-card outlined elevation="1" color="#00E676">
                       <br />
                       <v-row>
                         <v-col sm="2" md="4">
