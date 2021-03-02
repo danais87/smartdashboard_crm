@@ -1448,7 +1448,7 @@ export default {
       console.log(this.$refs.tree_leads.getCheckedKeys());
       this.addLead();
     },
-    
+
     clickService() {
       console.log(this.$refs.tree.getCheckedKeys());
       this.addService();
@@ -2069,9 +2069,9 @@ export default {
       const processStatus = item.processStatus;
       const live = item.live;
       const purchased = "N";
+      const customerName =
+            this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       const acquisition = this.editedItemLeads.acquisition;
-
-      this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       var insta = [];
       if (this.is_installment != false) {
         let inst = "";
@@ -2115,6 +2115,7 @@ export default {
         createdBy,
         active,
         smName,
+        acquisition,
         customerName,
         conclusion,
         internalComments,
