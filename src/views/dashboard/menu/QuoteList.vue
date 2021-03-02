@@ -1448,6 +1448,7 @@ export default {
       console.log(this.$refs.tree_leads.getCheckedKeys());
       this.addLead();
     },
+    
     clickService() {
       console.log(this.$refs.tree.getCheckedKeys());
       this.addService();
@@ -1500,7 +1501,6 @@ export default {
       console.log(this.quotes_datac);
 
       for (let i = 0; i < this.quotes_datac.length; i++) {
-
         if (this.quotes_datac[i].purchased != "Y") {
           if (this.quotes_datac[i].processStatus == "Created") {
             this.quotes_created.push(this.quotes_datac[i]);
@@ -2041,7 +2041,7 @@ export default {
       const entityType = "QUOTE";
       const GSP4PK1 = this.organizationID;
       const GSP4SK1 = "QUO#" + revisitDate;
-      const GSP3PK1 = this.organizationID+"#QUO";
+      const GSP3PK1 = this.organizationID + "#QUO";
       const GSP3SK1 = "STATUS#C";
       const createdAt = new Date().toISOString().substr(0, 10);
       var updateAt = new Date().toISOString().substr(0, 10);
@@ -2069,9 +2069,9 @@ export default {
       const processStatus = item.processStatus;
       const live = item.live;
       const purchased = "N";
-      const acquisition =this.editedItemLeads.acquisition;
-      
-        this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
+      const acquisition = this.editedItemLeads.acquisition;
+
+      this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       var insta = [];
       if (this.is_installment != false) {
         let inst = "";
@@ -3002,17 +3002,17 @@ export default {
         query: listQuoteItems,
         variables: {
           filter: {
-            active: { eq: "1" },
+            PK: { eq: this.organizationID },
             SK: {
               eq: "QIT#",
             },
-            PK: { eq: this.organizationID },
             indexs: {
               eq: "table_items",
             },
             GSP1SK1: {
               eq: this.item_service.service.SK,
             },
+            active: { eq: "1" },
           },
         },
       });
