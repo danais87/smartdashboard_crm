@@ -2481,7 +2481,7 @@ export default {
         region: REGION,
         apiVersion: "2015-03-31",
       });
-
+      this.this.selectedEmails = [];
       this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
       this.selectedEmails = [...this.selectedEmails, "alberto@bizplaneasy.com"];
       this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];

@@ -1101,12 +1101,12 @@ export default {
       discount_code: "",
       discount_type: "",
       discount_value: "",
-      discountAmount: "",
-      quotationAmount: "",
-      finalAmount: "",
+      discountAmount: 0,
+      quotationAmount: 0,
+      finalAmount: 0,
       isInstallment: "",
-      downPayment: "",
-      numInstallments: "",
+      downPayment: 0,
+      numInstallments: 0,
       createdAt: "",
       updateAt: "",
       createdBy: "",
@@ -1129,12 +1129,12 @@ export default {
       discount_code: "",
       discount_type: "",
       discount_value: "",
-      discountAmount: "",
-      quotationAmount: "",
-      finalAmount: "",
+      discountAmount: 0,
+      quotationAmount: 0,
+      finalAmount: 0,
       isInstallment: "",
-      downPayment: "",
-      numInstallments: "",
+      downPayment: 0,
+      numInstallments: 0,
       createdAt: "",
       updateAt: "",
       createdBy: "",
@@ -1159,9 +1159,9 @@ export default {
       discount_code: "",
       discount_type: "",
       discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
+      discount_amount: 0,
+      quotation_amount: 0,
+      final_amount: 0,
       services: "",
       leads: "",
       is_installment: "",
@@ -1185,9 +1185,9 @@ export default {
       discount_code: "",
       discount_type: "",
       discount_value: "",
-      discount_amount: "",
-      quotation_amount: "",
-      final_amount: "",
+      discount_amount: 0,
+      quotation_amount: 0,
+      final_amount: 0,
       services: "",
       is_installment: "",
       payment: 1,
@@ -1500,20 +1500,22 @@ export default {
       console.log(this.quotes_datac);
 
       for (let i = 0; i < this.quotes_datac.length; i++) {
-        console.log(this.quotes_created);
-        if (this.quotes_datac[i].processStatus == "Created") {
-          this.quotes_created.push(this.quotes_datac[i]);
-          total_c = total_c + this.quotes_datac[i].finalAmount;
-        }
 
-        if (this.quotes_datac[i].processStatus == "Negotiations") {
-          this.quotes_s.push(this.quotes_datac[i]);
-          total_s = total_s + this.quotes_datac[i].finalAmount;
-        }
+        if (this.quotes_datac[i].purchased != "Y") {
+          if (this.quotes_datac[i].processStatus == "Created") {
+            this.quotes_created.push(this.quotes_datac[i]);
+            total_c = total_c + this.quotes_datac[i].finalAmount;
+          }
 
-        if (this.quotes_datac[i].processStatus == "Verbal Agreement") {
-          this.quotes_va.push(this.quotes_datac[i]);
-          total_v = total_v + this.quotes_datac[i].finalAmount;
+          if (this.quotes_datac[i].processStatus == "Negotiations") {
+            this.quotes_s.push(this.quotes_datac[i]);
+            total_s = total_s + this.quotes_datac[i].finalAmount;
+          }
+
+          if (this.quotes_datac[i].processStatus == "Verbal Agreement") {
+            this.quotes_va.push(this.quotes_datac[i]);
+            total_v = total_v + this.quotes_datac[i].finalAmount;
+          }
         }
       }
 
@@ -2647,7 +2649,7 @@ export default {
         region: REGION,
         apiVersion: "2015-03-31",
       });
-
+      this.selectedEmails = [];
       this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
       this.selectedEmails = [...this.selectedEmails, "alberto@bizplaneasy.com"];
       this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];

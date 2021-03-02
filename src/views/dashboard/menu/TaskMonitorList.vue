@@ -137,8 +137,8 @@
                       default="Active"
                     ></v-select>
                   </v-col>
-                   <v-col cols="12" sm="4" md="4">
-                     <v-text-field
+                  <v-col cols="12" sm="4" md="4">
+                    <v-text-field
                       v-model="editedItem.estimatedHours"
                       label="Estimated Hours"
                       disabled
@@ -307,7 +307,7 @@ export default {
         sortable: true,
         value: "resp",
       },
-        {
+      {
         text: "Estimated Hours",
         align: "start",
         sortable: true,
@@ -439,7 +439,7 @@ export default {
       const todos = await API.graphql({
         query: listQuoteItems,
         variables: {
-           filter: {
+          filter: {
             PK: {
               eq: this.organizationID + "#TSK",
             },
@@ -472,7 +472,7 @@ export default {
           resp: this.task[i].taskResponsible,
           servi_PK: this.task[i].PK,
           servi_SK: this.task[i].SK,
-          estimatedHours: this.task[i].estimatedHours
+          estimatedHours: this.task[i].estimatedHours,
         });
       }
       loading.close();

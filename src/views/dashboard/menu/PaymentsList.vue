@@ -499,7 +499,7 @@ export default {
         path: "menu/paymentinstallments",
         query: {
           inst: item.instSK,
-          quote:item.quoteID
+          quote: item.quoteID,
         },
       });
     },
@@ -527,22 +527,22 @@ export default {
         variables: {
           filter: {
             PK: {
-              eq: this.organizationID + "#INS",
+              eq: this.organizationID,
             },
             SK: {
-              eq: "STATUS#",
+              eq: "INS#",
             },
             indexs: {
-              eq: "3_date",
+              eq: "4",
             },
             active: {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "INS#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "INS#" + this.end_date,
             },
           },
         },
@@ -637,7 +637,9 @@ export default {
             e_type,
           };
           this.list_email = [...this.list_email, todo];
-           this.selectedEmails.push(JSON.parse(this.editedItemLeads.l_email)[i].email);
+          this.selectedEmails.push(
+            JSON.parse(this.editedItemLeads.l_email)[i].email
+          );
         }
       }
       this.send_email.push({
@@ -649,7 +651,6 @@ export default {
     },
 
     async invokeLambda() {
-
       var AWS = require("aws-sdk");
 
       const todos = await API.graphql({
@@ -688,6 +689,7 @@ export default {
       this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
       this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];
       console.log(this.selectedEmails);
+
       for (let i = 0; i < this.selectedEmails.length; i++) {
         var pullParams = {
           FunctionName: com.funcName,

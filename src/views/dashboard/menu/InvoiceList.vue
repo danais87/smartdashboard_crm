@@ -143,7 +143,7 @@
                       label="Introduction Notes:"
                     ></v-textarea>
                   </v-col>
-                  <v-col v-for="item in q_services" :key="item.variant.id" >
+                  <v-col v-for="item in q_services" :key="item.variant.id">
                     <v-card outlined elevation="1" color="#00E676">
                       <br />
                       <v-row>
@@ -686,6 +686,7 @@ export default {
     },
 
     async getInvoices() {
+      console.log(this.startDate);
       const todos = await API.graphql({
         query: listInvoices,
         variables: {
@@ -697,7 +698,7 @@ export default {
               eq: "INV#",
             },
             indexs: {
-              eq: "4_order",
+              eq: "4",
             },
             active: {
               eq: "1",
@@ -712,6 +713,7 @@ export default {
         },
       });
       this.invoices = todos.data.listInvoices;
+      console.log(this.invoices);
     },
 
     async editItem(item) {
@@ -785,7 +787,6 @@ export default {
         this.calc = true;
         this.installments.push(inst[k]);
       }
-
 
       const l = await API.graphql({
         query: listCustomers,

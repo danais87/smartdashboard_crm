@@ -882,10 +882,11 @@ export default {
       this.selectedEmails = [...this.selectedEmails, "ucidanais@gmail.com"];
       this.selectedEmails = [...this.selectedEmails, "alberto@bizplaneasy.com"];
       this.selectedEmails = [...this.selectedEmails, "info@bizplaneasy.com"];
-      this.selectedEmails = [
+      /*this.selectedEmails = [
         ...this.selectedEmails,
         this.order.payer["email_address"],
-      ];
+      ];*/
+      
       console.log(this.selectedEmails);
 
       for (let i = 0; i < this.selectedEmails.length; i++) {

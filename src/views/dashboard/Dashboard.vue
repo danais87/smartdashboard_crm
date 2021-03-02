@@ -180,6 +180,7 @@ import {
   listCampaings,
   listQuoteItems,
   listQuotes,
+  listInvoices,
 } from "../../graphql/queries";
 import Card from "../../components/base/CardS.vue";
 import ChartCard from "../../components/base/ChartCard.vue";
@@ -427,8 +428,9 @@ export default {
       this.total_pp = 0;
       this.percent = 0;
       var total_l = 0;
+      var list_invo = [];
 
-      const todos = await API.graphql({
+      const list_quote = await API.graphql({
         query: listQuotes,
         variables: {
           filter: {
@@ -454,17 +456,48 @@ export default {
         },
       });
 
-      this.quotes_datac = todos.data.listQuotes;
+      this.quotes_datac = list_quote.data.listQuotes;
+
       console.log(this.quotes_datac);
       var ventas = [];
       for (let i = 0; i < this.quotes_datac.length; i++) {
-        if (this.quotes_datac[i].orderNumber == null) {
-          this.total_q = this.total_q + this.quotes_datac[i].finalAmount;
-        } else {
-          this.total_i = this.total_i + this.quotes_datac[i].finalAmount;
-          ventas.push(this.quotes_datac[i]);
-        }
+        this.total_q = this.total_q + this.quotes_datac[i].finalAmount;
       }
+
+      const list_invoices = await API.graphql({
+        query: listInvoices,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: "INV#",
+            },
+            indexs: {
+              eq: "4",
+            },
+            active: {
+              eq: "1",
+            },
+            startDate: {
+              eq: "INV#" + this.startDate,
+            },
+            endDate: {
+              eq: "INV#" + this.end_date,
+            },
+          },
+        },
+      });
+
+      list_invo = list_invoices.data.listInvoices;
+      console.log(list_invo);
+
+      for (let i = 0; i < list_invo.length; i++) {
+        this.total_i = this.total_i + list_invo[i].finalAmount;
+        ventas.push(list_invo[i]);
+      }
+
       if (this.total_i != 0) {
         this.percent = (this.total_i * 100) / (this.total_i + this.total_q);
         this.percent = this.formattedCurrencyValue(this.percent);
@@ -733,7 +766,7 @@ export default {
 
       var inv = invest.data.listCampaings;
       var total_camaping = 0;
-      
+
       for (let i = 0; i < inv.length; i++) {
         total_camaping += inv[i].price;
       }
