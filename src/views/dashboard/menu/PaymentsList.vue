@@ -64,62 +64,232 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialog" max-width="800px">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            class="ma-2"
-            outlined
-            x-small
-            fab
-            color="indigo"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>
-            <span class="headline">Installment</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12" sm="4" md="4">
-                  <v-text-field
-                    v-model="editedItem.full_name"
-                    label="Customer"
-                    disabled
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-                  <v-text-field
-                    v-model="editedItem.date"
-                    label="Pay Date"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-                  <v-text-field
-                    v-model="editedItem.payment"
-                    label="Payment"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="2" md="2">
-                  <v-text-field
-                    v-model="editedItem.scale"
-                    label="Scale"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <v-dialog v-model="dialog">
+          <v-card>
+            <el-container style=" solid #eee">
+              <el-container>
+                <el-header style="text-align: center; font-size: 16px">
+                  <v-row>
+                    <v-col cols="12" sm="4" md="4">
+                      <span>Invoice : {{ editedItem.smName }}</span>
+                      </v-col>
+                      <v-spacer></v-spacer>
+                      <v-col cols="12" sm="6" md="6">
+                      <v-btn color="blue darken-1" text @click="close"
+                        >Cancel</v-btn
+                      >
+                      <v-btn color="blue darken-1" text @click="close"
+                        >Save</v-btn
+                      >
+                      </v-col>
+                    </v-col>
+                  </v-row>
+                </el-header>
+                <el-main>
+                  <v-col v-if="editedItemLeads.name != ''">
+                    <v-card outlined elevation="1">
+                      <v-card-text>
+                        <v-row>
+                          <v-col sm="4" md="4">
+                            <v-list-item three-line>
+                              <v-list-item-content>
+                                <v-list-item-subtitle>
+                                  Name: {{ editedItemLeads.name }}
+                                  {{ editedItemLeads.lastname }}
+                                </v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-col>
+
+                          <v-col sm="4" md="4">
+                            <v-list-item
+                              three-line
+                              v-for="item in listemails"
+                              :key="item.id"
+                            >
+                              <v-list-item-content>
+                                <v-list-item-subtitle>
+                                  {{ item.e_type }}: {{ item.email }}
+                                </v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-col>
+                          <v-col sm="4" md="4">
+                            <v-list-item
+                              three-line
+                              v-for="item in listphone"
+                              :key="item.id"
+                            >
+                              <v-list-item-content>
+                                <v-list-item-subtitle>
+                                  {{ item.p_type }}: {{ item.phone }}
+                                </v-list-item-subtitle>
+                              </v-list-item-content>
+                            </v-list-item>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                  <v-col>
+                    <v-text-field
+                      v-model="editedItem.subject"
+                      label="Subject:"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col>
+                    <v-btn color="blue darken-1" text x-small
+                      >[load it from library]</v-btn
+                    >
+                    <v-textarea
+                      outlined
+                      name="Introduction"
+                      v-model="conclusion"
+                      required
+                      label="Introduction Notes:"
+                    ></v-textarea>
+                  </v-col>
+                  <v-col v-for="item in q_services" :key="item.variant.id">
+                    <v-card outlined elevation="1" color="#00E676">
+                      <br />
+                      <v-row>
+                        <v-col sm="2" md="4">
+                          {{ item.service.smName }}
+                        </v-col>
+
+                        <v-spacer></v-spacer>
+                        <v-col sm="2" md="4"
+                          ><b>Price:</b> ${{ item.service.price }}</v-col
+                        >
+                      </v-row>
+                      <v-card-text
+                        ><b>Description: </b>{{ item.service.description }}
+                        <v-spacer></v-spacer>
+                        <b>Product Type: </b>
+                        {{ item.service.productType }}
+                        <v-spacer></v-spacer>
+                        <b>Internal Comments: </b>{{ item.service.comments }}
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+
+                  <v-col>
+                    <el-header class="total" style="alaing: center"
+                      >TOTAL: ${{ total }}</el-header
+                    >
+                  </v-col>
+                  <v-row>
+                    <v-col sm="4" md="6">
+                      <v-select
+                        v-model="discount_id"
+                        :items="discount"
+                        label="Discount"
+                        item-text="discount_code"
+                        item-value="id"
+                        required
+                        disabled
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                  <v-col>
+                    <el-header class="total" style="alaing: center"
+                      >TOTAL: ${{ total_disc }}</el-header
+                    >
+                  </v-col>
+                  <v-col>
+                    <el-card class="box-card">
+                      <div slot="header" class="clearfix">
+                        <span>Installment:</span>
+                      </div>
+                      <div class="text item">
+                        <el-checkbox
+                          v-model="is_installment"
+                          label="Is Installment?"
+                          border
+                          disabled
+                        ></el-checkbox>
+                      </div>
+                      <br />
+                      <div v-if="is_installment == true" class="text item">
+                        <el-form
+                          ref="form"
+                          label-width="100px"
+                          :label-position="labelPosition"
+                        >
+                          <v-row>
+                            <v-col sm="3" md="3">
+                              <el-form-item label="Down Payment ($)">
+                                <el-input v-model="payment"></el-input>
+                              </el-form-item>
+                            </v-col>
+                            <v-col sm="3" md="3">
+                              <el-form-item label="Installments">
+                                <el-input v-model="number"></el-input>
+                              </el-form-item>
+                            </v-col>
+                          </v-row>
+                          <v-row v-if="calc == true">
+                            <v-col
+                              class="d-flex"
+                              cols="12"
+                              sm="12"
+                              md="12"
+                              v-if="vari == 'new'"
+                            >
+                              <v-data-table
+                                :headers="headers_i"
+                                :items="installments"
+                                class="elevation-1"
+                                :items-per-page="-1"
+                              >
+                                <template v-slot:[`item.scale`]="{ item }">
+                                  <v-chip
+                                    class="ma-2"
+                                    :color="getColor(item.scale)"
+                                    outlined
+                                    light
+                                    small
+                                    >{{ item.scale }}</v-chip
+                                  >
+                                </template>
+                                <template v-slot:top>
+                                  <v-toolbar flat color="white">
+                                    <v-toolbar-title
+                                      >Installments</v-toolbar-title
+                                    >
+                                    <v-divider
+                                      class="mx-4"
+                                      inset
+                                      vertical
+                                    ></v-divider>
+                                    <v-spacer></v-spacer>
+                                  </v-toolbar>
+                                </template>
+                                <template v-slot:[`item.amount`]="{ item }"
+                                  >${{ formattedValInstal(item.amount) }}
+                                </template>
+                              </v-data-table>
+                            </v-col>
+                          </v-row>
+                        </el-form>
+                      </div>
+                    </el-card>
+                  </v-col>
+                  <br />
+                  <v-col>
+                    <v-textarea
+                      outlined
+                      name="Comments"
+                      v-model="editedItem.internalComments"
+                      required
+                      label="Internal Comments:"
+                    ></v-textarea>
+                  </v-col>
+                </el-main>
+              </el-container>
+            </el-container>
+          </v-card>
+        </v-dialog>
       <v-row cols="12" sm="12" md="12">
         <v-spacer></v-spacer>
         <v-col cols="12" sm="2" md="2" align="center">

@@ -42,7 +42,7 @@
 
 <script>
 import Vuex from "vuex";
-import { getOrganization } from "../../../graphql/queries";
+import { getOrganization, listOrganizations } from "../../../graphql/queries";
 import { API } from "aws-amplify";
 export default {
   name: "Home",
@@ -102,7 +102,7 @@ export default {
     async getLibrarys() {
       this.library = [];
       const todos = await API.graphql({
-        query: getOrganization,
+        query: listOrganizations,
         variables: {
           filter: {
             active: { eq: "1" },
@@ -114,7 +114,7 @@ export default {
         },
       });
 
-      this.organization = todos.data.getOrganization[0];
+      this.organization = todos.data.listOrganizations[0];
       //Library
       if (this.organization.l_quoteLibrary[0]) {
         for (

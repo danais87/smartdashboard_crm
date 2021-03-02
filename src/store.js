@@ -10,7 +10,8 @@ import {
   listCustomers,
   listProducts,
   listQuotes,
-  listCampaings
+  listCampaings,
+  listOrganizations
 } from "../src/graphql/queries";
 
 Vue.use(Vuex)
@@ -894,11 +895,13 @@ export default new Vuex.Store({
       console.log(items);
       commit('SetLeads_Seek', items);
     },
+
     async GetCatalogs({
       commit
     }) {
+      console.log(this.state.organizationID);
       const todos = await API.graphql({
-        query: getOrganization,
+        query: listOrganizations,
         variables: {
           filter: {
             active: {
@@ -913,8 +916,9 @@ export default new Vuex.Store({
           },
         },
       });
-      const items = todos.data.getOrganization[0];
+      const items = todos.data.listOrganizations[0];
       console.log(items);
+
       var teams = [];
       //TEAMS
       if (items.l_team[0]) {
@@ -1153,7 +1157,7 @@ export default new Vuex.Store({
           }
         }
       }
-      commit('SetOrganization', items);
+      await commit('SetOrganization', items);
       commit('SetTeams', teams);
       commit('SetAcquisitions', acquisition);
       commit('SetServiceTypes', service_type);

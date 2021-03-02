@@ -175,6 +175,16 @@
                 <v-col>
                   <div id="paypal-button-container" style="width: 20%"></div>
                 </v-col>
+
+                <v-col>
+                  Card Type: Visa
+
+                    Card Number: 4032032361134577
+
+                    Expiration Date: 02/2025
+
+                    CVV: 611
+                </v-col>
               </div>
             </v-col>
           </v-row>

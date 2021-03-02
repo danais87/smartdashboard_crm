@@ -133,7 +133,7 @@ export default {
         attributes: {
           email: this.email,
           name: this.username,
-          "custom:organizationID": "ORG#BIZPLAN",
+          "custom:organizationID": "ORG#Pharmadash",
         },
         validationData: [],
       })

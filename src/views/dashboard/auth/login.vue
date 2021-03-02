@@ -101,11 +101,11 @@ export default {
           console.log(
             user.signInUserSession.accessToken["payload"]["cognito:groups"]
           );
-          this.SetUsuario(user.username);
-          this.SetOrganizationID(user.attributes["custom:organizationID"]);
-          this.SetRole(user.signInUserSession.accessToken["payload"]["cognito:groups"]);
-          this.GetListServices();
-          this.GetCatalogs();
+           this.SetUsuario(user.username);
+           this.SetOrganizationID(user.attributes["custom:organizationID"]);
+           this.SetRole(user.signInUserSession.accessToken["payload"]["cognito:groups"]);
+           this.GetListServices();
+           this.GetCatalogs();
           this.$router.push({
             path: "/index",
             query: {
