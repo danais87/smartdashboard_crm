@@ -372,6 +372,7 @@
                 class="elevation-1"
                 :search="search_l"
                 :items-per-page="-1"
+                @click:row="handleClick"
               >
                 <template v-slot:[`item.type`]="{ item }">
                   <v-chip
@@ -508,6 +509,8 @@ import {
   getOrganization,
   listCustomers,
   listInstallments,
+  listPhoneNumber,
+  listQuotes,
 } from "../../../graphql/queries";
 
 import Vuex from "vuex";
@@ -519,6 +522,8 @@ export default {
   data: () => ({
     props: { multiple: true, expandTrigger: "hover", checkStrictly: true },
     alert: false,
+    labelPosition: "top",
+    vari: [],
     startDate: new Date(),
     menu: false,
     modal: false,
@@ -605,6 +610,13 @@ export default {
     quotes: [],
     item: [],
     editedItem_c: [],
+    editedItemLeads: [],
+    is_installment: false,
+    total_disc: 0,
+    conclusion: "",
+    q_services: [],
+    discount: [],
+    discount_id: 0,
   }),
 
   computed: {
@@ -662,7 +674,10 @@ export default {
           .replace(/\d(?=(\d{3})+\.)/g, "$&,")
       );
     },
-
+    handleClick(value) {
+      this.editItem(value);
+      console.log(value);
+    },
     OpenPayment(item) {
       console.log(item.quoteID);
       this.$router.push({
@@ -736,6 +751,7 @@ export default {
             payment: this.item_inst[i].amount,
             scale: this.item_inst[i].scale,
             instSK: this.item_inst[i].SK,
+            installment: this.item_inst[i],
           });
           this.total_pp = this.total_pp + this.item_inst[i].amount;
         }
@@ -750,6 +766,7 @@ export default {
             payment: this.item_inst[i].amount,
             scale: this.item_inst[i].scale,
             instSK: this.item_inst[i].SK,
+            installment: this.item_inst[i],
           });
           this.total_pr = this.total_pr + this.item_inst[i].amount;
         }
@@ -761,8 +778,177 @@ export default {
     },
 
     async editItem(item) {
-      this.editedItem = Object.assign({}, item);
-      console.log(this.editedItem);
+      this.q_services = [];
+      this.installments = [];
+      this.list_phone = [];
+      this.list_email = [];
+      this.list_address = [];
+      console.log(item);
+      this.editedItem = item;
+
+      this.conclusion = item.installment.conclusion;
+      this.number = item.installment.numInstallments;
+      this.payment = item.installment.downPayment;
+
+      const seq = await API.graphql({
+        query: listQuotes,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: item.quoteID,
+            },
+            indexs: {
+              eq: "2",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+      console.log(seq.data.listQuotes);
+      var datas = seq.data.listQuotes;
+      var quotes = [];
+
+      var inst = [];
+      var services = [];
+      let vari = [];
+      let servi = [];
+      this.editedItemLeads = [];
+
+      for (let i = 0; i < datas.length; i++) {
+        if (datas[i].entityType == "QUOTE") {
+          quotes.push(datas[i]);
+        }
+        if (datas[i].entityType == "INSTALLMENT") {
+          inst.push(datas[i]);
+        }
+        if (datas[i].entityType == "QUOTEITEM") {
+          services.push(datas[i]);
+        }
+      }
+
+      for (let j = 0; j < services.length; j++) {
+        vari = [];
+        servi = [];
+        servi = services[j];
+        this.q_services.push({
+          service: servi,
+          variant: vari,
+        });
+      }
+
+      for (let k = 0; k < inst.length; k++) {
+        this.is_installment = true;
+        this.calc = true;
+        this.installments.push(inst[k]);
+      }
+
+      const l = await API.graphql({
+        query: listCustomers,
+        variables: {
+          filter: {
+            PK: {
+              eq: this.organizationID,
+            },
+            SK: {
+              eq: item.installment.GSP1PK1,
+            },
+            indexs: {
+              eq: "table",
+            },
+            active: {
+              eq: "1",
+            },
+          },
+        },
+      });
+
+      console.log(l);
+
+      this.editedItemLeads = l.data.listCustomers[0];
+
+      this.editedItemLeads.name = JSON.parse(
+        this.editedItemLeads.l_smName
+      )[0].fullName;
+      if (JSON.parse(this.editedItemLeads.l_email)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_email).length;
+          i++
+        ) {
+          let e_type = JSON.parse(this.editedItemLeads.l_email)[i].e_type;
+          let email = JSON.parse(this.editedItemLeads.l_email)[i].email;
+          const todo = {
+            email,
+            e_type,
+          };
+          this.list_email = [...this.list_email, todo];
+        }
+      }
+
+      const todos = await API.graphql({
+        query: listPhoneNumber,
+        variables: { filter: { GSP1PK1: { eq: this.editedItemLeads.SK } } },
+      });
+      this.phones = todos.data.listPhoneNumber;
+      console.log(this.phones);
+
+      if (this.phones.length > 0) {
+        for (let i = 0; i < this.phones.length; i++) {
+          let phone = this.phones[i].value;
+          let p_type = this.phones[i].type;
+          const todo = {
+            phone,
+            p_type,
+          };
+          this.list_phone = [...this.list_phone, todo];
+        }
+      }
+
+      if (JSON.parse(this.editedItemLeads.l_smAddress)[0]) {
+        for (
+          let i = 0;
+          i < JSON.parse(this.editedItemLeads.l_smAddress).length;
+          i++
+        ) {
+          let country = JSON.parse(this.editedItemLeads.l_smAddress)[i].country;
+          let state = JSON.parse(this.editedItemLeads.l_smAddress)[i].state;
+          let city = JSON.parse(this.editedItemLeads.l_smAddress)[i].city;
+          let street_address = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .street_address;
+          let zip_code = JSON.parse(this.editedItemLeads.l_smAddress)[i]
+            .zip_code;
+          let a_type = JSON.parse(this.editedItemLeads.l_smAddress)[i].a_type;
+          const todo = {
+            country,
+            state,
+            city,
+            street_address,
+            zip_code,
+            a_type,
+          };
+          this.list_address = [...this.list_address, todo];
+        }
+      }
+
+      this.SetPhone(this.list_phone);
+      this.SetEmails(this.list_email);
+      this.SetAddress(this.list_address);
+      if (item.installment.l_discount != null) {
+        if (JSON.parse(item.installment.l_discount)[0]) {
+          this.discount_id = JSON.parse(
+            item.installment.l_discount
+          )[0].discount_code;
+        }
+      }
+
+      this.total = item.installment.quotationAmount;
+      this.total_disc = item.installment.finalAmount;
+
       this.dialog = true;
     },
 
