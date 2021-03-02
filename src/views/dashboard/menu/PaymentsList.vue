@@ -617,6 +617,7 @@ export default {
     q_services: [],
     discount: [],
     discount_id: 0,
+    number:0,
   }),
 
   computed: {
@@ -674,10 +675,12 @@ export default {
           .replace(/\d(?=(\d{3})+\.)/g, "$&,")
       );
     },
+
     handleClick(value) {
       this.editItem(value);
       console.log(value);
     },
+
     OpenPayment(item) {
       console.log(item.quoteID);
       this.$router.push({
@@ -751,7 +754,7 @@ export default {
             payment: this.item_inst[i].amount,
             scale: this.item_inst[i].scale,
             instSK: this.item_inst[i].SK,
-            installment: this.item_inst[i],
+
           });
           this.total_pp = this.total_pp + this.item_inst[i].amount;
         }
@@ -766,7 +769,7 @@ export default {
             payment: this.item_inst[i].amount,
             scale: this.item_inst[i].scale,
             instSK: this.item_inst[i].SK,
-            installment: this.item_inst[i],
+
           });
           this.total_pr = this.total_pr + this.item_inst[i].amount;
         }
@@ -786,9 +789,6 @@ export default {
       console.log(item);
       this.editedItem = item;
 
-      this.conclusion = item.installment.conclusion;
-      this.number = item.installment.numInstallments;
-      this.payment = item.installment.downPayment;
 
       const seq = await API.graphql({
         query: listQuotes,
@@ -830,6 +830,7 @@ export default {
           services.push(datas[i]);
         }
       }
+       console.log(quotes);
 
       for (let j = 0; j < services.length; j++) {
         vari = [];
@@ -855,7 +856,7 @@ export default {
               eq: this.organizationID,
             },
             SK: {
-              eq: item.installment.GSP1PK1,
+              eq: item.customerID,
             },
             indexs: {
               eq: "table",
@@ -938,7 +939,8 @@ export default {
       this.SetPhone(this.list_phone);
       this.SetEmails(this.list_email);
       this.SetAddress(this.list_address);
-      if (item.installment.l_discount != null) {
+
+      if (quotes.l_discount != null) {
         if (JSON.parse(item.installment.l_discount)[0]) {
           this.discount_id = JSON.parse(
             item.installment.l_discount
@@ -946,8 +948,11 @@ export default {
         }
       }
 
-      this.total = item.installment.quotationAmount;
-      this.total_disc = item.installment.finalAmount;
+      this.conclusion = quotes.conclusion;
+      this.number = quotes.numInstallments;
+      this.payment = quotes.downPayment;
+      this.total = quotes.quotationAmount;
+      this.total_disc = quotes.finalAmount;
 
       this.dialog = true;
     },
