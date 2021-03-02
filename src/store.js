@@ -813,6 +813,32 @@ export default new Vuex.Store({
   },
 
   actions: {
+     async GetListServices({
+       commit
+     }) {
+       const list_prod = await API.graphql({
+         query: listProducts,
+         variables: {
+           filter: {
+             PK: {
+               eq: this.state.organizationID,
+             },
+             SK: {
+               eq: "PRO#",
+             },
+             indexs: {
+               eq: "table",
+             },
+             active: {
+               eq: "1",
+             },
+           },
+         },
+       });
+      console.log(list_prod);
+       const prod = list_prod.data.listProducts;
+       commit('SetListServices', prod);
+     },
     async GetLeads({
       commit
     }) {
@@ -1190,32 +1216,7 @@ export default new Vuex.Store({
       const items = todos.data.listCampaings;
       commit('SetInvestment', items);
     },
-    async GetListServices({
-      commit
-    }) {
-      const todos = await API.graphql({
-        query: listProducts,
-        variables: {
-          filter: {
-            PK: {
-              eq: this.state.organizationID,
-            },
-            SK: {
-              eq: "PRO#",
-            },
-            indexs: {
-              eq: "table",
-            },
-            active: {
-              eq: "1",
-            },
-          },
-        },
-      });
-      const items = todos.data.listProducts;
-      console.log(todos);
-      commit('SetListServices', items);
-    },
+
   },
   plugins: [createPersistedState()]
 

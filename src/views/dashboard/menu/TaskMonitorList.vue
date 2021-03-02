@@ -441,22 +441,22 @@ export default {
         variables: {
           filter: {
             PK: {
-              eq: this.organizationID + "#TSK",
+              eq: this.organizationID,
             },
             SK: {
-              eq: "STATUS#",
+              eq: "TSK#",
             },
             indexs: {
-              eq: "3_date",
+              eq: "4",
             },
             active: {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "TSK#" + this.startDate,
             },
             endDate: {
-              eq: this.endDate,
+              eq: "TSK#" + this.end_date,
             },
           },
         },

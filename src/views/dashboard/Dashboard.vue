@@ -396,7 +396,9 @@ export default {
       .substr(0, 10);
   },
   mounted() {
+    this.GetListServices();
     this.fillData();
+
   },
   computed: {
     ...Vuex.mapState([
@@ -409,6 +411,7 @@ export default {
   },
 
   methods: {
+    ...Vuex.mapActions(["GetCatalogs","GetListServices"]),
     complete(index) {
       this.list[index] = !this.list[index];
     },
@@ -511,22 +514,22 @@ export default {
         variables: {
           filter: {
             PK: {
-              eq: this.organizationID + "#PAY",
+              eq: this.organizationID,
             },
             SK: {
-              eq: "STATUS#",
+              eq: "INS#",
             },
             indexs: {
-              eq: "3_date",
+              eq: "4",
             },
             active: {
               eq: "1",
             },
             startDate: {
-              eq: this.startDate,
+              eq: "INS#" + this.startDate,
             },
             endDate: {
-              eq: this.end_date,
+              eq: "INS#" + this.end_date,
             },
           },
         },

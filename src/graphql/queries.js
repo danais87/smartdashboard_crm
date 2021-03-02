@@ -177,9 +177,32 @@ export const listProducts = /* GraphQL */ `
       active
       createdBy
       smName
+      smAddress
+      website
+      productType
+      amount
+      date
+      l_smName
+      l_email
+      l_smAddress
+      leadStatus
+      seekingService
+      acquisition
+      account
+      notes
+      businessType
+      jobTitle
+      levelAuthority
+      numberEmployee
+      email
+      table
+      type
+      idRegistry
+      l_value
+      value
+      customerName
       description
       price
-      productType
       otherType
       isRecurrent
       isVariant
@@ -187,6 +210,55 @@ export const listProducts = /* GraphQL */ `
       estimatedHours
       publicLink
       internalLink
+      subject
+      introduction
+      conclusion
+      internalComments
+      emailSent
+      sentDate
+      sentBy
+      isDiscount
+      isInstallment
+      downPayment
+      numInstallments
+      discountAmount
+      l_discount
+      l_installments
+      quotationAmount
+      finalAmount
+      processStatus
+      purchased
+      live
+      revisitDate
+      payDate
+      paidAmount
+      balance
+      annulled
+      quoteID
+      variantName
+      variantPrice
+      taskStatus
+      taskStart
+      taskEnd
+      taskResponsible
+      startDate
+      isPaid
+      reference
+      method
+      scale
+      l_productType
+      l_acquisition
+      l_taskStatusType
+      l_paymentMethod
+      l_team
+      l_leadStatus
+      l_quoteLibrary
+      l_quoteStatus
+      l_businessType
+      funcRegion
+      funcIdentityPoolId
+      funcName
+      funcSource
     }
   }
 `;

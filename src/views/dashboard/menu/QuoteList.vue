@@ -2069,7 +2069,8 @@ export default {
       const processStatus = item.processStatus;
       const live = item.live;
       const purchased = "N";
-      const customerName =
+      const acquisition =this.editedItemLeads.acquisition;
+      
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
       var insta = [];
       if (this.is_installment != false) {
