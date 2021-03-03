@@ -265,32 +265,6 @@ export default {
         !funcSource
       )
         return;
-      const search = {
-        PK,
-        SK,
-        id,
-        entityType,
-        l_team,
-        l_productType,
-        l_discount,
-        l_acquisition,
-        l_taskStatusType,
-        l_paymentMethod,
-        l_leadStatus,
-        l_quoteLibrary,
-        l_quoteStatus,
-        createdAt,
-        updateAt,
-        createdBy,
-        smName,
-        smAddress,
-        funcRegion,
-        funcIdentityPoolId,
-        funcName,
-        funcSource,
-        active,
-      };
-      const searchText = JSON.stringify(search);
 
       const todo = {
         PK,
@@ -316,7 +290,6 @@ export default {
         funcName,
         funcSource,
         active,
-        searchText
       };
       this.companys = [...this.companys, todo];
       const c = await API.graphql({
@@ -387,18 +360,7 @@ export default {
       )
         return;
 
-      const search = {
-        SK,
-        PK,
-        updateAt,
-        smName,
-        smAddress,
-        funcRegion,
-        funcIdentityPoolId,
-        funcName,
-        funcSource,
-      };
-      const searchText = JSON.stringify(search);
+
 
       const todo = {
         SK,
@@ -409,8 +371,7 @@ export default {
         funcRegion,
         funcIdentityPoolId,
         funcName,
-        funcSource,
-        searchText
+        funcSource, 
       };
 
       await API.graphql({

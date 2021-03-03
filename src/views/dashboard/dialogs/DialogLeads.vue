@@ -268,11 +268,23 @@ export default {
       this.phones = this.listphone;
       var names = [];
       var l = "";
+
       names.push({
         firstName: item.name,
         lastName: item.last_name,
         fullName: item.name + " " + item.last_name,
       });
+
+      const firstName = item.name;
+      const lastName = item.last_name;
+      const fullName = item.name + " " + item.last_name;
+
+      var l_n = {
+        firstName,
+        lastName,
+        fullName,
+      };
+
       const PK = this.organizationID;
       const id = uuid.v1();
       const SK = "CUS#" + id;
@@ -318,29 +330,7 @@ export default {
         const PK = this.organizationID;
         const id = item.id;
 
-        const search = {
-          PK,
-          id,
-          SK,
-          entityType,
-          createdAt,
-          updateAt,
-          createdBy,
-          active,
-          l_smName,
-          leadStatus,
-          account,
-          l_email,
-          l_smAddress,
-          seekingService,
-          acquisition,
-          notes,
-          businessType,
-          jobTitle,
-          levelAuthority,
-          numberEmployee,
-        };
-        const searchText = JSON.stringify(search);
+
         const todo = {
           PK,
           id,
@@ -362,7 +352,7 @@ export default {
           jobTitle,
           levelAuthority,
           numberEmployee,
-          searchText,
+          
         };
         console.log(todo);
 
@@ -386,22 +376,7 @@ export default {
             const value = this.phones[i].phone;
             const type = this.phones[i].p_type;
             const customerName = item.name + " " + item.last_name;
-            const search = {
-              PK,
-              SK,
-              GSP1PK1,
-              GSP1SK1,
-              entityType,
-              createdAt,
-              updateAt,
-              createdBy,
-              active,
-              value,
-              l_email,
-              customerName,
-              type,
-            };
-            const searchText = JSON.stringify(search);
+
             const todo = {
               PK,
               SK,
@@ -416,7 +391,6 @@ export default {
               l_email,
               customerName,
               type,
-              searchText,
             };
 
             await API.graphql({
@@ -459,16 +433,32 @@ export default {
           levelAuthority,
           numberEmployee,
         };
+        /* for (const property in object) {
+          console.log(`${property}: ${object[property]}`);
 
+        // SE CREA EL CAMPO SEARCHTEXT EXPLUYENDO LOS CAMPOS COMUNES
         for (const property in todo) {
-          if (`${todo[property]}` != "") {
-            searchText.push(`${todo[property]}`);
+          if (
+            `${property}` != " " &&
+            `${property}` != "id" &&
+            `${property}` != "PK" &&
+            `${property}` != "SK" &&
+            `${property}`.includes("GSP") != true
+          ) {
+            if (`${property}`.startsWith("l_smName") == true) {
+              for (const property in l_n) {
+                console.log(`${property}: ${l_n[property]}`);
+                searchText.push(`${l_n[property]}`.toLowerCase());
+              }
+            }
+            if (`${property}`.startsWith("l_smName") == false) {
+              searchText.push(`${todo[property]}`.toLowerCase());
+            }
           }
         }
-
-        todo["searchText"] = searchText;
-
+        todo["searchText"] = searchText; }*/
         console.log(todo);
+
         try {
           l = await API.graphql({
             query: createRecord,
@@ -494,22 +484,7 @@ export default {
             const value = this.phones[i].phone;
             const type = this.phones[i].p_type;
             const customerName = item.name + " " + item.last_name;
-            const search = {
-              PK,
-              SK,
-              GSP1PK1,
-              GSP1SK1,
-              entityType,
-              createdAt,
-              updateAt,
-              createdBy,
-              active,
-              value,
-              customerName,
-              l_email,
-              type,
-            };
-            const searchText = JSON.stringify(search);
+
             const todo = {
               PK,
               SK,
@@ -524,7 +499,6 @@ export default {
               customerName,
               l_email,
               type,
-              searchText,
             };
             console.log(todo);
             await API.graphql({

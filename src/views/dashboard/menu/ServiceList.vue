@@ -508,28 +508,7 @@ export default {
         this.alert = false;
         this.openMS();
       } else {
-        const search = {
-          smName,
-          description,
-          price,
-          productType,
-          otherType,
-          isRecurrent,
-          isVariant,
-          active,
-          createdBy,
-          updateAt,
-          createdAt,
-          entityType,
-          PK,
-          SK,
-          id,
-          l_variant,
-          estimatedHours,
-          publicLink,
-          internalLink,
-        };
-        const searchText = JSON.stringify(search);
+
         const todo = {
           smName,
           description,
@@ -550,7 +529,6 @@ export default {
           estimatedHours,
           publicLink,
           internalLink,
-          searchText,
         };
         const serv = await API.graphql({
           query: createRecord,
@@ -600,23 +578,7 @@ export default {
         this.alert = false;
         this.openMS();
       } else {
-        const search = {
-          PK,
-          SK,
-          updateAt,
-          smName,
-          description,
-          price,
-          productType,
-          otherType,
-          isRecurrent,
-          isVariant,
-          l_variant,
-          estimatedHours,
-          publicLink,
-          internalLink,
-        };
-        const searchText = JSON.stringify(search);
+
         const todo = {
           PK,
           SK,
@@ -631,8 +593,7 @@ export default {
           l_variant,
           estimatedHours,
           publicLink,
-          internalLink,
-          searchText,
+          internalLink, 
         };
         const prod = await API.graphql({
           query: updateRecord,

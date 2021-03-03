@@ -2095,45 +2095,7 @@ export default {
         }
       }
       const l_installments = JSON.stringify(insta);
-      const search = {
-        PK,
-        id,
-        SK,
-        GSP1PK1,
-        GSP1SK1,
-        GSP2PK1,
-        GSP2SK1,
-        GSP3PK1,
-        GSP3SK1,
-        GSP4PK1,
-        GSP4SK1,
-        entityType,
-        createdAt,
-        updateAt,
-        revisitDate,
-        createdBy,
-        active,
-        smName,
-        acquisition,
-        customerName,
-        conclusion,
-        internalComments,
-        subject,
-        introduction,
-        isDiscount,
-        l_discount,
-        l_installments,
-        discountAmount,
-        quotationAmount,
-        finalAmount,
-        isInstallment,
-        processStatus,
-        live,
-        purchased,
-        downPayment,
-        numInstallments,
-      };
-      const searchText = JSON.stringify(search);
+
       const todo = {
         PK,
         id,
@@ -2171,7 +2133,6 @@ export default {
         purchased,
         downPayment,
         numInstallments,
-        searchText,
       };
 
       const a = await API.graphql({
@@ -2218,33 +2179,7 @@ export default {
         const publicLink = this.q_services[i].service.publicLink;
         const internalLink = this.q_services[i].service.internalLink;
         var insta = [];
-        const search = {
-          PK,
-          SK,
-          id,
-          GSP1PK1,
-          GSP1SK1,
-          GSP2PK1,
-          GSP2SK1,
-          entityType,
-          createdAt,
-          updateAt,
-          createdBy,
-          active,
-          smName,
-          description,
-          price,
-          productType,
-          otherType,
-          isRecurrent,
-          isVariant,
-          internalComments,
-          customerName,
-          estimatedHours,
-          publicLink,
-          internalLink,
-        };
-        const searchText = JSON.stringify(search);
+
         const t = {
           PK,
           SK,
@@ -2270,7 +2205,6 @@ export default {
           estimatedHours,
           publicLink,
           internalLink,
-          searchText,
         };
         await API.graphql({
           query: createRecord,
@@ -2351,31 +2285,7 @@ export default {
       const purchased = "N";
       const customerName =
         this.editedItemLeads.name + " " + this.editedItemLeads.last_name;
-      const search = {
-        PK,
-        SK,
-        GSP1PK1,
-        GSP4SK1,
-        updateAt,
-        customerName,
-        conclusion,
-        internalComments,
-        subject,
-        introduction,
-        isDiscount,
-        l_discount,
-        l_installments,
-        discountAmount,
-        quotationAmount,
-        finalAmount,
-        isInstallment,
-        processStatus,
-        live,
-        purchased,
-        downPayment,
-        numInstallments,
-      };
-      const searchText = JSON.stringify(search);
+
       todo = {
         PK,
         SK,
@@ -2399,7 +2309,6 @@ export default {
         purchased,
         downPayment,
         numInstallments,
-        searchText,
       };
 
       if (!this.q_services || !this.editedItemLeads.id)
@@ -2489,35 +2398,7 @@ export default {
         const estimatedHours = this.q_services[i].service.estimatedHours;
         const publicLink = this.q_services[i].service.publicLink;
         const internalLink = this.q_services[i].service.internalLink;
-        const search = {
-          PK,
-          SK,
-          id,
-          GSP1PK1,
-          GSP1SK1,
-          GSP2PK1,
-          GSP2SK1,
-          GSP4PK1,
-          GSP4SK1,
-          entityType,
-          createdAt,
-          updateAt,
-          createdBy,
-          active,
-          smName,
-          description,
-          price,
-          productType,
-          otherType,
-          isRecurrent,
-          isVariant,
-          internalComments,
-          customerName,
-          estimatedHours,
-          publicLink,
-          internalLink,
-        };
-        const searchText = JSON.stringify(search);
+
         const t = {
           PK,
           SK,
@@ -2545,7 +2426,6 @@ export default {
           estimatedHours,
           publicLink,
           internalLink,
-          searchText,
         };
         await API.graphql({
           query: createRecord,
@@ -2599,25 +2479,7 @@ export default {
           this.alert = false;
           this.openMS();
         } else {
-          const search = {
-            PK,
-            SK,
-            updateAt,
-            smName,
-            description,
-            price,
-            productType,
-            otherType,
-            isRecurrent,
-            isVariant,
-            internalComments,
-            l_variant,
-            customerName,
-            estimatedHours,
-            publicLink,
-            internalLink,
-          };
-          const searchText = JSON.stringify(search);
+
           const todo = {
             PK,
             SK,
@@ -2634,8 +2496,7 @@ export default {
             customerName,
             estimatedHours,
             publicLink,
-            internalLink,
-            searchText,
+            internalLink, 
           };
           const prod = await API.graphql({
             query: updateRecord,
