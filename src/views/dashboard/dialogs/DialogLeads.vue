@@ -431,33 +431,7 @@ export default {
       } else {
         console.log("created");
 
-        const search = {
-          PK,
-          id,
-          SK,
-          GSP1PK1,
-          GSP1SK1,
-          GSP4PK1,
-          GSP4SK1,
-          entityType,
-          createdAt,
-          updateAt,
-          createdBy,
-          active,
-          l_smName,
-          leadStatus,
-          account,
-          l_email,
-          l_smAddress,
-          seekingService,
-          acquisition,
-          notes,
-          businessType,
-          jobTitle,
-          levelAuthority,
-          numberEmployee,
-        };
-        const searchText = JSON.stringify(search);
+        const searchText = [];
 
         const todo = {
           PK,
@@ -484,9 +458,17 @@ export default {
           jobTitle,
           levelAuthority,
           numberEmployee,
-          searchText,
         };
 
+        for (const property in todo) {
+          if (`${todo[property]}` != "") {
+            searchText.push(`${todo[property]}`);
+          }
+        }
+
+        todo["searchText"] = searchText;
+
+        console.log(todo);
         try {
           l = await API.graphql({
             query: createRecord,
@@ -542,7 +524,7 @@ export default {
               customerName,
               l_email,
               type,
-              searchText
+              searchText,
             };
             console.log(todo);
             await API.graphql({
