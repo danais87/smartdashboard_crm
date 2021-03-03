@@ -177,10 +177,8 @@
                 </v-col>
 
                 <v-col>
-                  Card Type: Visa
-                  Card Number: 4032032361134577
-                  Expiration Date: 02/2025
-                  CVV: 611
+                  Card Type: Visa Card Number: 4032032361134577 Expiration Date:
+                  02/2025 CVV: 611
                 </v-col>
               </div>
             </v-col>
@@ -629,6 +627,44 @@ export default {
       const paidAmount = this.item.downPayment;
       const customerName = this.item.customerName;
       const acquisition = this.item.acquisition;
+
+      const search = {
+        PK,
+        id,
+        SK,
+        GSP1PK1,
+        GSP1SK1,
+        GSP3PK1,
+        GSP4PK1,
+        GSP4SK1,
+        GSP3SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        balance,
+        paidAmount,
+        smName,
+        payDate,
+        customerName,
+        acquisition,
+        conclusion,
+        internalComments,
+        subject,
+        introduction,
+        isDiscount,
+        l_discount,
+        discountAmount,
+        quotationAmount,
+        finalAmount,
+        isInstallment,
+        processStatus,
+        quoteID,
+        downPayment,
+        numInstallments,
+      };
+      const searchText = JSON.stringify(search);
       const todo = {
         PK,
         id,
@@ -664,6 +700,7 @@ export default {
         quoteID,
         downPayment,
         numInstallments,
+        searchText,
       };
 
       const invo = await API.graphql({
@@ -710,6 +747,29 @@ export default {
         const customerName = this.q_services[i].customerName;
         const productType = this.q_services[i].productType;
         const estimatedHours = this.q_services[i].estimatedHours;
+        const search = {
+          PK,
+          SK,
+          GSP1PK1,
+          GSP1SK1,
+          GSP2PK1,
+          GSP2SK1,
+          GSP3PK1,
+          GSP3SK1,
+          GSP4PK1,
+          GSP4SK1,
+          entityType,
+          taskStatus,
+          taskStart,
+          updateAt,
+          createdAt,
+          active,
+          smName,
+          customerName,
+          productType,
+          estimatedHours,
+        };
+        const searchText = JSON.stringify(search);
         const todo = {
           PK,
           SK,
@@ -731,6 +791,7 @@ export default {
           customerName,
           productType,
           estimatedHours,
+          searchText,
         };
         await API.graphql({
           query: createRecord,
@@ -765,6 +826,33 @@ export default {
           const isPaid = "Y";
           const payDate = new Date().toISOString().substr(0, 10);
           const customerName = this.item.customerName;
+          const search = {
+            id,
+            PK,
+            SK,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            entityType,
+            createdAt,
+            createdBy,
+            active,
+            startDate,
+            amount,
+            type,
+            scale,
+            customerName,
+            GSP3PK1,
+            GSP3SK1,
+            GSP4PK1,
+            GSP4SK1,
+            isPaid,
+            payDate,
+            updateAt,
+          };
+          const searchText = JSON.stringify(search);
+
           inst = {
             id,
             PK,
@@ -789,6 +877,7 @@ export default {
             isPaid,
             payDate,
             updateAt,
+            searchText,
           };
           await API.graphql({
             query: createRecord,
@@ -815,7 +904,32 @@ export default {
           const type = this.installments[i].type;
           const scale = this.installments[i].scale;
           const isPaid = "N";
-          const customerName =this.item.customerName;
+          const customerName = this.item.customerName;
+          const search = {
+            id,
+            PK,
+            SK,
+            GSP1PK1,
+            GSP1SK1,
+            GSP2PK1,
+            GSP2SK1,
+            GSP3PK1,
+            GSP3SK1,
+            GSP4PK1,
+            GSP4SK1,
+            entityType,
+            createdAt,
+            createdBy,
+            active,
+            startDate,
+            amount,
+            type,
+            scale,
+            isPaid,
+            customerName,
+            updateAt,
+          };
+          const searchText = JSON.stringify(search);
           inst = {
             id,
             PK,
@@ -839,6 +953,7 @@ export default {
             isPaid,
             customerName,
             updateAt,
+            searchText,
           };
           await API.graphql({
             query: createRecord,

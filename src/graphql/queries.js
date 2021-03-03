@@ -40,6 +40,7 @@ export const listOrganizations = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -78,6 +79,7 @@ export const getOrganization = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -116,6 +118,7 @@ export const listCustomers = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      searchText
     }
   }
 `;
@@ -150,6 +153,7 @@ export const getCustomer = /* GraphQL */ `
       jobTitle
       levelAuthority
       numberEmployee
+      searchText
     }
   }
 `;
@@ -259,6 +263,7 @@ export const listProducts = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -292,6 +297,7 @@ export const getProduct = /* GraphQL */ `
       estimatedHours
       publicLink
       internalLink
+      searchText
     }
   }
 `;
@@ -397,6 +403,7 @@ export const listQuotes = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -506,6 +513,7 @@ export const listInvoices = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -611,6 +619,7 @@ export const getQuote = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -720,6 +729,7 @@ export const listQuoteItems = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -756,6 +766,7 @@ export const getQuoteItem = /* GraphQL */ `
       estimatedHours
       publicLink
       internalLink
+      searchText
     }
   }
 `;
@@ -865,6 +876,7 @@ export const listInstallments = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -896,6 +908,7 @@ export const getInstallment = /* GraphQL */ `
       customerName
       payDate
       scale
+      searchText
     }
   }
 `;
@@ -924,6 +937,7 @@ export const listEmployee = /* GraphQL */ `
       createdBy
       l_smName
       email
+      searchText
     }
   }
 `;
@@ -948,6 +962,7 @@ export const getEmployee = /* GraphQL */ `
       createdBy
       l_smName
       email
+      searchText
     }
   }
 `;
@@ -1030,6 +1045,7 @@ export const listPhoneNumber = /* GraphQL */ `
       type
       l_email
       customerName
+      searchText
     }
   }
 `;
@@ -1056,6 +1072,7 @@ export const getPhoneNumber = /* GraphQL */ `
       type
       l_email
       customerName
+      searchText
     }
   }
 `;
@@ -1165,6 +1182,7 @@ export const listSmartDash = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -1190,6 +1208,7 @@ export const listAccounts = /* GraphQL */ `
       smName
       smAddress
       website
+      searchText
     }
   }
 `;
@@ -1215,6 +1234,7 @@ export const getAccounts = /* GraphQL */ `
       smName
       smAddress
       website
+      searchText
     }
   }
 `;
@@ -1324,6 +1344,7 @@ export const listCampaings = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -1429,6 +1450,7 @@ export const listTask = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;

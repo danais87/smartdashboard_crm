@@ -317,6 +317,30 @@ export default {
         const SK = item.SK;
         const PK = this.organizationID;
         const id = item.id;
+
+        const search = {
+          PK,
+          id,
+          SK,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          l_smName,
+          leadStatus,
+          account,
+          l_email,
+          l_smAddress,
+          seekingService,
+          acquisition,
+          notes,
+          businessType,
+          jobTitle,
+          levelAuthority,
+          numberEmployee,
+        };
+        const searchText = JSON.stringify(search);
         const todo = {
           PK,
           id,
@@ -338,6 +362,7 @@ export default {
           jobTitle,
           levelAuthority,
           numberEmployee,
+          searchText,
         };
         console.log(todo);
 
@@ -361,7 +386,7 @@ export default {
             const value = this.phones[i].phone;
             const type = this.phones[i].p_type;
             const customerName = item.name + " " + item.last_name;
-            const todo = {
+            const search = {
               PK,
               SK,
               GSP1PK1,
@@ -376,6 +401,23 @@ export default {
               customerName,
               type,
             };
+            const searchText = JSON.stringify(search);
+            const todo = {
+              PK,
+              SK,
+              GSP1PK1,
+              GSP1SK1,
+              entityType,
+              createdAt,
+              updateAt,
+              createdBy,
+              active,
+              value,
+              l_email,
+              customerName,
+              type,
+              searchText,
+            };
 
             await API.graphql({
               query: updateRecord,
@@ -388,7 +430,8 @@ export default {
         }
       } else {
         console.log("created");
-        const todo = {
+
+        const search = {
           PK,
           id,
           SK,
@@ -414,6 +457,36 @@ export default {
           levelAuthority,
           numberEmployee,
         };
+        const searchText = JSON.stringify(search);
+
+        const todo = {
+          PK,
+          id,
+          SK,
+          GSP1PK1,
+          GSP1SK1,
+          GSP4PK1,
+          GSP4SK1,
+          entityType,
+          createdAt,
+          updateAt,
+          createdBy,
+          active,
+          l_smName,
+          leadStatus,
+          account,
+          l_email,
+          l_smAddress,
+          seekingService,
+          acquisition,
+          notes,
+          businessType,
+          jobTitle,
+          levelAuthority,
+          numberEmployee,
+          searchText,
+        };
+
         try {
           l = await API.graphql({
             query: createRecord,
@@ -439,6 +512,22 @@ export default {
             const value = this.phones[i].phone;
             const type = this.phones[i].p_type;
             const customerName = item.name + " " + item.last_name;
+            const search = {
+              PK,
+              SK,
+              GSP1PK1,
+              GSP1SK1,
+              entityType,
+              createdAt,
+              updateAt,
+              createdBy,
+              active,
+              value,
+              customerName,
+              l_email,
+              type,
+            };
+            const searchText = JSON.stringify(search);
             const todo = {
               PK,
               SK,
@@ -453,6 +542,7 @@ export default {
               customerName,
               l_email,
               type,
+              searchText
             };
             console.log(todo);
             await API.graphql({

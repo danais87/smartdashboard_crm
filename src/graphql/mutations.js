@@ -103,6 +103,7 @@ export const createRecord = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -208,6 +209,7 @@ export const updateRecord = /* GraphQL */ `
       funcIdentityPoolId
       funcName
       funcSource
+      searchText
     }
   }
 `;
@@ -234,6 +236,7 @@ export const deletePhoneNumber = /* GraphQL */ `
       type
       l_email
       customerName
+      searchText
     }
   }
 `;
@@ -265,6 +268,7 @@ export const deleteInstallments = /* GraphQL */ `
       customerName
       payDate
       scale
+      searchText
     }
   }
 `;

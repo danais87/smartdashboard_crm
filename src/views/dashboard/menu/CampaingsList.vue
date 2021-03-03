@@ -251,6 +251,25 @@ export default {
       const productType = item.productType;
 
       if (!price || !startDate || !description) return alert("error en datos");
+      const search = {
+        PK,
+        SK,
+        id,
+        GSP1PK1,
+        GSP1SK1,
+        GSP4PK1,
+        GSP4SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        price,
+        startDate,
+        description,
+        productType,
+      };
+      const searchText = JSON.stringify(search);
 
       const todo = {
         PK,
@@ -269,11 +288,14 @@ export default {
         startDate,
         description,
         productType,
+        searchText,
       };
+
       await API.graphql({
         query: createRecord,
         variables: { input: todo },
       });
+
       this.GetInvestment();
       loading.close();
     },
@@ -297,6 +319,19 @@ export default {
       const productType = item.productType;
       if (!price || !startDate || !description) return alert("error en datos");
 
+      const search = {
+        PK,
+        SK,
+        GSP4PK1,
+        GSP4SK1,
+        updateAt,
+        price,
+        startDate,
+        description,
+        productType,
+      };
+      const searchText = JSON.stringify(search);
+
       const todo = {
         PK,
         SK,
@@ -307,6 +342,7 @@ export default {
         startDate,
         description,
         productType,
+        searchText
       };
 
       await API.graphql({
