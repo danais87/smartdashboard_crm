@@ -1479,9 +1479,7 @@
 <script>
 import { API } from "aws-amplify";
 import { createRecord, updateRecord } from "../../../graphql/mutations";
-import {
-  listSmartDash,
-} from "../../../graphql/queries";
+import { listSmartDash } from "../../../graphql/queries";
 import Vuex from "vuex";
 import { uuid } from "vue-uuid";
 
@@ -1949,7 +1947,25 @@ export default {
       const productType = item.productType;
 
       if (!price || !startDate || !description) return alert("error en datos");
-
+      const search = {
+       PK,
+        SK,
+        id,
+        GSP1PK1,
+        GSP1SK1,
+        GSP4PK1,
+        GSP4SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        price,
+        startDate,
+        description,
+        productType,
+      };
+      const searchText = JSON.stringify(search);
       const todo = {
         PK,
         SK,
@@ -1967,6 +1983,7 @@ export default {
         startDate,
         description,
         productType,
+        searchText
       };
       await API.graphql({
         query: createRecord,
@@ -1994,7 +2011,18 @@ export default {
       const description = item.description;
       const productType = item.productType;
       if (!price || !startDate || !description) return alert("error en datos");
-
+      const search = {
+       PK,
+        SK,
+        GSP4PK1,
+        GSP4SK1,
+        updateAt,
+        price,
+        startDate,
+        description,
+        productType,
+      };
+      const searchText = JSON.stringify(search);
       const todo = {
         PK,
         SK,
@@ -2005,6 +2033,7 @@ export default {
         startDate,
         description,
         productType,
+        searchText
       };
 
       await API.graphql({
@@ -2276,7 +2305,22 @@ export default {
       const website = item.website;
 
       if (!smName || !smAddress || !website) return alert("error en datos");
-
+      const search = {
+        PK,
+        SK,
+        id,
+        GSP1PK1,
+        GSP1SK1,
+        entityType,
+        createdAt,
+        updateAt,
+        createdBy,
+        active,
+        smName,
+        smAddress,
+        website,
+      };
+      const searchText = JSON.stringify(search);
       const todo = {
         PK,
         SK,
@@ -2291,6 +2335,7 @@ export default {
         smName,
         smAddress,
         website,
+        searchText,
       };
       await API.graphql({
         query: createRecord,
@@ -2316,7 +2361,15 @@ export default {
       const website = item.website;
 
       if (!smName || !smAddress || !website) return alert("error en datos");
-
+       const search = {
+       PK,
+        SK,
+        updateAt,
+        smName,
+        smAddress,
+        website,
+      };
+      const searchText = JSON.stringify(search);
       const todo = {
         PK,
         SK,
@@ -2324,6 +2377,7 @@ export default {
         smName,
         smAddress,
         website,
+        searchText
       };
 
       await API.graphql({
